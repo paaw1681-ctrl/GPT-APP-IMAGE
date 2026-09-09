@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+:root {
+  --background: #faf7f2;
+  --surface: #ffffff;
+  --foreground: #2b241d;
+  --muted: #6b6053;
+  --border: #e7dfd3;
+  --primary: #8b5e3c;
+  --primary-foreground: #ffffff;
+  --primary-hover: #74492c;
+  --accent: #4f6f52;
+  --danger: #b3452f;
+  --danger-bg: #fbeae5;
+  --warning: #a6741a;
+  --warning-bg: #fbf1de;
+  --success: #3f7a4c;
+  --success-bg: #e9f4ea;
+  --radius: 1rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+button,
+a {
+  -webkit-touch-callout: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1c1712;
+    --surface: #262019;
+    --foreground: #f1ece3;
+    --muted: #b3a793;
+    --border: #3a332a;
+    --primary: #c69a6f;
+    --primary-foreground: #201a14;
+    --primary-hover: #d6ac82;
+    --accent: #7fa583;
+    --danger: #e08a72;
+    --danger-bg: #3a241d;
+    --warning: #d9ad5c;
+    --warning-bg: #3a2f1a;
+    --success: #7fbb8a;
+    --success-bg: #1e3324;
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "oakoats-image-studio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.116.0",
+    "exifr": "^7.1.3",
+    "heic-convert": "^2.1.0",
+    "next": "16.3.4",
+    "openai": "^7.12.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "server-only": "^0.0.1",
+    "sharp": "^0.35.4",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^26.5.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.1.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.4",
+    "happy-dom": "^20.14.0",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.13",
+    "typescript": "^5",
+    "vitest": "^5.0.0"
+  }
+}
