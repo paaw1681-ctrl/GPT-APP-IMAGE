@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { isEmailAllowed, getServerEnv } from "@/lib/env";
+import { isEmailAllowed } from "@/lib/env";
 
 const bodySchema = z.object({ email: z.string().email() });
+const PRODUCTION_CALLBACK_URL = "https://gpt-app-image.vercel.app/auth/callback";
 
 export async function POST(req: NextRequest) {
   const json = await req.json().catch(() => null);
@@ -21,13 +22,10 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const env = getServerEnv();
-  const origin = env.APP_BASE_URL ?? req.nextUrl.origin;
-
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: `${origin}/auth/callback` },
+    options: { emailRedirectTo: PRODUCTION_CALLBACK_URL },
   });
 
   if (error) {
