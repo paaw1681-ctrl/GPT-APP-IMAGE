@@ -6,6 +6,7 @@ import { recordCost } from "@/lib/cost/ledger";
 import { assertBudgetAllows } from "@/lib/cost/budget";
 import { createIdempotentJob } from "@/lib/generation/idempotency";
 import { loadGenerationContext, productLockSummary } from "@/lib/generation/context";
+import { getRecentScenarios, scenariosToNotes } from "@/lib/generation/scenarioHistory";
 import { buildPrompt } from "@/lib/prompt/build";
 import { BUCKET, assetPath } from "@/lib/storage/paths";
 
@@ -63,6 +64,9 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
 
     await supabase.from("generation_jobs").update({ status: "processing", started_at: new Date().toISOString() }).eq("id", job.id);
 
+    const recentScenarios = await getRecentScenarios(supabase, context.productId);
+    const antiRepetitionNotes = scenariosToNotes(recentScenarios);
+
     const built = buildPrompt({
       modules: context.promptVersion.modules,
       productLockSummary: productLockSummary(context.profile),
@@ -75,7 +79,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       featuredSubjectLabel: context.concept.featured_subject ?? "auto",
       scenario: context.concept.scenario_metadata as never,
       ideaText: context.concept.idea_text,
-      antiRepetitionNotes: [],
+      antiRepetitionNotes,
       userNote: parsed.data.userNote,
       mode: parsed.data.mode,
     });
@@ -145,7 +149,13 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
         });
 
         if (parsed.data.mode === "final") {
-          await runQualityGate(supabase, assetRow.id, job.id, context, buffer.toString("base64"), user.id);
+          // Błąd Quality Gate nie może odrzucić poprawnie wygenerowanego finału —
+          // użytkownik i tak dostaje zdjęcie, tylko bez automatycznej oceny.
+          try {
+            await runQualityGate(supabase, assetRow.id, job.id, context, buffer.toString("base64"), user.id);
+          } catch (qgErr) {
+            console.error("Quality Gate nie powiodło się:", qgErr);
+          }
         }
       }
 
@@ -165,10 +175,38 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       throw genErr;
     }
 
-    return NextResponse.json({ job: { ...job, status: "completed" }, assets: createdAssets });
+    const costGuardTip = await buildCostGuardTip(supabase, sessionId, parsed.data.mode);
+
+    return NextResponse.json({ job: { ...job, status: "completed" }, assets: createdAssets, costGuardTip });
   } catch (err) {
     return handleApiError(err);
   }
+}
+
+/**
+ * Strażnik kosztów (sekcja 45) — krótkie, konkretne podpowiedzi, tylko gdy
+ * rzeczywiście pomagają. Nigdy nie blokuje akcji, tylko sugeruje.
+ */
+async function buildCostGuardTip(
+  supabase: Parameters<typeof getCriticProvider>[0],
+  sessionId: string,
+  mode: "prototype" | "final",
+): Promise<string | null> {
+  if (mode !== "prototype") return null;
+  const { count } = await supabase
+    .from("generation_jobs")
+    .select("id", { count: "exact", head: true })
+    .eq("session_id", sessionId)
+    .eq("kind", "prototype")
+    .eq("status", "completed");
+
+  if ((count ?? 0) >= 3) {
+    return "To już trzecia podobna generacja w tej sesji. Zamiast kolejnego prototypu, rozważ zmianę koncepcji.";
+  }
+  if ((count ?? 0) === 2) {
+    return "Masz już dobry prototyp. Bardziej opłaca się go finalizować niż generować kolejny podobny.";
+  }
+  return null;
 }
 
 async function runQualityGate(

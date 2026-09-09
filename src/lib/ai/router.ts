@@ -127,6 +127,32 @@ export async function getTextVisionProvider(
   };
 }
 
+/**
+ * Provider tylko dla roli product_analysis, z możliwością eskalacji do
+ * mocniejszego modelu (sekcja 10/62): wysokie confidence -> tani model,
+ * niskie confidence / personalizacja / złożony produkt -> mocniejszy model.
+ * Rozdzielone od getTextVisionProvider, bo eskalacja dotyczy tylko tej roli.
+ */
+export async function getProductAnalysisProvider(
+  supabase: Client,
+  opts: { escalate?: boolean } = {},
+): Promise<{ provider: TextVisionProvider; model: ResolvedModel }> {
+  const model = await resolveModel(supabase, "product_analysis", opts);
+  if (model.provider === "mock") {
+    return { provider: new MockTextVisionProvider(), model };
+  }
+  const { OpenAiTextVisionProvider } = await import("@/lib/ai/providers/openai/text");
+  return {
+    provider: new OpenAiTextVisionProvider({
+      productAnalysis: model.modelId,
+      scenario: model.modelId,
+      content: model.modelId,
+      trendResearch: model.modelId,
+    }),
+    model,
+  };
+}
+
 export async function getImageProvider(
   supabase: Client,
   role: "prototype_image" | "final_image",

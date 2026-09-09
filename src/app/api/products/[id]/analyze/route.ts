@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireApiUser, apiError, handleApiError } from "@/lib/api/helpers";
-import { getTextVisionProvider } from "@/lib/ai/router";
+import { getProductAnalysisProvider } from "@/lib/ai/router";
 import { recordCost } from "@/lib/cost/ledger";
 import { assertBudgetAllows } from "@/lib/cost/budget";
 import { BUCKET } from "@/lib/storage/paths";
@@ -46,20 +46,35 @@ export async function POST(_req: Request, ctx: { params: Promise<{ id: string }>
       }),
     );
 
-    const { provider, models } = await getTextVisionProvider(supabase);
-    const { result, usage } = await provider.analyzeProduct({
+    const analysisInput = {
       references: referenceInputs,
       productTypeOptions: (productTypes ?? []).map((t) => ({ key: t.key, label: t.label_pl })),
       audienceOptions: (audienceContexts ?? []).map((t) => ({ key: t.key, label: t.label_pl })),
-    });
+    };
 
-    await recordCost(supabase, {
-      jobId: null,
-      model: models.productAnalysis,
-      usage,
-      userId: user.id,
-      category: "vision",
-    });
+    const { provider, model } = await getProductAnalysisProvider(supabase);
+    let { result, usage } = await provider.analyzeProduct(analysisInput);
+    let analyzerModel = model;
+
+    await recordCost(supabase, { jobId: null, model, usage, userId: user.id, category: "vision" });
+
+    // Eskalacja (sekcja 10/62): niskie confidence, wykryta personalizacja albo
+    // niepewne pola -> powtórz analizę mocniejszym modelem i użyj JEGO wyniku.
+    const needsEscalation =
+      result.analysis_confidence === "low" ||
+      result.personalization_detected ||
+      result.uncertain_fields.length > 0;
+
+    if (needsEscalation) {
+      const { provider: provider2, model: model2 } = await getProductAnalysisProvider(supabase, { escalate: true });
+      if (model2.modelId !== analyzerModel.modelId) {
+        const escalated = await provider2.analyzeProduct(analysisInput);
+        result = escalated.result;
+        usage = escalated.usage;
+        analyzerModel = model2;
+        await recordCost(supabase, { jobId: null, model: model2, usage, userId: user.id, category: "vision" });
+      }
+    }
 
     const matchedType = (productTypes ?? []).find((t) => t.key === result.product_type_key);
     const matchedAudience = (audienceContexts ?? []).find((t) => t.key === result.audience_context_key);
@@ -107,7 +122,7 @@ export async function POST(_req: Request, ctx: { params: Promise<{ id: string }>
         notes: result.notes,
         uncertain_fields: result.uncertain_fields,
         analysis_confidence: result.analysis_confidence,
-        analyzer_model: models.productAnalysis.modelId,
+        analyzer_model: analyzerModel.modelId,
         raw: result,
         reference_quality_status: result.reference_quality_status,
         reference_quality_notes: result.reference_quality_notes,

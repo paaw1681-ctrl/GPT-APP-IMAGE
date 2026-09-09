@@ -38,6 +38,7 @@ export default function GeneratorPage({ params }: { params: Promise<{ id: string
   const [phase, setPhase] = useState<Phase>("wybor");
   const [photoType, setPhotoType] = useState("lifestyle");
   const [creative, setCreative] = useState(false);
+  const [count, setCount] = useState(1);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +49,7 @@ export default function GeneratorPage({ params }: { params: Promise<{ id: string
   const [estimate, setEstimate] = useState<{ minPln: number; maxPln: number; mock: boolean } | null>(null);
   const [job, setJob] = useState<{ id: string; status: string; error_message?: string | null } | null>(null);
   const [assets, setAssets] = useState<JobAsset[]>([]);
+  const [costGuardTip, setCostGuardTip] = useState<string | null>(null);
 
   useEffect(() => {
     apiFetch<{ session: { id: string } }>(`/api/products/${productId}/sessions`, { method: "POST" })
@@ -59,6 +61,8 @@ export default function GeneratorPage({ params }: { params: Promise<{ id: string
     if (!sessionId) return;
     setBusy(true);
     setError(null);
+    setCostGuardTip(null);
+    setEstimate(null);
     try {
       const res = await apiFetch<{ concept: Concept }>(`/api/sessions/${sessionId}/concepts`, {
         method: "POST",
@@ -79,7 +83,7 @@ export default function GeneratorPage({ params }: { params: Promise<{ id: string
     try {
       const res = await apiFetch<{ minPln: number; maxPln: number; mock: boolean }>(
         `/api/sessions/${sessionId}/generate/estimate`,
-        { method: "POST", body: JSON.stringify({ mode: nextMode, count: 1, referenceCount: 3 }) },
+        { method: "POST", body: JSON.stringify({ mode: nextMode, count, referenceCount: 3 }) },
       );
       setEstimate(res);
     } catch (e) {
@@ -92,19 +96,21 @@ export default function GeneratorPage({ params }: { params: Promise<{ id: string
     setPhase("generowanie");
     setError(null);
     try {
-      const res = await apiFetch<{ job: { id: string; status: string }; assets: JobAsset[] }>(
-        `/api/sessions/${sessionId}/generate`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            conceptId: concept.id,
-            mode,
-            count: 1,
-            idempotencyKey: newIdempotencyKey(),
-          }),
-        },
-      );
+      const res = await apiFetch<{
+        job: { id: string; status: string };
+        assets: JobAsset[];
+        costGuardTip?: string | null;
+      }>(`/api/sessions/${sessionId}/generate`, {
+        method: "POST",
+        body: JSON.stringify({
+          conceptId: concept.id,
+          mode,
+          count,
+          idempotencyKey: newIdempotencyKey(),
+        }),
+      });
       setJob(res.job);
+      setCostGuardTip(res.costGuardTip ?? null);
       await pollJob(res.job.id);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Generacja nie powiodła się. Nie naliczono kolejnej próby automatycznie.");
@@ -176,9 +182,40 @@ export default function GeneratorPage({ params }: { params: Promise<{ id: string
           </button>
 
           {advancedOpen && (
-            <div>
-              <p className="mb-1 text-sm text-muted">Dodatkowa uwaga (opcjonalnie)</p>
-              <Textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="np. bez uśmiechu, chłodniejsze światło…" />
+            <div className="space-y-4">
+              <div>
+                <p className="mb-1 text-sm text-muted">Dodatkowa uwaga (opcjonalnie)</p>
+                <Textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="np. bez uśmiechu, chłodniejsze światło…" />
+              </div>
+              <div>
+                <p className="mb-1 text-sm text-muted">Liczba obrazów</p>
+                <div className="flex gap-2">
+                  {[1, 2, 3].map((n) => (
+                    <button
+                      key={n}
+                      onClick={() => setCount(n)}
+                      className={`h-10 flex-1 rounded-xl border text-sm ${
+                        count === n ? "border-primary bg-primary/10 font-medium" : "border-border"
+                      }`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setCount(5)}
+                    className={`h-10 flex-1 rounded-xl border text-sm ${
+                      count === 5 ? "border-danger bg-danger-bg font-medium text-danger" : "border-border"
+                    }`}
+                  >
+                    5
+                  </button>
+                </div>
+                {count > 1 && (
+                  <p className="mt-1 text-xs text-warning">
+                    Zwykle wystarczy 1 prototyp, żeby ocenić kierunek — {count}× to {count}× wyższy koszt.
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
@@ -236,6 +273,9 @@ export default function GeneratorPage({ params }: { params: Promise<{ id: string
 
           {mode === "prototype" ? (
             <div className="space-y-2">
+              {costGuardTip && (
+                <p className="rounded-xl bg-primary/5 px-3 py-2 text-sm text-primary">{costGuardTip}</p>
+              )}
               <Button className="w-full" size="lg" onClick={() => { setEstimate(null); loadEstimate("final"); setPhase("koncepcja"); }}>
                 Finalizuj
               </Button>

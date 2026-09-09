@@ -70,12 +70,19 @@ export default function NewProductPage() {
     setUploading(true);
     try {
       const id = await ensureProduct();
-      const formData = new FormData();
-      Array.from(files).forEach((f) => formData.append("files", f));
-      const res = await fetch(`/api/products/${id}/references`, { method: "POST", body: formData });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Nie udało się przesłać zdjęć.");
-      setPreviews((prev) => [...prev, ...json.references.map((r: { previewUrl: string }) => r.previewUrl).filter(Boolean)]);
+      // Jeden plik na request — kilka zdjęć z iPhone'a w jednym multipart body
+      // łatwo przekracza limit rozmiaru żądania funkcji serverless (Vercel).
+      for (const file of Array.from(files)) {
+        const formData = new FormData();
+        formData.append("files", file);
+        const res = await fetch(`/api/products/${id}/references`, { method: "POST", body: formData });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error ?? "Nie udało się przesłać zdjęć.");
+        setPreviews((prev) => [
+          ...prev,
+          ...json.references.map((r: { previewUrl: string }) => r.previewUrl).filter(Boolean),
+        ]);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Nie udało się przesłać zdjęć.");
     } finally {

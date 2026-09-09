@@ -80,4 +80,7 @@ export const SUPPORTED_REFERENCE_MIME_TYPES = [
   "image/heif",
 ];
 
-export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+// Konserwatywny limit — funkcje serverless Vercel mają ograniczenie rozmiaru
+// żądania (ok. 4.5 MB na Hobby). Klient wysyła jeden plik na request, a to
+// wciąż zostawia margines dla typowego zdjęcia z iPhone'a (HEIC/JPEG 1-6 MB).
+export const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;

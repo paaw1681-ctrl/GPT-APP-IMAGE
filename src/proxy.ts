@@ -2,7 +2,15 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { getPublicEnv, isEmailAllowed } from "@/lib/env";
 
-const PUBLIC_PATHS = ["/logowanie", "/auth/callback", "/api/auth/request-link", "/manifest.webmanifest", "/sw.js"];
+const PUBLIC_PATHS = [
+  "/logowanie",
+  "/auth/callback",
+  "/api/auth/request-link",
+  "/manifest.webmanifest",
+  "/sw.js",
+  "/offline.html",
+  "/apple-touch-icon.png",
+];
 
 function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) return true;
