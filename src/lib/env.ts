@@ -1,8 +1,11 @@
 import { z } from "zod";
 
+const SUPABASE_URL = "https://tutuzaxlovtthiqubkgi.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_50uN_8Y6wGM257dnh9TMnA_loCsQs2h";
+
 const serverSchema = z.object({
-  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1).optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   OPENAI_API_KEY: z.string().min(1).optional(),
   USE_MOCK_AI: z
@@ -54,10 +57,13 @@ export function isEmailAllowed(email: string | null | undefined): boolean {
   return getAllowedEmails().includes(email.trim().toLowerCase());
 }
 
-/** Bezpieczna wartość dla klienta — te dwie zmienne są publiczne (NEXT_PUBLIC_*) z założenia. */
+/**
+ * Publiczna konfiguracja projektu Supabase. Klucz publishable jest przeznaczony
+ * do użycia w aplikacji przeglądarkowej; bezpieczeństwo zapewniają Auth i RLS.
+ */
 export function getPublicEnv() {
   return {
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-    supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+    supabaseUrl: SUPABASE_URL,
+    supabaseAnonKey: SUPABASE_PUBLISHABLE_KEY,
   };
 }
