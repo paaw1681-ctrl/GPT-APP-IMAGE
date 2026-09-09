@@ -31,6 +31,11 @@ export async function POST(req: NextRequest) {
   });
 
   if (error) {
+    console.error("[auth/request-link] Supabase signInWithOtp failed", {
+      name: error.name,
+      message: error.message,
+      status: error.status,
+    });
     return NextResponse.json(
       { error: "Nie udało się wysłać linku logowania. Spróbuj ponownie za chwilę." },
       { status: 500 },
