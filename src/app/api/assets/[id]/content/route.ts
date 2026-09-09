@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireApiUser, apiError, handleApiError } from "@/lib/api/helpers";
 import { getTextVisionProvider } from "@/lib/ai/router";
 import { recordCost } from "@/lib/cost/ledger";
+import { assertBudgetAllows } from "@/lib/cost/budget";
 import { WORKSPACE_ID } from "@/lib/auth/session";
 import { PHOTO_TYPES } from "@/lib/prompt/photoTypes";
 
@@ -41,7 +42,11 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
         .limit(1)
         .maybeSingle(),
       supabase.from("products").select("name").eq("id", asset.product_id).maybeSingle(),
-      supabase.from("brand_profiles").select("content_voice").eq("workspace_id", WORKSPACE_ID).maybeSingle(),
+      supabase
+        .from("brand_profiles")
+        .select("content_voice, verified_brand_facts")
+        .eq("workspace_id", WORKSPACE_ID)
+        .maybeSingle(),
       supabase
         .from("verified_facts")
         .select("value_pl")
@@ -50,13 +55,17 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     ]);
 
   try {
+    await assertBudgetAllows(supabase);
     const { provider, models } = await getTextVisionProvider(supabase);
     const photoTypeLabel = PHOTO_TYPES.find((p) => p.key === concept?.photo_type)?.label ?? "zdjęcie produktowe";
     const { result, usage } = await provider.generateContent({
       channel: parsed.data.channel,
       productSummary: `${product?.name ?? ""} — ${profile?.product_name ?? ""}. ${(profile?.materials as string[] | undefined)?.join(", ") ?? ""}`,
       photoType: photoTypeLabel,
-      verifiedFacts: (verifiedFacts ?? []).map((f) => f.value_pl),
+      verifiedFacts: [
+        ...(verifiedFacts ?? []).map((f) => f.value_pl),
+        ...((brand?.verified_brand_facts as string[] | null) ?? []),
+      ],
       brandVoice: brand?.content_voice ?? "ciepły, rzeczowy głos polskiej manufaktury",
     });
 

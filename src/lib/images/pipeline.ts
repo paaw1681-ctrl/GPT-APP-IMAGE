@@ -38,9 +38,15 @@ export async function processReferenceImage(
   let source: Buffer | Uint8Array = input;
 
   if (isHeic(mimeType, filename)) {
-    const heicConvert = (await import("heic-convert")).default;
-    const converted = await heicConvert({ buffer: input, format: "JPEG", quality: 0.95 });
-    source = Buffer.from(converted);
+    try {
+      const heicConvert = (await import("heic-convert")).default;
+      const converted = await heicConvert({ buffer: input, format: "JPEG", quality: 0.95 });
+      source = Buffer.from(converted);
+    } catch {
+      throw new Error(
+        "Nie udało się odczytać zdjęcia HEIC/HEIF. Spróbuj wybrać w Ustawieniach iPhone opcję 'Najbardziej kompatybilne' albo dodaj zdjęcie jako JPEG.",
+      );
+    }
   }
 
   const base = sharp(source, { failOn: "none" }).rotate();

@@ -5,6 +5,7 @@ import { apiFetch } from "@/lib/api/client";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { formatPln } from "@/lib/format";
 
 interface Run {
   id: string;
@@ -49,7 +50,7 @@ export default function TestLabPage() {
           <Card key={r.id}>
             <p className="text-sm font-medium">{r.photo_type}</p>
             <p className="text-xs text-muted">
-              A: {r.model_a} vs B: {r.model_b} — szac. koszt {((r.estimated_cost_cents ?? 0) / 100).toFixed(2)} zł
+              A: {r.model_a} vs B: {r.model_b} — szac. koszt {formatPln((r.estimated_cost_cents ?? 0) / 100)}
             </p>
             {r.result ? (
               <Badge tone="success" className="mt-2">

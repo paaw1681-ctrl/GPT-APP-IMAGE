@@ -12,6 +12,7 @@ import { PHOTO_TYPES, defaultAspectFor, defaultPurposeFor } from "@/lib/prompt/p
 const bodySchema = z.object({
   photoType: z.enum(PHOTO_TYPES.map((p) => p.key) as [string, ...string[]]),
   purpose: z.string().optional(),
+  aspectRatio: z.string().optional(),
   featuredSubject: z.string().default("auto"),
   creative: z.boolean().default(false),
   userNote: z.string().max(500).optional(),
@@ -72,8 +73,10 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       .slice(0, 3)
       .map((p) => p.summary_pl);
 
-    const purpose = parsed.data.purpose ?? defaultPurposeFor(parsed.data.photoType);
-    const aspectRatio = defaultAspectFor(purpose, parsed.data.photoType);
+    const purposeOverride = parsed.data.purpose && parsed.data.purpose !== "auto" ? parsed.data.purpose : undefined;
+    const aspectOverride = parsed.data.aspectRatio && parsed.data.aspectRatio !== "auto" ? parsed.data.aspectRatio : undefined;
+    const purpose = purposeOverride ?? defaultPurposeFor(parsed.data.photoType);
+    const aspectRatio = aspectOverride ?? defaultAspectFor(purpose, parsed.data.photoType);
 
     const productSummary = `${product.name} — ${profile.product_name ?? ""}. Materiały: ${(profile.materials as string[]).join(", ")}. Elementy: ${profile.element_count ?? "?"}.`;
 

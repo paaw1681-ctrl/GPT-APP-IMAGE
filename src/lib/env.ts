@@ -32,6 +32,12 @@ export function getServerEnv(): ServerEnv {
       `Brakuje wymaganych zmiennych środowiskowych: ${missing}. Sprawdź .env.example.`,
     );
   }
+  if (parsed.data.ENABLE_PAID_AI && !parsed.data.OPENAI_API_KEY) {
+    throw new Error(
+      "ENABLE_PAID_AI=true wymaga ustawienia OPENAI_API_KEY. Ustaw klucz albo wyłącz płatne AI.",
+    );
+  }
+
   cached = parsed.data;
   return cached;
 }

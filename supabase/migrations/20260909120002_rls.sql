@@ -132,11 +132,14 @@ insert into storage.buckets (id, name, public)
 values ('oakoats', 'oakoats', false)
 on conflict (id) do nothing;
 
-create policy "workspace members read storage" on storage.objects for select
-  using (bucket_id = 'oakoats' and auth.uid() is not null);
-create policy "workspace members write storage" on storage.objects for insert
-  with check (bucket_id = 'oakoats' and auth.uid() is not null);
-create policy "workspace members update storage" on storage.objects for update
-  using (bucket_id = 'oakoats' and auth.uid() is not null);
-create policy "workspace members delete storage" on storage.objects for delete
-  using (bucket_id = 'oakoats' and auth.uid() is not null);
+-- UWAGA: dostęp musi być ograniczony do faktycznych członków workspace'u, nie
+-- tylko "zalogowany" — Supabase Auth domyślnie pozwala na samodzielną
+-- rejestrację, więc sam auth.uid() is not null nie chroni przed obcym kontem.
+create policy "oak oats members read storage" on storage.objects for select
+  using (bucket_id = 'oakoats' and exists (select 1 from workspace_members m where m.user_id = auth.uid()));
+create policy "oak oats members write storage" on storage.objects for insert
+  with check (bucket_id = 'oakoats' and exists (select 1 from workspace_members m where m.user_id = auth.uid()));
+create policy "oak oats members update storage" on storage.objects for update
+  using (bucket_id = 'oakoats' and exists (select 1 from workspace_members m where m.user_id = auth.uid()));
+create policy "oak oats members delete storage" on storage.objects for delete
+  using (bucket_id = 'oakoats' and exists (select 1 from workspace_members m where m.user_id = auth.uid()));

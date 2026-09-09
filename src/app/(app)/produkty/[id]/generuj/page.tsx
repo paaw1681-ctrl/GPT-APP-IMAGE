@@ -6,7 +6,8 @@ import { apiFetch, newIdempotencyKey } from "@/lib/api/client";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Textarea } from "@/components/ui/Input";
-import { PHOTO_TYPES } from "@/lib/prompt/photoTypes";
+import { PHOTO_TYPES, PURPOSES, ASPECT_RATIOS } from "@/lib/prompt/photoTypes";
+import { formatPlnRange } from "@/lib/format";
 import { GeneratedAssetView } from "@/components/GeneratedAssetView";
 
 interface Concept {
@@ -39,6 +40,8 @@ export default function GeneratorPage({ params }: { params: Promise<{ id: string
   const [photoType, setPhotoType] = useState("lifestyle");
   const [creative, setCreative] = useState(false);
   const [count, setCount] = useState(1);
+  const [purposeChoice, setPurposeChoice] = useState("auto");
+  const [aspectChoice, setAspectChoice] = useState("auto");
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +69,13 @@ export default function GeneratorPage({ params }: { params: Promise<{ id: string
     try {
       const res = await apiFetch<{ concept: Concept }>(`/api/sessions/${sessionId}/concepts`, {
         method: "POST",
-        body: JSON.stringify({ photoType, creative, userNote: userNote ?? (note || undefined) }),
+        body: JSON.stringify({
+          photoType,
+          creative,
+          purpose: purposeChoice,
+          aspectRatio: aspectChoice,
+          userNote: userNote ?? (note || undefined),
+        }),
       });
       setConcept(res.concept);
       setPhase("koncepcja");
@@ -187,6 +196,36 @@ export default function GeneratorPage({ params }: { params: Promise<{ id: string
                 <p className="mb-1 text-sm text-muted">Dodatkowa uwaga (opcjonalnie)</p>
                 <Textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="np. bez uśmiechu, chłodniejsze światło…" />
               </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="mb-1 text-sm text-muted">Cel</p>
+                  <select
+                    className="h-10 w-full rounded-xl border border-border bg-surface px-2 text-sm"
+                    value={purposeChoice}
+                    onChange={(e) => setPurposeChoice(e.target.value)}
+                  >
+                    {PURPOSES.map((p) => (
+                      <option key={p.key} value={p.key}>
+                        {p.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <p className="mb-1 text-sm text-muted">Format</p>
+                  <select
+                    className="h-10 w-full rounded-xl border border-border bg-surface px-2 text-sm"
+                    value={aspectChoice}
+                    onChange={(e) => setAspectChoice(e.target.value)}
+                  >
+                    {ASPECT_RATIOS.map((a) => (
+                      <option key={a.key} value={a.key}>
+                        {a.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
               <div>
                 <p className="mb-1 text-sm text-muted">Liczba obrazów</p>
                 <div className="flex gap-2">
@@ -241,7 +280,7 @@ export default function GeneratorPage({ params }: { params: Promise<{ id: string
               <p className="text-sm">
                 Szacowany koszt:{" "}
                 <strong>
-                  {estimate.mock ? "0 zł (tryb mock)" : `ok. ${estimate.minPln.toFixed(2)}–${estimate.maxPln.toFixed(2)} zł`}
+                  {estimate.mock ? "0 zł (tryb mock)" : `ok. ${formatPlnRange(estimate.minPln, estimate.maxPln)}`}
                 </strong>
               </p>
               <Button className="w-full" size="lg" onClick={runGeneration}>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api/client";
 import { Card } from "@/components/ui/Card";
+import { formatPln } from "@/lib/format";
 
 interface Metrics {
   totalFinals: number;
@@ -31,7 +32,7 @@ export default function MetricsPage() {
           />
           <Row
             label="Koszt / zaakceptowany final"
-            value={metrics.costPerAcceptedFinalPln !== null ? `${metrics.costPerAcceptedFinalPln.toFixed(2)} zł` : "—"}
+            value={metrics.costPerAcceptedFinalPln !== null ? formatPln(metrics.costPerAcceptedFinalPln) : "—"}
           />
         </Card>
       )}

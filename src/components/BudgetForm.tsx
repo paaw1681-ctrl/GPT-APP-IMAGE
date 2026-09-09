@@ -5,6 +5,7 @@ import { apiFetch } from "@/lib/api/client";
 import { Button } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
+import { formatPln } from "@/lib/format";
 
 interface BudgetStatus {
   monthlyLimitPlnCents: number;
@@ -48,7 +49,7 @@ export function BudgetForm({ initial }: { initial: BudgetStatus }) {
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted">
-        {(status.spentMonthPlnCents / 100).toFixed(2)} zł / {(status.monthlyLimitPlnCents / 100).toFixed(2)} zł ({status.percent}%)
+        {formatPln(status.spentMonthPlnCents / 100)} / {formatPln(status.monthlyLimitPlnCents / 100)} ({status.percent}%)
         {status.blocked && <Badge tone="danger" className="ml-2">zablokowano</Badge>}
       </p>
       <div>

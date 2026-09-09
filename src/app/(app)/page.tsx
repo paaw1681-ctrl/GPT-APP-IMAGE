@@ -6,9 +6,10 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { BUCKET } from "@/lib/storage/paths";
+import { formatPln } from "@/lib/format";
 
 function pln(cents: number): string {
-  return (cents / 100).toFixed(2).replace(".", ",") + " zł";
+  return formatPln(cents / 100);
 }
 
 export default async function DashboardPage() {
