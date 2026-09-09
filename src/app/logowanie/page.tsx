@@ -10,6 +10,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   brak_dostepu: "Ten adres e-mail nie ma dostępu do aplikacji.",
   nieprawidlowy_link: "Link logowania wygasł albo jest nieprawidłowy. Poproś o nowy.",
   brak_kodu: "Link logowania jest niekompletny. Poproś o nowy.",
+  link_wygasl: "Ten link logowania już wygasł albo został wcześniej użyty. Poproś o nowy poniżej i kliknij go od razu po otrzymaniu.",
 };
 
 function LoginForm() {

@@ -60,6 +60,12 @@ export async function proxy(request: NextRequest) {
 
   if (!allowed) {
     const url = new URL("/logowanie", request.url);
+    // Supabase Auth przekierowuje tu bezpośrednio z błędem w query string, gdy
+    // link logowania wygasł/został już użyty — nie chcemy tego po cichu gubić.
+    const supabaseErrorCode = request.nextUrl.searchParams.get("error_code");
+    if (supabaseErrorCode) {
+      url.searchParams.set("blad", supabaseErrorCode === "otp_expired" ? "link_wygasl" : "nieprawidlowy_link");
+    }
     return NextResponse.redirect(url);
   }
 
