@@ -1,0 +1,1339 @@
+<title>Edytor strony Oak&amp;Oats</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400&family=Jost:wght@400;500;600&display=swap">
+<style>
+/* Układ: dwa panele — po lewej lista sekcji z polami, po prawej podgląd na żywo w ramce o szerokości urządzenia.
+   Na telefonie przełącznik „Edycja / Podgląd”. */
+:root{
+  --bg:#f1eee9; --panel:#fbfaf7; --field:#ffffff; --line:#e1dbd2; --fg:#26221e; --mute:#776d63;
+  --acc:#6f5443; --accfg:#ffffff; --sel:#c4952f; --danger:#a5463a; --stage:#e6e1d9;
+  --ui:"Jost","Avenir Next","Segoe UI",system-ui,sans-serif; --disp:"Cormorant Garamond",Georgia,serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#181614; --panel:#211e1b; --field:#2a2622; --line:#3a352f; --fg:#efe9e1; --mute:#a99d90;
+  --acc:#d7b096; --accfg:#1c1714; --sel:#e3bb5c; --danger:#e08a7d; --stage:#12100f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#181614; --panel:#211e1b; --field:#2a2622; --line:#3a352f; --fg:#efe9e1; --mute:#a99d90;
+  --acc:#d7b096; --accfg:#1c1714; --sel:#e3bb5c; --danger:#e08a7d; --stage:#12100f; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:14px/1.45 var(--ui);overflow:hidden}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--sel);outline-offset:2px}
+
+.app{height:100%;display:grid;grid-template-rows:auto 1fr}
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--panel);border-bottom:1px solid var(--line);
+  padding-block:8px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+.brand{font:500 21px/1 var(--disp);letter-spacing:.04em;margin-right:6px;white-space:nowrap}
+.brand i{font-style:italic;font-weight:400;color:var(--mute)}
+.grp{display:flex;gap:2px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:2px}
+.btn{border:1px solid var(--line);background:var(--field);border-radius:7px;padding:7px 11px;line-height:1.1;white-space:nowrap}
+.btn:hover{border-color:var(--mute)}
+.btn:disabled{opacity:.4;cursor:default}
+.grp .btn{border-color:transparent;background:transparent}
+.grp .btn[aria-pressed="true"]{background:var(--field);border-color:var(--line);font-weight:600}
+.btn--acc{background:var(--acc);border-color:var(--acc);color:var(--accfg);font-weight:600}
+.btn--acc:hover{filter:brightness(1.08);border-color:var(--acc)}
+.btn--sm{padding:4px 8px;font-size:12px}
+.btn--danger{color:var(--danger)}
+.sp{flex:1}
+.status{font-size:12px;color:var(--mute);white-space:nowrap}
+.tabsw{display:none}
+
+.main{display:grid;grid-template-columns:400px 1fr;min-height:0}
+.side{border-right:1px solid var(--line);background:var(--panel);overflow-y:auto;min-height:0;padding:12px 12px 80px}
+.stage{background:var(--stage);min-height:0;overflow:auto;display:grid;justify-items:center;align-items:start;padding:14px}
+.frame{width:100%;height:100%;min-height:600px;border:0;background:#fff;box-shadow:0 1px 0 var(--line),0 8px 30px rgba(0,0,0,.12);border-radius:6px;transition:width .25s}
+.stage[data-dev="tablet"] .frame{width:820px;max-width:100%}
+.stage[data-dev="phone"] .frame{width:390px;max-width:100%}
+
+/* karty sekcji */
+.card{border:1px solid var(--line);border-radius:10px;background:var(--field);margin-bottom:8px}
+.card.is-sel{border-color:var(--sel);box-shadow:0 0 0 1px var(--sel)}
+.card.is-hidden .card__name{opacity:.45;text-decoration:line-through}
+.card__head{display:flex;align-items:center;gap:6px;padding:8px 8px 8px 12px;cursor:pointer;user-select:none}
+.card__name{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card__type{display:block;font-weight:400;font-size:11px;color:var(--mute);letter-spacing:.04em}
+.ib{width:28px;height:28px;display:grid;place-items:center;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--mute);font-size:14px}
+.ib:hover{border-color:var(--line);color:var(--fg)}
+.card__body{padding:4px 12px 14px;border-top:1px solid var(--line);display:grid;gap:12px}
+.card:not(.is-open) .card__body{display:none}
+
+.f{display:grid;gap:5px;min-width:0}
+.f>label,.f .lbl{font-size:12px;font-weight:600;color:var(--mute);letter-spacing:.02em}
+.f input[type=text],.f textarea,.f select,.f input[type=number]{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:8px 9px;min-width:0}
+.f textarea{resize:vertical;min-height:70px}
+.f .hint{font-size:11.5px;color:var(--mute)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rng{display:flex;align-items:center;gap:8px}.rng input{flex:1}.rng output{min-width:52px;text-align:right;font-variant-numeric:tabular-nums;font-size:12px}
+.grpbox{border:1px dashed var(--line);border-radius:9px;padding:10px;display:grid;gap:12px}
+.grpbox>.gt{font:500 17px/1.1 var(--disp)}
+.flash{animation:flash 1.2s}
+@keyframes flash{0%,40%{box-shadow:0 0 0 3px var(--sel)}100%{box-shadow:0 0 0 0 transparent}}
+
+.list{display:grid;gap:8px}
+.li{border:1px solid var(--line);border-radius:9px;background:var(--panel)}
+.li__head{display:flex;align-items:center;gap:4px;padding:6px 6px 6px 10px;cursor:pointer}
+.li__name{flex:1;min-width:0;font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.li__body{padding:2px 10px 12px;display:grid;gap:10px}
+.li:not(.is-open) .li__body{display:none}
+.li__thumb{width:30px;height:30px;border-radius:5px;object-fit:cover;flex:none;background:var(--line)}
+
+/* pole zdjęcia */
+.img{display:grid;gap:8px}
+.img__crops{display:grid;grid-template-columns:1.45fr 1fr;gap:8px}
+.crop{position:relative;border-radius:8px;overflow:hidden;background:var(--line);cursor:crosshair;border:1px solid var(--line)}
+.crop img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.crop--d{aspect-ratio:4/3}.crop--m{aspect-ratio:9/16;max-height:170px;justify-self:stretch}
+.crop__dot{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.5),0 0 0 9999px rgba(0,0,0,.08);pointer-events:none}
+.crop__tag{position:absolute;left:6px;top:6px;background:rgba(0,0,0,.55);color:#fff;font-size:10.5px;padding:2px 6px;border-radius:4px;letter-spacing:.03em}
+.crop.is-drop{outline:3px dashed var(--sel);outline-offset:-3px}
+.img__btns{display:flex;flex-wrap:wrap;gap:6px}
+.lib{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:220px;overflow:auto;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.lib button{padding:0;border:2px solid transparent;border-radius:6px;overflow:hidden;aspect-ratio:1;background:var(--line)}
+.lib button:hover{border-color:var(--sel)}
+.lib img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* punkty na zdjęciu */
+.pts{position:relative;border-radius:8px;overflow:hidden;cursor:crosshair;border:1px solid var(--line)}
+.pts img{width:100%;display:block;pointer-events:none}
+.pts__dot{position:absolute;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:#fff;color:#222;font:600 12px/24px var(--ui);text-align:center;box-shadow:0 1px 6px rgba(0,0,0,.35);pointer-events:none}
+.pts__dot.is-on{background:var(--sel);color:#1b1612}
+
+.add{width:100%;padding:12px;border:1.5px dashed var(--line);border-radius:10px;background:transparent;color:var(--mute);font-weight:600}
+.add:hover{border-color:var(--acc);color:var(--fg)}
+
+/* modale */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(20,16,12,.45);display:grid;place-items:center;
+  padding-block:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.dlg{background:var(--panel);border:1px solid var(--line);border-radius:14px;width:min(860px,100%);max-height:100%;overflow:auto;padding:22px;display:grid;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.dlg h2{margin:0;font:500 28px/1.1 var(--disp)}
+.dlg p{margin:0;color:var(--mute)}
+.dlg textarea{width:100%;min-height:260px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--field)}
+.dlg__foot{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;align-items:center}
+.types{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.type{text-align:left;border:1px solid var(--line);background:var(--field);border-radius:11px;padding:14px;display:grid;gap:6px}
+.type:hover{border-color:var(--acc)}
+.type b{font:500 19px/1.1 var(--disp)}
+.type span{font-size:12.5px;color:var(--mute)}
+.type em{font-style:normal;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)}
+.files{display:grid;gap:4px;max-height:200px;overflow:auto;font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--field)}
+.files div{display:flex;justify-content:space-between;gap:10px}
+.files code{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.tag{font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:var(--bg);color:var(--mute);flex:none}
+.tag--new{background:var(--sel);color:#1b1612}
+.chk{display:flex;gap:8px;align-items:center;font-size:13px}
+.steps{margin:0;padding-left:20px;display:grid;gap:4px;color:var(--fg)}
+
+.toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:9px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:calc(100% - 32px)}
+
+@media (max-width:900px){
+  .main{grid-template-columns:1fr}
+  .tabsw{display:flex}
+  .app[data-pane="edit"] .stage{display:none}
+  .app[data-pane="view"] .side{display:none}
+  .side{border-right:0}
+  .stage{padding:8px}
+  .hide-sm{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app" id="app" data-pane="edit">
+  <header class="bar">
+    <div class="brand">Oak&amp;Oats <i>edytor strony</i></div>
+    <div class="grp tabsw" role="group" aria-label="Widok">
+      <button class="btn" id="paneEdit" aria-pressed="true">Edycja</button>
+      <button class="btn" id="paneView" aria-pressed="false">Podgląd</button>
+    </div>
+    <button class="btn" id="undo" title="Cofnij (Ctrl+Z)">↶ Cofnij</button>
+    <button class="btn" id="redo" title="Ponów (Ctrl+Shift+Z)">↷</button>
+    <div class="grp" role="group" aria-label="Urządzenie">
+      <button class="btn" data-dev="desktop" aria-pressed="true">Komputer</button>
+      <button class="btn hide-sm" data-dev="tablet" aria-pressed="false">Tablet</button>
+      <button class="btn" data-dev="phone" aria-pressed="false">Telefon</button>
+    </div>
+    <span class="sp"></span>
+    <span class="status" id="status">Zapisano w przeglądarce</span>
+    <button class="btn" id="projBtn">Projekt</button>
+    <button class="btn" id="codeBtn">Kod</button>
+    <button class="btn btn--acc" id="zipBtn">Eksport do Sky-Shop</button>
+  </header>
+  <div class="main">
+    <aside class="side" id="side" aria-label="Sekcje strony"></aside>
+    <section class="stage" id="stage" data-dev="desktop" aria-label="Podgląd strony">
+      <iframe class="frame" id="frame" title="Podgląd strony głównej"></iframe>
+    </section>
+  </div>
+</div>
+<input type="file" id="fileIn" accept="image/jpeg,image/png,image/webp,image/avif" hidden>
+<input type="file" id="projIn" accept="application/json,.json" hidden>
+
+<script>
+"use strict";
+/* ============================================================
+   Dane domyślne: zdjęcia wstrzykiwane przez build-edytor.py
+   ============================================================ */
+const DEFAULT_IMAGES = /*@@IMAGES@@*/{};
+
+/* ============================================================
+   Narzędzia
+   ============================================================ */
+const $ = (s, r = document) => r.querySelector(s);
+const el = (tag, attrs = {}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else if (k === 'text') n.textContent = v;
+    else n.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat()) if (c != null && c !== false) n.append(c.nodeType ? c : document.createTextNode(c));
+  return n;
+};
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rich = s => esc(s).replace(/\*(.+?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
+const uid = () => Math.random().toString(36).slice(2, 8);
+const clone = o => JSON.parse(JSON.stringify(o));
+const slug = s => String(s || '').normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/ł/g,'l').replace(/Ł/g,'L')
+  .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').split('-').slice(0, 4).join('-') || 'zdjecie';
+const I = (key, alt, p = [50, 50]) => ({ key, km: '', p, pm: null, alt });
+let toastT;
+function toast(msg) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = el('div', { class: 'toast', role: 'status', text: msg });
+  document.body.append(t); clearTimeout(toastT); toastT = setTimeout(() => t.remove(), 3200);
+}
+
+/* ============================================================
+   Magazyn zdjęć: key -> {blob, url, w, h}
+   ============================================================ */
+const IMGS = new Map();
+async function addImage(key, blob) {
+  const url = URL.createObjectURL(blob);
+  let w = 0, h = 0;
+  try { const b = await createImageBitmap(blob); w = b.width; h = b.height; b.close(); }
+  catch { await new Promise(r => { const i = new Image(); i.onload = () => { w = i.naturalWidth; h = i.naturalHeight; r(); }; i.onerror = r; i.src = url; }); }
+  IMGS.set(key, { blob, url, w, h, user: !(key in DEFAULT_IMAGES) });
+  return key;
+}
+const dataToBlob = async d => (await fetch(d)).blob();
+async function fileToImage(file) {
+  if (!/^image\/(jpeg|png|webp|avif)$/.test(file.type)) throw new Error('Obsługiwane formaty: JPG, PNG, WEBP. Zdjęcia HEIC z iPhone\'a najpierw zapisz jako JPG.');
+  const bmp = await createImageBitmap(file);
+  const s = Math.min(1, 2000 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas'); c.width = Math.round(bmp.width * s); c.height = Math.round(bmp.height * s);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height); bmp.close();
+  const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', .9));
+  const key = 'u' + Date.now().toString(36) + uid();
+  await addImage(key, blob); saveUploads(); return key;
+}
+const imgUrl = k => IMGS.get(k)?.url || '';
+
+/* ============================================================
+   Typy sekcji (widgety)
+   Każdy typ: label, desc, kind, fields (schemat panelu), make() (dane startowe), css, render(d, c, id)
+   ============================================================ */
+const LINK_HINT = 'Adres kategorii lub produktu, np. /pl/c/naszyjniki';
+const TITLE_HINT = 'Słowo w *gwiazdkach* będzie kursywą.';
+const tileText = (c, title, sub, more) =>
+  `<span class="oo-tile__text"><span class="oo-tile__title">${c.t(title)}</span>${sub ? `<span class="oo-tile__sub">${c.t(sub)}</span>` : ''}${more ? `<span class="oo-tile__more">${c.e(more)}</span>` : ''}</span>`;
+const head = (c, d, link) => (d.eyebrow || d.title || link) ?
+  `<div class="oo-head"><div>${d.eyebrow ? `<span class="oo-eyebrow">${c.e(d.eyebrow)}</span>` : ''}${d.title ? `<h2 class="oo-h2">${c.t(d.title)}</h2>` : ''}</div>${link || ''}</div>` : '';
+const HEAD_FIELDS = [
+  { t: 'text', k: 'eyebrow', label: 'Nadtytuł' },
+  { t: 'text', k: 'title', label: 'Tytuł sekcji', hint: TITLE_HINT },
+];
+
+const TYPES = {
+  heroTiles: {
+    label: 'Hero z kafli', kind: 'Pełny ekran', desc: 'Duży kafel z nagłówkiem i dwa mniejsze obok. Na telefonie duży na górze, dwa pod nim.',
+    make: () => ({
+      h: 100, hm: 86,
+      main: { img: I('', ''), eyebrow: 'Nadtytuł', title: 'Nagłówek *strony*', lead: 'Krótki opis.', cta: 'Zobacz', href: '/' },
+      side: [{ img: I('', ''), title: 'Kafel *pierwszy*', more: 'Zobacz', href: '/' }, { img: I('', ''), title: 'Kafel *drugi*', more: 'Zobacz', href: '/' }]
+    }),
+    fields: [
+      { t: 'group', k: 'main', label: 'Duży kafel', fields: [
+        { t: 'img', k: 'img', label: 'Zdjęcie', mobile: true },
+        { t: 'text', k: 'eyebrow', label: 'Nadtytuł' },
+        { t: 'text', k: 'title', label: 'Nagłówek H1', hint: TITLE_HINT },
+        { t: 'area', k: 'lead', label: 'Opis' },
+        { t: 'text', k: 'cta', label: 'Tekst przycisku' },
+        { t: 'text', k: 'href', label: 'Link', hint: LINK_HINT } ] },
+      { t: 'list', k: 'side', label: 'Małe kafle', min: 2, max: 2, title: it => it.title, item: [
+        { t: 'img', k: 'img', label: 'Zdjęcie', mobile: true },
+        { t: 'text', k: 'title', label: 'Tytuł', hint: TITLE_HINT },
+        { t: 'text', k: 'more', label: 'Podpis linku' },
+        { t: 'text', k: 'href', label: 'Link', hint: LINK_HINT } ] },
+      { t: 'range', k: 'h', label: 'Wysokość na komputerze', min: 60, max: 100, unit: '% ekranu' },
+      { t: 'range', k: 'hm', label: 'Wysokość dużego kafla na telefonie', min: 50, max: 100, unit: '% ekranu' },
+    ],
+    css: `.oo-hero{display:grid;gap:var(--oo-seam);grid-template-columns:1.3fr 1fr;grid-template-rows:1fr 1fr;min-height:560px;max-height:1000px}
+.oo-hero__main{grid-row:1 / span 2}
+.oo-hero__main .oo-fill{animation:oo-settle 1.8s cubic-bezier(.2,.7,.2,1) backwards}
+.oo-hero__main::after{background:linear-gradient(180deg,rgba(30,26,22,0) 35%,rgba(30,26,22,.72) 100%)}
+.oo-hero__main .oo-tile__text{gap:16px;max-width:42rem;padding-bottom:clamp(28px,4.5vw,64px)}
+.oo-hero h1{font:500 clamp(2.6rem,5vw,5.2rem)/.98 var(--oo-serif);letter-spacing:-.01em;text-wrap:balance}
+.oo-hero__lead{max-width:34em;font-size:clamp(.98rem,1.1vw,1.08rem);opacity:.92}
+@keyframes oo-settle{from{transform:scale(1.07)}to{transform:scale(1)}}
+@media (max-width:760px){
+.oo-hero{grid-template-columns:1fr 1fr;grid-template-rows:auto auto;height:auto!important;min-height:0;max-height:none}
+.oo-hero__main{grid-column:1 / span 2;grid-row:auto;min-height:480px}
+.oo-hero__main .oo-tile__text{gap:12px}
+.oo-hero h1{font-size:clamp(2.4rem,11vw,3.2rem)}
+.oo-hero .oo-eyebrow{letter-spacing:.16em}
+.oo-hero__side{aspect-ratio:4/5}
+.oo-hero__side .oo-tile__title{font-size:1.3rem}
+.oo-hero__side .oo-tile__text{padding:14px 12px 16px;gap:8px}
+.oo-hero__side .oo-tile__more{font-size:.64rem;letter-spacing:.14em}
+.oo-hero__side .oo-tile__more::after{width:14px}}`,
+    render: (d, c, id) => {
+      c.rule(`.oo-b${id}{height:calc(${d.h}svh - var(--oo-offset))}`);
+      c.ruleM(`.oo-b${id} .oo-hero__main{height:calc(${d.hm}svh - var(--oo-offset))}`);
+      const m = d.main;
+      return `<section class="oo-hero oo-b${id}" aria-label="${c.e(String(m.title).replace(/\*/g, ''))}">
+<a class="oo-tile oo-hero__main" href="${c.href(m.href)}"${c.edit(id, 'main')}>${c.img(m.img, '(max-width:760px) 100vw, 57vw', true)}
+<div class="oo-tile__text">${m.eyebrow ? `<span class="oo-eyebrow">${c.e(m.eyebrow)}</span>` : ''}<h1>${c.t(m.title)}</h1>${m.lead ? `<span class="oo-hero__lead">${c.t(m.lead)}</span>` : ''}${m.cta ? `<span><span class="oo-btn oo-btn--solid">${c.e(m.cta)}</span></span>` : ''}</div></a>
+${d.side.map((s, i) => `<a class="oo-tile oo-hero__side" href="${c.href(s.href)}"${c.edit(id, 'side.' + i)}>${c.img(s.img, '(max-width:760px) 50vw, 43vw', true)}${tileText(c, s.title, '', s.more)}</a>`).join('\n')}
+</section>`;
+    }
+  },
+
+  heroSingle: {
+    label: 'Hero jednym zdjęciem', kind: 'Pełny ekran', desc: 'Jedno zdjęcie na cały ekran, tekst po lewej, na środku lub po prawej, do dwóch przycisków.',
+    make: () => ({ img: I('', ''), eyebrow: 'Nowa kolekcja', title: 'Nagłówek *strony*', lead: 'Krótki opis kolekcji.', cta: 'Zobacz kolekcję', href: '/', cta2: '', href2: '', align: 'left', shade: 55, h: 100, hm: 88 }),
+    fields: [
+      { t: 'img', k: 'img', label: 'Zdjęcie', mobile: true },
+      ...HEAD_FIELDS.slice(0, 1), { t: 'text', k: 'title', label: 'Nagłówek H1', hint: TITLE_HINT },
+      { t: 'area', k: 'lead', label: 'Opis' },
+      { t: 'row', fields: [{ t: 'text', k: 'cta', label: 'Przycisk 1' }, { t: 'text', k: 'href', label: 'Link 1' }] },
+      { t: 'row', fields: [{ t: 'text', k: 'cta2', label: 'Przycisk 2 (opcja)' }, { t: 'text', k: 'href2', label: 'Link 2' }] },
+      { t: 'select', k: 'align', label: 'Położenie tekstu', opts: [['left', 'Lewo'], ['center', 'Środek'], ['right', 'Prawo']] },
+      { t: 'range', k: 'shade', label: 'Przyciemnienie pod tekstem', min: 0, max: 85, unit: '%' },
+      { t: 'range', k: 'h', label: 'Wysokość na komputerze', min: 50, max: 100, unit: '% ekranu' },
+      { t: 'range', k: 'hm', label: 'Wysokość na telefonie', min: 50, max: 100, unit: '% ekranu' },
+    ],
+    css: `.oo-hs1{position:relative;overflow:hidden;display:grid;align-items:end;min-height:520px;color:var(--oo-linen);background:var(--oo-taupe)}
+.oo-hs1 .oo-fill{animation:oo-settle 1.8s cubic-bezier(.2,.7,.2,1) backwards}
+.oo-hs1__in{position:relative;z-index:2;display:grid;gap:16px;max-width:44rem;padding:clamp(28px,5vw,80px) var(--oo-gutter)}
+.oo-hs1--center{justify-items:center;text-align:center}.oo-hs1--center .oo-hs1__in{justify-items:center;margin-inline:auto}
+.oo-hs1--right .oo-hs1__in{margin-left:auto}
+.oo-hs1 h1{font:500 clamp(2.6rem,5.4vw,5.6rem)/.98 var(--oo-serif);text-wrap:balance}
+.oo-hs1__lead{max-width:34em;opacity:.92}
+.oo-hs1__cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+@keyframes oo-settle{from{transform:scale(1.07)}to{transform:scale(1)}}`,
+    render: (d, c, id) => {
+      c.rule(`.oo-b${id}{height:calc(${d.h}svh - var(--oo-offset))}.oo-b${id}::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(${d.align === 'center' ? '180deg' : d.align === 'right' ? '270deg' : '90deg'},rgba(30,26,22,${(d.shade / 100).toFixed(2)}) 0%,rgba(30,26,22,${(d.shade / 250).toFixed(2)}) 55%,rgba(30,26,22,0) 100%)}`);
+      c.ruleM(`.oo-b${id}{height:calc(${d.hm}svh - var(--oo-offset))}.oo-b${id}::after{background:linear-gradient(180deg,rgba(30,26,22,0) 30%,rgba(30,26,22,${(d.shade / 100).toFixed(2)}) 100%)}`);
+      return `<section class="oo-hs1 oo-hs1--${d.align} oo-b${id}"${c.edit(id)}>${c.img(d.img, '100vw', true)}
+<div class="oo-hs1__in">${d.eyebrow ? `<span class="oo-eyebrow">${c.e(d.eyebrow)}</span>` : ''}<h1>${c.t(d.title)}</h1>${d.lead ? `<p class="oo-hs1__lead">${c.t(d.lead)}</p>` : ''}
+<div class="oo-hs1__cta">${d.cta ? `<a class="oo-btn oo-btn--solid" href="${c.href(d.href)}">${c.e(d.cta)}</a>` : ''}${d.cta2 ? `<a class="oo-btn oo-btn--ghost" href="${c.href(d.href2)}">${c.e(d.cta2)}</a>` : ''}</div></div></section>`;
+    }
+  },
+
+  marquee: {
+    label: 'Pasek przewijany', kind: 'Interaktywny', desc: 'Płynnie przesuwający się pasek haseł, np. pod hero. Zatrzymuje się po najechaniu myszą.',
+    make: () => ({ items: [{ t: 'Hasło pierwsze' }, { t: 'Hasło drugie' }], speed: 40, tone: 'ink' }),
+    fields: [
+      { t: 'list', k: 'items', label: 'Hasła', min: 1, max: 10, title: it => it.t, add: () => ({ t: 'Nowe hasło' }), item: [{ t: 'text', k: 't', label: 'Tekst' }] },
+      { t: 'range', k: 'speed', label: 'Czas jednego przebiegu', min: 12, max: 90, unit: ' s' },
+      { t: 'select', k: 'tone', label: 'Kolor', opts: [['ink', 'Ciemny'], ['taupe', 'Taupe (jak menu)'], ['linen', 'Jasny']] },
+    ],
+    css: `.oo-mq{overflow:hidden;padding-block:16px;font:500 .78rem/1 var(--oo-sans);letter-spacing:.22em;text-transform:uppercase}
+.oo-mq--ink{background:var(--oo-ink);color:var(--oo-linen)}.oo-mq--taupe{background:var(--oo-taupe);color:#fff}.oo-mq--linen{background:var(--oo-linen);color:var(--oo-ink)}
+.oo-mq__track{display:flex;width:max-content;animation:oo-mq var(--oo-mq,40s) linear infinite}
+.oo-mq:hover .oo-mq__track{animation-play-state:paused}
+.oo-mq__set{display:flex;flex:none}
+.oo-mq__set span{display:inline-flex;align-items:center;gap:2.2em;padding-right:2.2em;white-space:nowrap}
+.oo-mq__set span::after{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.55}
+@keyframes oo-mq{to{transform:translateX(-50%)}}`,
+    render: (d, c, id) => {
+      c.rule(`.oo-b${id}{--oo-mq:${d.speed}s}`);
+      const set = `<div class="oo-mq__set">${[...d.items, ...d.items, ...d.items].map(i => `<span>${c.e(i.t)}</span>`).join('')}</div>`;
+      return `<div class="oo-mq oo-mq--${d.tone} oo-b${id}" role="marquee" aria-label="${c.e(d.items.map(i => i.t).join(', '))}"${c.edit(id)}><div class="oo-mq__track" aria-hidden="true">${set}${set}</div></div>`;
+    }
+  },
+
+  cats: {
+    label: 'Kafle kategorii', kind: 'Kafle', desc: 'Pas 2–6 kafli kategorii na wysokość ekranu. Na telefonie siatka 2×2 albo przewijanie palcem.',
+    make: () => ({ eyebrow: '', title: '', h: 88, mobile: 'grid', items: [0, 1, 2, 3].map(i => ({ img: I('', ''), title: 'Kategoria ' + (i + 1), sub: '', more: 'Zobacz', href: '/' })) }),
+    fields: [
+      ...HEAD_FIELDS,
+      { t: 'list', k: 'items', label: 'Kafle', min: 1, max: 6, title: it => it.title, add: () => ({ img: I('', ''), title: 'Nowa kategoria', sub: '', more: 'Zobacz', href: '/' }), item: [
+        { t: 'img', k: 'img', label: 'Zdjęcie', mobile: true },
+        { t: 'text', k: 'title', label: 'Tytuł', hint: TITLE_HINT },
+        { t: 'text', k: 'sub', label: 'Podtytuł (ukryty na telefonie)' },
+        { t: 'text', k: 'more', label: 'Podpis linku' },
+        { t: 'text', k: 'href', label: 'Link', hint: LINK_HINT } ] },
+      { t: 'range', k: 'h', label: 'Wysokość na komputerze', min: 40, max: 100, unit: '% ekranu' },
+      { t: 'select', k: 'mobile', label: 'Na telefonie', opts: [['grid', 'Siatka 2 kolumny'], ['swipe', 'Przewijanie palcem'], ['stack', 'Jeden pod drugim']] },
+    ],
+    css: `.oo-cats__grid{display:grid;gap:var(--oo-seam);min-height:420px}
+.oo-cats__grid .oo-tile__text{padding-inline:clamp(16px,2vw,32px)}
+.oo-tile__sub{font-size:.92rem;opacity:.9;max-width:22em}
+.oo-cats__headpad{padding-top:clamp(48px,6vw,90px)}
+@media (max-width:1024px){.oo-cats__grid{grid-template-columns:repeat(2,1fr)!important;height:auto!important;min-height:0}.oo-cats__grid .oo-tile{aspect-ratio:4/5}}
+@media (max-width:760px){
+.oo-cats__grid .oo-tile__sub{display:none}.oo-cats__grid .oo-tile__title{font-size:1.4rem}.oo-cats__grid .oo-tile__text{padding:14px 12px 16px}
+.oo-cats--swipe .oo-cats__grid{grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:72vw;overflow-x:auto;scroll-snap-type:x mandatory;padding-inline:var(--oo-gutter);scrollbar-width:none}
+.oo-cats--swipe .oo-tile{scroll-snap-align:center}
+.oo-cats--stack .oo-cats__grid{grid-template-columns:1fr!important}.oo-cats--stack .oo-tile{aspect-ratio:5/4}}`,
+    render: (d, c, id) => {
+      c.rule(`.oo-b${id} .oo-cats__grid{grid-template-columns:repeat(${d.items.length},1fr);height:min(${d.h}svh,900px)}`);
+      const h = head(c, d);
+      return `<nav class="oo-cats oo-cats--${d.mobile} oo-b${id}${h ? ' oo-cats__headpad' : ''}" aria-label="${c.e(String(d.title || 'Kategorie').replace(/\*/g, ''))}"${c.edit(id)}>${h}<div class="oo-cats__grid">
+${d.items.map((it, i) => `<a class="oo-tile" href="${c.href(it.href)}"${c.edit(id, 'items.' + i)}>${c.img(it.img, `(max-width:1024px) 50vw, ${Math.round(100 / d.items.length)}vw`)}${tileText(c, it.title, it.sub, it.more)}</a>`).join('\n')}
+</div></nav>`;
+    }
+  },
+
+  hotspots: {
+    label: 'Punkty na zdjęciu', kind: 'Interaktywny', desc: 'Zdjęcie z klikalnymi punktami. Po kliknięciu punktu otwiera się karta produktu z linkiem. Działa też dotykiem.',
+    make: () => ({ eyebrow: 'Kup cały zestaw', title: 'Kliknij *punkt*', text: 'Opis sekcji.', side: 'left', img: I('', ''), points: [{ x: 50, y: 50, name: 'Produkt', desc: '', cta: 'Zobacz produkt', href: '/' }] }),
+    fields: [
+      ...HEAD_FIELDS, { t: 'area', k: 'text', label: 'Opis obok zdjęcia' },
+      { t: 'select', k: 'side', label: 'Zdjęcie', opts: [['left', 'Po lewej'], ['right', 'Po prawej']] },
+      { t: 'img', k: 'img', label: 'Zdjęcie (pokazywane w całości, bez kadrowania)', crop: false },
+      { t: 'points', k: 'points', imgK: 'img', label: 'Punkty', max: 8, title: it => it.name,
+        add: () => ({ x: 50, y: 50, name: 'Nowy produkt', desc: '', cta: 'Zobacz produkt', href: '/' }), item: [
+        { t: 'text', k: 'name', label: 'Nazwa produktu' },
+        { t: 'text', k: 'desc', label: 'Opis lub cena' },
+        { t: 'row', fields: [{ t: 'text', k: 'cta', label: 'Tekst linku' }, { t: 'text', k: 'href', label: 'Link' }] } ] },
+    ],
+    css: `.oo-hp{display:grid;grid-template-columns:1.25fr 1fr;align-items:center;background:var(--oo-linen)}
+.oo-hp--right .oo-hp__media{order:2}
+.oo-hp__media{position:relative;line-height:0}
+.oo-hp__media img{width:100%;height:auto}
+.oo-hp__text{display:grid;gap:18px;padding:clamp(40px,6vw,100px) clamp(24px,5vw,90px)}
+.oo-hp__text .oo-eyebrow{color:var(--oo-clay)}
+.oo-hp__text p{color:var(--oo-muted);max-width:30em}
+.oo-pt{position:absolute;z-index:3;line-height:1.4}
+.oo-pt>summary{list-style:none;cursor:pointer;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:rgba(248,244,238,.92);box-shadow:0 2px 12px rgba(30,26,22,.3);display:grid;place-items:center}
+.oo-pt>summary::-webkit-details-marker{display:none}
+.oo-pt>summary::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--oo-ink);transition:transform .3s}
+.oo-pt>summary::after{content:"";position:absolute;inset:-17px 0 0 -17px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(248,244,238,.9);animation:oo-ping 2.4s ease-out infinite}
+.oo-pt[open]>summary::before{transform:scale(1.5);background:var(--oo-clay)}
+.oo-pt__card{position:absolute;top:24px;left:-24px;width:min(250px,70vw);background:var(--oo-linen);color:var(--oo-ink);padding:16px 18px;box-shadow:0 12px 34px rgba(30,26,22,.22);display:grid;gap:6px}
+.oo-pt--flip .oo-pt__card{left:auto;right:-24px}
+.oo-pt--up .oo-pt__card{top:auto;bottom:24px}
+.oo-pt__card b{font:500 1.3rem/1.1 var(--oo-serif)}
+.oo-pt__card span{font-size:.88rem;color:var(--oo-muted)}
+.oo-pt__card a{margin-top:4px;font:500 .72rem/1 var(--oo-sans);letter-spacing:.18em;text-transform:uppercase;border-bottom:1px solid currentColor;justify-self:start;padding-bottom:5px}
+@keyframes oo-ping{0%{transform:scale(1);opacity:.9}80%,100%{transform:scale(1.9);opacity:0}}
+@media (max-width:760px){.oo-hp{grid-template-columns:1fr}.oo-hp--right .oo-hp__media{order:0}.oo-pt>summary{width:30px;height:30px;margin:-15px 0 0 -15px}}`,
+    render: (d, c, id) => {
+      const pts = d.points.map((p, i) => {
+        const k = `oo-b${id}p${i}`; c.rule(`.${k}{left:${p.x}%;top:${p.y}%}`);
+        return `<details class="oo-pt ${k}${p.x > 55 ? ' oo-pt--flip' : ''}${p.y > 60 ? ' oo-pt--up' : ''}"><summary aria-label="${c.e(p.name)}"></summary><div class="oo-pt__card"><b>${c.e(p.name)}</b>${p.desc ? `<span>${c.e(p.desc)}</span>` : ''}${p.cta ? `<a href="${c.href(p.href)}">${c.e(p.cta)}</a>` : ''}</div></details>`;
+      }).join('');
+      return `<section class="oo-hp oo-hp--${d.side} oo-b${id}"${c.edit(id)}><div class="oo-hp__media">${c.img(d.img, '(max-width:760px) 100vw, 56vw', false, 'plain')}${pts}</div>
+<div class="oo-hp__text">${d.eyebrow ? `<span class="oo-eyebrow">${c.e(d.eyebrow)}</span>` : ''}${d.title ? `<h2 class="oo-h2">${c.t(d.title)}</h2>` : ''}${d.text ? `<p>${c.t(d.text)}</p>` : ''}</div></section>`;
+    }
+  },
+
+  tabs: {
+    label: 'Zakładki', kind: 'Interaktywny', desc: 'Panel z przełączanymi zakładkami: każda ma zdjęcie, tekst i przycisk. Działa bez skryptów.',
+    make: () => ({ eyebrow: 'Kolekcje', title: 'Wybierz *swoją*', tabs: [{ label: 'Zakładka 1', img: I('', ''), title: 'Tytuł', text: 'Opis.', cta: 'Zobacz', href: '/' }, { label: 'Zakładka 2', img: I('', ''), title: 'Tytuł', text: 'Opis.', cta: 'Zobacz', href: '/' }] }),
+    fields: [
+      ...HEAD_FIELDS,
+      { t: 'list', k: 'tabs', label: 'Zakładki', min: 2, max: 6, title: it => it.label, add: () => ({ label: 'Nowa', img: I('', ''), title: 'Tytuł', text: 'Opis.', cta: 'Zobacz', href: '/' }), item: [
+        { t: 'text', k: 'label', label: 'Nazwa zakładki' },
+        { t: 'img', k: 'img', label: 'Zdjęcie', mobile: true },
+        { t: 'text', k: 'title', label: 'Tytuł', hint: TITLE_HINT },
+        { t: 'area', k: 'text', label: 'Opis' },
+        { t: 'row', fields: [{ t: 'text', k: 'cta', label: 'Przycisk' }, { t: 'text', k: 'href', label: 'Link' }] } ] },
+    ],
+    css: `.oo-tabs{padding-block:clamp(56px,7vw,104px);background:var(--oo-oat)}
+.oo-tabs__r{position:absolute;opacity:0;pointer-events:none}
+.oo-tabs__nav{display:flex;flex-wrap:wrap;gap:8px;padding-inline:var(--oo-gutter);margin-bottom:clamp(20px,2.4vw,32px)}
+.oo-tabs__nav label{cursor:pointer;padding:12px 20px;border:1px solid rgba(46,41,36,.22);font:500 .74rem/1 var(--oo-sans);letter-spacing:.18em;text-transform:uppercase;transition:background .25s,color .25s}
+.oo-tabs__nav label:hover{border-color:var(--oo-ink)}
+.oo-tabs__panel{display:none;grid-template-columns:1.2fr 1fr;gap:var(--oo-seam);background:var(--oo-linen);animation:oo-fade .5s ease}
+.oo-tabs__media{position:relative;min-height:clamp(340px,44vw,620px);overflow:hidden}
+.oo-tabs__txt{display:grid;align-content:center;gap:18px;padding:clamp(32px,5vw,90px)}
+.oo-tabs__txt h3{font:500 clamp(1.9rem,3vw,3rem)/1.05 var(--oo-serif);text-wrap:balance}
+.oo-tabs__txt h3 em{font-style:italic;font-weight:400}
+.oo-tabs__txt p{color:var(--oo-muted);max-width:30em}
+.oo-tabs__txt .oo-btn{justify-self:start}
+@keyframes oo-fade{from{opacity:.25}to{opacity:1}}
+@media (max-width:760px){.oo-tabs__panel{grid-template-columns:1fr}.oo-tabs__media{min-height:0;aspect-ratio:4/5}
+.oo-tabs__nav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.oo-tabs__nav label{flex:none;padding:11px 16px}}`,
+    render: (d, c, id) => {
+      const n = `oo-t${id}`;
+      d.tabs.forEach((_, i) => {
+        c.rule(`#${n}-${i}:checked~.oo-tabs__panels>.oo-tabs__panel:nth-child(${i + 1}){display:grid}#${n}-${i}:checked~.oo-tabs__nav>label:nth-child(${i + 1}){background:var(--oo-ink);color:var(--oo-linen);border-color:var(--oo-ink)}#${n}-${i}:focus-visible~.oo-tabs__nav>label:nth-child(${i + 1}){outline:2px solid var(--oo-clay);outline-offset:2px}`);
+      });
+      return `<section class="oo-tabs oo-b${id}"${c.edit(id)}>${head(c, d)}
+${d.tabs.map((_, i) => `<input class="oo-tabs__r" type="radio" name="${n}" id="${n}-${i}"${i === 0 ? ' checked' : ''}>`).join('')}
+<div class="oo-tabs__nav">${d.tabs.map((t, i) => `<label for="${n}-${i}">${c.e(t.label)}</label>`).join('')}</div>
+<div class="oo-tabs__panels">${d.tabs.map((t, i) => `<div class="oo-tabs__panel"${c.edit(id, 'tabs.' + i)}><div class="oo-tabs__media">${c.img(t.img, '(max-width:760px) 100vw, 55vw')}</div><div class="oo-tabs__txt"><h3>${c.t(t.title)}</h3>${t.text ? `<p>${c.t(t.text)}</p>` : ''}${t.cta ? `<a class="oo-btn oo-btn--dark" href="${c.href(t.href)}">${c.e(t.cta)}</a>` : ''}</div></div>`).join('')}</div>
+</section>`;
+    }
+  },
+
+  split: {
+    label: 'Zdjęcie i tekst', kind: 'Treść', desc: 'Zdjęcie obok tekstu z podpisem i krótką listą cech. Dobre do opowieści o pracowni.',
+    make: () => ({ img: I('', ''), side: 'left', eyebrow: 'Nadtytuł', title: 'Tytuł *sekcji*', text: 'Treść.', sign: '', signSub: '', facts: [], cta: '', href: '' }),
+    fields: [
+      { t: 'img', k: 'img', label: 'Zdjęcie', mobile: true },
+      { t: 'select', k: 'side', label: 'Zdjęcie', opts: [['left', 'Po lewej'], ['right', 'Po prawej']] },
+      ...HEAD_FIELDS, { t: 'area', k: 'text', label: 'Treść' },
+      { t: 'row', fields: [{ t: 'text', k: 'sign', label: 'Podpis' }, { t: 'text', k: 'signSub', label: 'Pod podpisem' }] },
+      { t: 'list', k: 'facts', label: 'Cechy (do 4)', min: 0, max: 4, title: it => it.b, add: () => ({ b: 'Cecha', t: 'opis' }), item: [
+        { t: 'text', k: 'b', label: 'Nazwa' }, { t: 'text', k: 't', label: 'Opis' } ] },
+      { t: 'row', fields: [{ t: 'text', k: 'cta', label: 'Przycisk (opcja)' }, { t: 'text', k: 'href', label: 'Link' }] },
+    ],
+    css: `.oo-split{display:grid;grid-template-columns:1.1fr 1fr;gap:var(--oo-seam)}
+.oo-split--right .oo-split__img{order:2}
+.oo-split__img{min-height:clamp(420px,56vw,760px)}
+.oo-split__img::after{display:none}
+.oo-split__text{background:var(--oo-linen);display:grid;align-content:center;gap:22px;padding:clamp(48px,7vw,110px) clamp(24px,6vw,110px)}
+.oo-split__text .oo-eyebrow{color:var(--oo-clay)}
+.oo-split__text p{color:var(--oo-muted);max-width:32em}
+.oo-split__text .oo-btn{justify-self:start}
+.oo-sign{font:italic 400 1.5rem/1.2 var(--oo-serif);color:var(--oo-ink)!important}
+.oo-sign small{display:block;margin-top:4px;font:500 .7rem/1.3 var(--oo-sans);letter-spacing:.22em;text-transform:uppercase;color:var(--oo-muted)}
+.oo-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:18px;margin:6px 0 0;padding:22px 0 0;border-top:1px solid rgba(46,41,36,.14);list-style:none}
+.oo-facts li{display:grid;gap:4px;min-width:0}
+.oo-facts b{font:500 1.25rem/1.15 var(--oo-serif)}
+.oo-facts span{font-size:.84rem;color:var(--oo-muted);line-height:1.45}
+@media (max-width:760px){.oo-split{grid-template-columns:1fr}.oo-split--right .oo-split__img{order:0}.oo-split__img{min-height:0;aspect-ratio:4/3}.oo-facts{grid-template-columns:1fr;gap:14px}}`,
+    render: (d, c, id) => `<section class="oo-split oo-split--${d.side} oo-b${id}"${c.edit(id)}><div class="oo-tile oo-split__img">${c.img(d.img, '(max-width:760px) 100vw, 53vw')}</div>
+<div class="oo-split__text">${d.eyebrow ? `<span class="oo-eyebrow">${c.e(d.eyebrow)}</span>` : ''}${d.title ? `<h2 class="oo-h2">${c.t(d.title)}</h2>` : ''}${d.text ? `<p>${c.t(d.text)}</p>` : ''}
+${d.sign ? `<p class="oo-sign">${c.e(d.sign)}${d.signSub ? `<small>${c.e(d.signSub)}</small>` : ''}</p>` : ''}
+${d.facts.length ? `<ul class="oo-facts">${d.facts.map(f => `<li><b>${c.e(f.b)}</b><span>${c.e(f.t)}</span></li>`).join('')}</ul>` : ''}
+${d.cta ? `<a class="oo-btn oo-btn--dark" href="${c.href(d.href)}">${c.e(d.cta)}</a>` : ''}</div></section>`
+  },
+
+  gallery: {
+    label: 'Galeria przewijana', kind: 'Kafle', desc: 'Pas zdjęć z podpisami przewijany w poziomie, z linkiem „wszystkie produkty”.',
+    make: () => ({ eyebrow: 'Na co dzień', title: 'Galeria', linkText: 'Wszystkie produkty', linkHref: '/', items: [] }),
+    fields: [
+      ...HEAD_FIELDS,
+      { t: 'row', fields: [{ t: 'text', k: 'linkText', label: 'Link w nagłówku' }, { t: 'text', k: 'linkHref', label: 'Adres' }] },
+      { t: 'list', k: 'items', label: 'Zdjęcia', min: 1, max: 16, title: it => it.caption, add: () => ({ img: I('', ''), caption: 'Podpis', href: '/' }), item: [
+        { t: 'img', k: 'img', label: 'Zdjęcie' }, { t: 'text', k: 'caption', label: 'Podpis' }, { t: 'text', k: 'href', label: 'Link', hint: LINK_HINT } ] },
+    ],
+    css: `.oo-gal{padding-block:clamp(56px,7vw,104px) clamp(40px,5vw,72px)}
+.oo-strip{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(220px,22vw,360px);gap:var(--oo-seam);overflow-x:auto;scroll-snap-type:x mandatory;padding-inline:var(--oo-gutter);scroll-padding-inline:var(--oo-gutter);scrollbar-width:thin;scrollbar-color:var(--oo-taupe) transparent;padding-bottom:14px}
+.oo-strip figure{scroll-snap-align:start;display:grid;gap:10px}
+.oo-strip .oo-tile{aspect-ratio:4/5}
+.oo-strip .oo-tile::after{display:none}
+.oo-strip figcaption{font-size:.86rem;color:var(--oo-muted)}
+@media (max-width:760px){.oo-strip{grid-auto-columns:68vw}}`,
+    render: (d, c, id) => `<section class="oo-gal oo-b${id}"${c.edit(id)}>${head(c, d, d.linkText ? `<a class="oo-link" href="${c.href(d.linkHref)}">${c.e(d.linkText)}</a>` : '')}
+<div class="oo-strip">${d.items.map((it, i) => `<figure${c.edit(id, 'items.' + i)}><a class="oo-tile" href="${c.href(it.href)}">${c.img(it.img, '(max-width:760px) 68vw, 22vw', false, 'small')}</a>${it.caption ? `<figcaption>${c.e(it.caption)}</figcaption>` : ''}</figure>`).join('')}</div></section>`
+  },
+
+  products: {
+    label: 'Karty produktów', kind: 'Sprzedaż', desc: 'Siatka wybranych produktów: zdjęcie, nazwa, cena, znaczek „Nowość”. Na telefonie przewijane palcem.',
+    make: () => ({ eyebrow: 'Wybrane', title: 'Nowości', linkText: 'Zobacz wszystkie', linkHref: '/', items: [0, 1, 2, 3].map(i => ({ img: I('', ''), name: 'Nazwa produktu', price: '', badge: '', href: '/' })) }),
+    fields: [
+      ...HEAD_FIELDS,
+      { t: 'row', fields: [{ t: 'text', k: 'linkText', label: 'Link w nagłówku' }, { t: 'text', k: 'linkHref', label: 'Adres' }] },
+      { t: 'list', k: 'items', label: 'Produkty', min: 1, max: 8, title: it => it.name, add: () => ({ img: I('', ''), name: 'Nazwa produktu', price: '', badge: '', href: '/' }), item: [
+        { t: 'img', k: 'img', label: 'Zdjęcie' }, { t: 'text', k: 'name', label: 'Nazwa' },
+        { t: 'row', fields: [{ t: 'text', k: 'price', label: 'Cena (sprawdź w Sky-Shop)' }, { t: 'text', k: 'badge', label: 'Znaczek, np. Nowość' }] },
+        { t: 'text', k: 'href', label: 'Link do produktu' } ] },
+    ],
+    css: `.oo-prod{padding-block:clamp(56px,7vw,104px);background:var(--oo-linen)}
+.oo-prod__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.6vw,24px);padding-inline:var(--oo-gutter)}
+.oo-card{display:grid;gap:10px;align-content:start}
+.oo-card .oo-tile{aspect-ratio:4/5}.oo-card .oo-tile::after{display:none}
+.oo-card__badge{position:absolute;z-index:2;left:12px;top:12px;background:var(--oo-linen);color:var(--oo-ink);font:500 .64rem/1 var(--oo-sans);letter-spacing:.18em;text-transform:uppercase;padding:7px 9px}
+.oo-card__name{font:500 1.2rem/1.2 var(--oo-serif)}
+.oo-card__price{font-size:.9rem;color:var(--oo-muted);font-variant-numeric:tabular-nums}
+@media (max-width:1024px){.oo-prod__grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:760px){.oo-prod__grid{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:62vw;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.oo-card{scroll-snap-align:start}}`,
+    render: (d, c, id) => `<section class="oo-prod oo-b${id}"${c.edit(id)}>${head(c, d, d.linkText ? `<a class="oo-link" href="${c.href(d.linkHref)}">${c.e(d.linkText)}</a>` : '')}
+<div class="oo-prod__grid">${d.items.map((it, i) => `<a class="oo-card" href="${c.href(it.href)}"${c.edit(id, 'items.' + i)}><span class="oo-tile">${c.img(it.img, '(max-width:760px) 62vw, 25vw', false, 'small')}${it.badge ? `<span class="oo-card__badge">${c.e(it.badge)}</span>` : ''}</span><span class="oo-card__name">${c.e(it.name)}</span>${it.price ? `<span class="oo-card__price">${c.e(it.price)}</span>` : ''}</a>`).join('')}</div></section>`
+  },
+
+  quotes: {
+    label: 'Opinie klientek', kind: 'Zaufanie', desc: 'Przewijane karty z prawdziwymi opiniami. Wklejaj tylko autentyczne opinie, np. z Google lub Instagrama.',
+    make: () => ({ eyebrow: 'Opinie', title: 'Co piszą *klientki*', items: [{ quote: 'Wklej tu prawdziwą opinię klientki.', name: 'Imię', product: 'Produkt' }] }),
+    fields: [
+      ...HEAD_FIELDS,
+      { t: 'list', k: 'items', label: 'Opinie', min: 1, max: 10, title: it => it.name, add: () => ({ quote: 'Wklej tu prawdziwą opinię klientki.', name: 'Imię', product: '' }), item: [
+        { t: 'area', k: 'quote', label: 'Treść opinii' }, { t: 'row', fields: [{ t: 'text', k: 'name', label: 'Podpis' }, { t: 'text', k: 'product', label: 'Produkt' }] } ] },
+    ],
+    css: `.oo-q{padding-block:clamp(56px,7vw,104px)}
+.oo-q__row{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(260px,30vw,420px);gap:clamp(12px,1.6vw,24px);overflow-x:auto;scroll-snap-type:x mandatory;padding-inline:var(--oo-gutter);scroll-padding-inline:var(--oo-gutter);scrollbar-width:none;padding-bottom:6px}
+.oo-q__card{scroll-snap-align:start;background:var(--oo-linen);padding:clamp(24px,2.6vw,40px);display:grid;gap:18px;align-content:space-between}
+.oo-q__card blockquote{font:italic 400 clamp(1.3rem,1.7vw,1.6rem)/1.3 var(--oo-serif)}
+.oo-q__card blockquote::before{content:"\\201E";display:block;font-size:3rem;line-height:.6;color:var(--oo-clay)}
+.oo-q__who{font:500 .72rem/1.4 var(--oo-sans);letter-spacing:.18em;text-transform:uppercase;color:var(--oo-muted)}
+@media (max-width:760px){.oo-q__row{grid-auto-columns:82vw}}`,
+    render: (d, c, id) => `<section class="oo-q oo-b${id}"${c.edit(id)}>${head(c, d)}<div class="oo-q__row">${d.items.map((q, i) => `<figure class="oo-q__card"${c.edit(id, 'items.' + i)}><blockquote>${c.t(q.quote)}</blockquote><figcaption class="oo-q__who">${c.e(q.name)}${q.product ? ` · ${c.e(q.product)}` : ''}</figcaption></figure>`).join('')}</div></section>`
+  },
+
+  faq: {
+    label: 'Pytania i odpowiedzi', kind: 'Interaktywny', desc: 'Rozwijane odpowiedzi na częste pytania. Pierwsze może być otwarte od razu.',
+    make: () => ({ eyebrow: 'Pomoc', title: 'Częste *pytania*', first: true, items: [{ q: 'Pytanie?', a: 'Odpowiedź.' }] }),
+    fields: [
+      ...HEAD_FIELDS,
+      { t: 'list', k: 'items', label: 'Pytania', min: 1, max: 14, title: it => it.q, add: () => ({ q: 'Nowe pytanie?', a: 'Odpowiedź.' }), item: [
+        { t: 'text', k: 'q', label: 'Pytanie' }, { t: 'area', k: 'a', label: 'Odpowiedź' } ] },
+      { t: 'select', k: 'first', label: 'Pierwsze pytanie', opts: [[true, 'Otwarte na start'], [false, 'Zamknięte']] },
+    ],
+    css: `.oo-faq{padding-block:clamp(56px,7vw,104px);background:var(--oo-linen)}
+.oo-faq__list{padding-inline:var(--oo-gutter);max-width:980px;margin-inline:auto}
+.oo-faq .oo-head{padding-inline:var(--oo-gutter);max-width:980px;margin-inline:auto}
+.oo-faq details{border-top:1px solid rgba(46,41,36,.16)}
+.oo-faq details:last-child{border-bottom:1px solid rgba(46,41,36,.16)}
+.oo-faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:20px;align-items:center;padding:22px 0;font:500 clamp(1.2rem,1.6vw,1.45rem)/1.25 var(--oo-serif)}
+.oo-faq summary::-webkit-details-marker{display:none}
+.oo-faq summary::after{content:"+";font:300 1.6rem/1 var(--oo-sans);transition:transform .3s;flex:none}
+.oo-faq details[open] summary::after{transform:rotate(45deg)}
+.oo-faq details p{padding:0 0 24px;color:var(--oo-muted);max-width:44em}`,
+    render: (d, c, id) => `<section class="oo-faq oo-b${id}"${c.edit(id)}>${head(c, d)}<div class="oo-faq__list">${d.items.map((q, i) => `<details${i === 0 && d.first ? ' open' : ''}${c.edit(id, 'items.' + i)}><summary>${c.e(q.q)}</summary><p>${c.t(q.a)}</p></details>`).join('')}</div></section>`
+  },
+
+  promo: {
+    label: 'Baner promocyjny', kind: 'Sprzedaż', desc: 'Szeroki baner ze zdjęciem, hasłem, kodem rabatowym do skopiowania wzrokiem i przyciskiem.',
+    make: () => ({ img: I('', ''), eyebrow: 'Dla nowych klientek', title: 'Hasło *promocji*', text: '', code: '', cta: 'Zobacz', href: '/', align: 'left' }),
+    fields: [
+      { t: 'img', k: 'img', label: 'Zdjęcie', mobile: true },
+      ...HEAD_FIELDS, { t: 'area', k: 'text', label: 'Opis' },
+      { t: 'text', k: 'code', label: 'Kod rabatowy (opcja)', hint: 'Wpisz tylko kod, który działa w Sky-Shop.' },
+      { t: 'row', fields: [{ t: 'text', k: 'cta', label: 'Przycisk' }, { t: 'text', k: 'href', label: 'Link' }] },
+      { t: 'select', k: 'align', label: 'Tekst', opts: [['left', 'Po lewej'], ['center', 'Na środku']] },
+    ],
+    css: `.oo-promo{position:relative;overflow:hidden;min-height:clamp(380px,46vw,620px);display:grid;align-items:center;color:var(--oo-linen);background:var(--oo-taupe)}
+.oo-promo::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(30,26,22,.62),rgba(30,26,22,.1))}
+.oo-promo--center{text-align:center}.oo-promo--center::after{background:rgba(30,26,22,.42)}
+.oo-promo__in{position:relative;z-index:2;display:grid;gap:16px;max-width:38rem;padding:clamp(40px,6vw,90px) var(--oo-gutter)}
+.oo-promo--center .oo-promo__in{margin-inline:auto;justify-items:center}
+.oo-promo__in .oo-btn{justify-self:start}.oo-promo--center .oo-promo__in .oo-btn{justify-self:center}
+.oo-promo__code{justify-self:start;border:1px dashed rgba(248,244,238,.8);padding:10px 16px;font:500 1rem/1 var(--oo-sans);letter-spacing:.24em;user-select:all}
+.oo-promo--center .oo-promo__code{justify-self:center}`,
+    render: (d, c, id) => `<section class="oo-promo oo-promo--${d.align} oo-b${id}"${c.edit(id)}>${c.img(d.img, '100vw')}<div class="oo-promo__in">${d.eyebrow ? `<span class="oo-eyebrow">${c.e(d.eyebrow)}</span>` : ''}${d.title ? `<h2 class="oo-h2">${c.t(d.title)}</h2>` : ''}${d.text ? `<p>${c.t(d.text)}</p>` : ''}${d.code ? `<span class="oo-promo__code">${c.e(d.code)}</span>` : ''}${d.cta ? `<a class="oo-btn oo-btn--solid" href="${c.href(d.href)}">${c.e(d.cta)}</a>` : ''}</div></section>`
+  },
+};
+
+/* ============================================================
+   Strona startowa: obecny projekt Oak&Oats
+   ============================================================ */
+const FONTS_D = ['Cormorant Garamond', 'Playfair Display', 'EB Garamond', 'Lora', 'Fraunces'];
+const FONTS_B = ['Jost', 'Montserrat', 'Lato', 'Karla', 'Nunito Sans'];
+function defaultState() {
+  const b = (type, data, hidden = false) => ({ id: uid(), type, hidden, data });
+  return {
+    v: 2,
+    settings: {
+      prefix: '/userdata/public/assets/oo-hero/', offD: 150, offM: 110, seam: 6, mock: true,
+      fontD: 'Cormorant Garamond', fontB: 'Jost',
+      colors: { oat: '#efe8dd', linen: '#f8f4ee', ink: '#2e2924', muted: '#6c6258', taupe: '#9c8b78', clay: '#b4877b' }
+    },
+    blocks: [
+      b('heroTiles', {
+        h: 100, hm: 86,
+        main: { img: I('01-hero-naszyjnik', 'Kobieta w lnianej koszuli z naszyjnikiem z drewnianych i silikonowych koralików', [42, 30]), eyebrow: 'Manufaktura Oak&Oats · ręcznie w Polsce', title: 'Noszone *blisko*', lead: 'Naszyjniki z drewna bukowego i matowego silikonu. Biżuteria, którą zakładasz dla siebie, a która spokojnie zostaje z Tobą także wtedy, gdy obok jest dziecko.', cta: 'Odkryj naszyjniki', href: '/pl/c/naszyjniki' },
+        side: [
+          { img: I('02-hero-brelok-torebka', 'Klucze z kwiatowym brelokiem z koralików nad plecioną torebką', [50, 40]), title: 'Do kluczy, *do torebki*', more: 'Breloki i wristlety', href: '/pl/c/breloki' },
+          { img: I('03-hero-imienne', 'Brelok z drewnianymi literami układającymi imię ZOSIA i białymi stokrotkami', [50, 50]), title: 'Z imieniem, *które znaczy najwięcej*', more: 'Linia IMIENNE', href: '/pl/c/imienne' }]
+      }),
+      b('marquee', { items: [{ t: 'Ręcznie w Polsce' }, { t: 'Personalizacja imieniem' }, { t: 'Drewno bukowe i matowy silikon' }, { t: 'Gotowe na prezent' }], speed: 40, tone: 'ink' }),
+      b('cats', { eyebrow: '', title: '', h: 88, mobile: 'grid', items: [
+        { img: I('10-kat-naszyjniki', 'Cztery naszyjniki z koralików w odcieniach bieli, szarości i buku na marmurowej płycie'), title: 'Naszyjniki', sub: 'Biżuteria z buku i matowego silikonu', more: 'Zobacz', href: '/pl/c/naszyjniki' },
+        { img: I('11-kat-mama', 'Dłoń trzymająca wristlet z różowych i drewnianych koralików z literami MAMA'), title: 'Wristlet *MAMA*', sub: 'Na nadgarstek, do kluczy, na co dzień', more: 'Zobacz', href: '/pl/c/mama' },
+        { img: I('12-kat-breloki', 'Brelok z koralików przypięty do paska lnianej torebki'), title: 'Dodatki *do torebki*', sub: 'Breloki z imieniem, inicjałami i kwiatami', more: 'Zobacz', href: '/pl/c/breloki' },
+        { img: I('13-kat-dziecko', 'Zestaw: zawieszka do smoczka i gryzak z drewnianym kółkiem na lnianym woreczku'), title: 'Dla dziecka', sub: 'Zawieszki, gryzaki, grzechotki i zestawy prezentowe', more: 'Zobacz', href: '/pl/c/dla-dziecka' }] }),
+      b('tabs', { eyebrow: 'Kolekcje', title: 'Wybierz *swoją*', tabs: [
+        { label: 'Naszyjniki', img: I('32-galeria-naszyjnik', 'Naszyjnik z beżowych i drewnianych koralików na marmurze'), title: 'Biżuteria, *którą zakładasz dla siebie*', text: 'Drewno bukowe i matowy silikon w stonowanych odcieniach. Lekkie, do lnu, swetra i prostej koszuli.', cta: 'Zobacz naszyjniki', href: '/pl/c/naszyjniki' },
+        { label: 'Wristlety', img: I('31-galeria-mama-dlon', 'Wristlet MAMA na otwartej dłoni w ciepłym świetle'), title: 'MAMA *na nadgarstku*', text: 'Pętla z koralików na klucze, która wygodnie zostaje na nadgarstku, gdy ręce są zajęte.', cta: 'Zobacz wristlety', href: '/pl/c/mama' },
+        { label: 'Imienne', img: I('33-galeria-asm', 'Perłowo-różowy brelok z drewnianymi literami ASM'), title: 'Twoje litery, *Twoje imię*', text: 'Inicjały albo całe imię ułożone z drewnianych kostek. Na brelok, do torebki, na prezent.', cta: 'Personalizuj', href: '/pl/c/imienne' }] }),
+      b('hotspots', { eyebrow: 'Kup cały zestaw', title: 'Trzy naszyjniki, *trzy nastroje*', text: 'Kliknij punkt na zdjęciu, żeby zobaczyć produkt.', side: 'left',
+        img: I('36-galeria-naszyjniki-trio', 'Trzy naszyjniki w naturalnych tonach ułożone na marmurze'),
+        points: [
+          { x: 36, y: 33, name: 'Naszyjnik pierwszy', desc: 'Wpisz nazwę i cenę z Sky-Shop', cta: 'Zobacz produkt', href: '/pl/c/naszyjniki' },
+          { x: 70, y: 42, name: 'Naszyjnik drugi', desc: 'Wpisz nazwę i cenę z Sky-Shop', cta: 'Zobacz produkt', href: '/pl/c/naszyjniki' },
+          { x: 48, y: 74, name: 'Naszyjnik trzeci', desc: 'Wpisz nazwę i cenę z Sky-Shop', cta: 'Zobacz produkt', href: '/pl/c/naszyjniki' }] }),
+      b('split', { img: I('20-pracownia', 'Jasna pracownia z drewnianym stołem, półkami z koralikami i pudełkami do pakowania'), side: 'left', eyebrow: 'Z pracowni', title: 'Każdy egzemplarz *przechodzi przez moje ręce*',
+        text: 'Koraliki dobieram po kolorze i usłojeniu, nawlekam ręcznie i sprawdzam każde zapięcie, zanim zamówienie trafi do pudełka. Dlatego dwa naszyjniki z tej samej kolekcji nigdy nie są identyczne.',
+        sign: 'Wiktoria', signSub: 'Oak&Oats', facts: [{ b: 'Buk', t: 'naturalne drewno, wykończone na gładko' }, { b: 'Silikon', t: 'matowy, w stonowanych odcieniach' }, { b: 'Imię', t: 'litery układamy pod Twoje zamówienie' }], cta: '', href: '' }),
+      b('gallery', { eyebrow: 'Na co dzień', title: 'Drobiazgi, *które zostają z Tobą*', linkText: 'Wszystkie produkty', linkHref: '/pl/c/nowosci', items: [
+        { img: I('30-galeria-klucze', 'Brelok MAMA przy kluczach trzymanych w dłoni'), caption: 'Brelok MAMA przy kluczach', href: '/pl/c/mama' },
+        { img: I('31-galeria-mama-dlon', 'Wristlet MAMA na otwartej dłoni w ciepłym świetle'), caption: 'Wristlet MAMA', href: '/pl/c/mama' },
+        { img: I('32-galeria-naszyjnik', 'Naszyjnik z beżowych i drewnianych koralików na marmurze'), caption: 'Naszyjnik z buku i silikonu', href: '/pl/c/naszyjniki' },
+        { img: I('33-galeria-asm', 'Perłowo-różowy brelok z drewnianymi literami ASM'), caption: 'Brelok z inicjałami', href: '/pl/c/imienne' },
+        { img: I('36-galeria-naszyjniki-trio', 'Trzy naszyjniki w naturalnych tonach ułożone na marmurze'), caption: 'Naszyjniki w naturalnych tonach', href: '/pl/c/naszyjniki' },
+        { img: I('37-galeria-mama-len', 'Różowy wristlet MAMA na lnianej tkaninie'), caption: 'MAMA na lnie', href: '/pl/c/mama' },
+        { img: I('34-galeria-kwiaty', 'Trzy kwiatowe zawieszki do smoczka: błękitna, szara i biała'), caption: 'Zawieszki kwiatowe', href: '/pl/c/dla-dziecka' },
+        { img: I('35-galeria-zawieszka', 'Pudroworóżowa kwiatowa zawieszka z drewnianym klipsem na lnianym woreczku'), caption: 'Zawieszka w pudrowym różu', href: '/pl/c/dla-dziecka' }] }),
+      b('products', { eyebrow: 'Wybrane', title: 'Nowości *w sklepie*', linkText: 'Zobacz wszystkie', linkHref: '/pl/c/nowosci', items: [
+        { img: I('11-kat-mama', 'Wristlet MAMA'), name: 'Wristlet MAMA', price: '', badge: 'Nowość', href: '/pl/c/mama' },
+        { img: I('10-kat-naszyjniki', 'Naszyjnik z koralików'), name: 'Naszyjnik z buku', price: '', badge: '', href: '/pl/c/naszyjniki' },
+        { img: I('33-galeria-asm', 'Brelok z inicjałami'), name: 'Brelok z inicjałami', price: '', badge: '', href: '/pl/c/imienne' },
+        { img: I('34-galeria-kwiaty', 'Zawieszki kwiatowe'), name: 'Zawieszka kwiatowa', price: '', badge: '', href: '/pl/c/dla-dziecka' }] }, true),
+      b('quotes', TYPES.quotes.make(), true),
+      b('faq', { eyebrow: 'Pomoc', title: 'Częste *pytania*', first: true, items: [
+        { q: 'Jak zamówić produkt z imieniem?', a: 'Uzupełnij odpowiedź zgodnie z tym, jak działa personalizacja w Twoim sklepie.' },
+        { q: 'Ile trwa wysyłka?', a: 'Uzupełnij czas realizacji i dostawy.' }] }, true),
+      b('promo', { img: I('37-galeria-mama-len', 'Różowy wristlet MAMA na lnianej tkaninie', [50, 50]), eyebrow: 'Dla nowych klientek', title: 'Prezent *na start*', text: 'Zapisz się do newslettera i odbierz kod na pierwsze zamówienie.', code: '', cta: 'Zapisz się', href: '/', align: 'left' }, true),
+    ]
+  };
+}
+
+/* ============================================================
+   Generowanie kodu (wspólne dla podglądu i eksportu)
+   ============================================================ */
+function baseCss(s) {
+  const C = s.colors;
+  return `html,body{overflow-x:clip}
+.oo{--oo-oat:${C.oat};--oo-linen:${C.linen};--oo-ink:${C.ink};--oo-muted:${C.muted};--oo-taupe:${C.taupe};--oo-clay:${C.clay};
+--oo-serif:"${s.fontD}",Georgia,"Times New Roman",serif;--oo-sans:"${s.fontB}","Avenir Next",system-ui,sans-serif;
+--oo-offset:${s.offD}px;--oo-seam:${s.seam}px;--oo-gutter:max(16px,4vw);
+position:relative;left:50%;width:100vw;margin-left:-50vw;background:var(--oo-oat);color:var(--oo-ink);font-family:var(--oo-sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.oo *,.oo *::before,.oo *::after{box-sizing:border-box}
+.oo img{display:block;max-width:100%}
+.oo a{color:inherit;text-decoration:none}
+.oo h1,.oo h2,.oo h3,.oo p,.oo figure,.oo blockquote,.oo ul{margin:0}
+.oo>*+*{margin-top:var(--oo-seam)}
+.oo-eyebrow{display:block;font:500 .72rem/1.3 var(--oo-sans);letter-spacing:.24em;text-transform:uppercase}
+.oo-h2{font:500 clamp(2rem,3.4vw,3.2rem)/1.04 var(--oo-serif);text-wrap:balance}
+.oo em{font-style:italic;font-weight:400}
+.oo-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px 40px;padding-inline:var(--oo-gutter);margin-bottom:clamp(24px,3vw,40px)}
+.oo-head .oo-eyebrow{color:var(--oo-clay);margin-bottom:12px}
+.oo-link{font:500 .76rem/1 var(--oo-sans);letter-spacing:.2em;text-transform:uppercase;padding-bottom:6px;border-bottom:1px solid currentColor}
+.oo-tile{position:relative;overflow:hidden;display:block;background:var(--oo-taupe);isolation:isolate}
+.oo-tile::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(30,26,22,0) 45%,rgba(30,26,22,.62) 100%)}
+.oo-fill{position:absolute;inset:0;width:100%!important;height:100%!important;object-fit:cover;transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
+.oo picture{display:contents}
+.oo-tile__text{position:absolute;z-index:2;left:0;right:0;bottom:0;padding:clamp(18px,2.6vw,40px) var(--oo-gutter) clamp(20px,2.8vw,44px);color:var(--oo-linen);display:grid;gap:10px}
+.oo-tile__title{font:500 clamp(1.6rem,2.2vw,2.4rem)/1.08 var(--oo-serif);text-wrap:balance}
+.oo-tile__more{display:inline-flex;align-items:center;gap:.6em;font:500 .74rem/1 var(--oo-sans);letter-spacing:.2em;text-transform:uppercase}
+.oo-tile__more::after{content:"";width:28px;height:1px;background:currentColor;transition:width .4s ease}
+a.oo-tile:hover .oo-fill,a.oo-tile:focus-visible .oo-fill,.oo-card:hover .oo-fill{transform:scale(1.045)}
+a.oo-tile:hover .oo-tile__more::after{width:52px}
+.oo a:focus-visible,.oo summary:focus-visible{outline:2px solid var(--oo-clay);outline-offset:2px}
+.oo-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 26px;font:500 .76rem/1 var(--oo-sans);letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--oo-linen);transition:background .3s,color .3s}
+.oo-btn--solid{background:var(--oo-linen);color:var(--oo-ink)}
+a.oo-btn--solid:hover,a.oo-tile:hover .oo-btn--solid{background:transparent;color:var(--oo-linen)}
+.oo-btn--ghost{color:var(--oo-linen)}.oo-btn--ghost:hover{background:var(--oo-linen);color:var(--oo-ink)}
+.oo-btn--dark{background:var(--oo-ink);color:var(--oo-linen);border-color:var(--oo-ink)}.oo-btn--dark:hover{background:transparent;color:var(--oo-ink)}
+@media (max-width:760px){.oo{--oo-seam:${Math.max(2, s.seam - 2)}px;--oo-offset:${s.offM}px}}
+@media (prefers-reduced-motion:reduce){.oo *{animation:none!important;transition:none!important}}`;
+}
+
+/* ctx: mode = 'preview' | 'export'; files: key -> {base, w, h} (eksport) */
+function makeCtx(mode, files) {
+  const rules = [], rulesM = []; let n = 0;
+  const src = (key, size) => {
+    if (mode === 'preview') return imgUrl(key);
+    const f = files[key]; return f ? `${STATE.settings.prefix}${f.base}${size === 'm' ? '-m' : ''}.jpg` : '';
+  };
+  const srcset = key => {
+    if (mode === 'preview') return '';
+    const f = files[key]; if (!f) return '';
+    return f.w > 800 ? ` srcset="${esc(src(key, 'm'))} 800w, ${esc(src(key))} ${Math.min(1600, f.w)}w"` : '';
+  };
+  return {
+    mode, rules, rulesM,
+    e: esc, t: rich,
+    href: h => esc(h || '#'),
+    edit: (id, sub) => mode === 'preview' ? ` data-edit="${id}${sub != null ? ':' + sub : ''}"` : '',
+    rule: r => rules.push(r), ruleM: r => rulesM.push(r),
+    img(im, sizes, eager = false, variant = 'fill') {
+      if (!im || !im.key || !IMGS.has(im.key)) return '';
+      const meta = IMGS.get(im.key), cls = 'oo-i' + (++n);
+      if (variant !== 'plain') {
+        rules.push(`.${cls}{object-position:${im.p[0]}% ${im.p[1]}%}`);
+        if (im.pm) rulesM.push(`.${cls}{object-position:${im.pm[0]}% ${im.pm[1]}%}`);
+      }
+      const useSmall = variant === 'small' && mode === 'export';
+      const main = useSmall ? src(im.key, files[im.key]?.w > 800 ? 'm' : '') : src(im.key);
+      const dims = useSmall && meta.w > 800 ? ` width="800" height="${Math.round(meta.h * 800 / meta.w)}"` : ` width="${meta.w}" height="${meta.h}"`;
+      const tag = `<img class="${variant === 'plain' ? '' : 'oo-fill '}${cls}" src="${esc(main)}"${useSmall ? '' : srcset(im.key)}${useSmall ? '' : ` sizes="${sizes}"`}${dims} alt="${esc(im.alt)}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'}>`;
+      if (im.km && IMGS.has(im.km)) {
+        const mm = files?.[im.km];
+        const ms = mode === 'preview' ? imgUrl(im.km) : (mm && mm.w > 800 ? `${src(im.km, 'm')} 800w, ${src(im.km)} ${Math.min(1600, mm.w)}w` : src(im.km));
+        return `<picture><source media="(max-width:760px)" srcset="${esc(ms)}"${mode === 'export' && mm && mm.w > 800 ? ' sizes="100vw"' : ''}>${tag}</picture>`;
+      }
+      return tag;
+    }
+  };
+}
+
+function fontsLink(s) {
+  const fam = f => f.replace(/ /g, '+');
+  return `https://fonts.googleapis.com/css2?family=${fam(s.fontD)}:ital,wght@0,500;0,600;1,400;1,500&family=${fam(s.fontB)}:wght@400;500&display=swap`;
+}
+
+function renderSnippet(state, ctx) {
+  const vis = state.blocks.filter(b => !b.hidden && TYPES[b.type]);
+  const body = vis.map(b => `<!-- ${TYPES[b.type].label} -->\n` + TYPES[b.type].render(b.data, ctx, b.id)).join('\n\n');
+  const types = [...new Set(vis.map(b => b.type))];
+  const css = [baseCss(state.settings), ...types.map(t => TYPES[t].css), ctx.rules.join('\n'),
+    ctx.rulesM.length ? `@media (max-width:760px){${ctx.rulesM.join('\n')}}` : ''].join('\n');
+  const headerNote = ctx.mode === 'export' ? `<!--
+  OAK&OATS — strona główna (wygenerowano w edytorze ${new Date().toLocaleString('pl-PL')})
+  Sky-Shop → Wygląd → Strona główna → Obszar edytowalny → tryb „Źródło” → wklej całość.
+  Zdjęcia: wgraj pliki z paczki do folderu, którego adres zaczyna się od: ${state.settings.prefix}
+-->\n` : '';
+  return `${headerNote}<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="${fontsLink(state.settings)}">
+<style>
+${css}
+</style>
+<div class="oo">
+${body}
+</div>`;
+}
+
+const MOCK = `<div style="font-family:Jost,system-ui,sans-serif;background:#fff">
+<div style="height:96px;display:grid;place-content:center;text-align:center;font:500 26px/1 'Cormorant Garamond',Georgia,serif;letter-spacing:.18em;color:#2e2924">OAK&amp;OATS<small style="display:block;margin-top:6px;font:500 9px/1 Jost,sans-serif;letter-spacing:.5em">HANDMADE</small></div>
+<nav style="background:#9c8b78;color:#fff;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 26px;padding:14px 16px;font:500 11px/1 Jost,sans-serif;letter-spacing:.2em"><span>O NAS</span><span>PRODUKTY</span><span>BEZPIECZEŃSTWO</span><span>KONTAKT</span><span>BLOG</span></nav></div>`;
+
+/* ============================================================
+   Stan, historia, zapis
+   ============================================================ */
+let STATE, SEL = null;
+const HIST = [], FUT = [];
+let lastSnap = '';
+function snapshot() {
+  const s = JSON.stringify(STATE);
+  if (s === lastSnap) return;
+  if (lastSnap) { HIST.push(lastSnap); if (HIST.length > 100) HIST.shift(); FUT.length = 0; }
+  lastSnap = s; updUndo();
+}
+function updUndo() { $('#undo').disabled = !HIST.length; $('#redo').disabled = !FUT.length; }
+function undo() { if (!HIST.length) return; FUT.push(lastSnap); lastSnap = HIST.pop(); STATE = JSON.parse(lastSnap); afterLoad(); }
+function redo() { if (!FUT.length) return; HIST.push(lastSnap); lastSnap = FUT.pop(); STATE = JSON.parse(lastSnap); afterLoad(); }
+
+let snapT, saveT;
+function changed(structural = false) {
+  schedulePreview();
+  clearTimeout(snapT); snapT = setTimeout(snapshot, 450);
+  clearTimeout(saveT); $('#status').textContent = 'Zapisywanie…'; saveT = setTimeout(saveState, 700);
+  if (structural) renderPanel();
+}
+
+const DB = {
+  open() { return new Promise((res, rej) => { const r = indexedDB.open('oo-editor', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
+  async get(k) { try { const d = await this.open(); return await new Promise(r => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => r(q.result); q.onerror = () => r(undefined); }); } catch { return undefined; } },
+  async set(k, v) { try { const d = await this.open(); await new Promise(r => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = r; t.onerror = r; }); return true; } catch { return false; } },
+};
+async function saveState() { const ok = await DB.set('state', JSON.stringify(STATE)); $('#status').textContent = ok ? 'Zapisano w przeglądarce' : 'Bez zapisu w przeglądarce — użyj „Projekt → Zapisz plik”'; }
+async function saveUploads() { const o = {}; for (const [k, v] of IMGS) if (v.user) o[k] = v.blob; await DB.set('uploads', o); }
+
+/* ============================================================
+   Podgląd
+   ============================================================ */
+let prevT, frameScroll = 0;
+function schedulePreview() { clearTimeout(prevT); prevT = setTimeout(renderPreview, 160); }
+function renderPreview() {
+  const f = $('#frame');
+  try { frameScroll = f.contentWindow?.scrollY || frameScroll; } catch {}
+  const ctx = makeCtx('preview');
+  const html = `<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0;background:#fff}[data-edit]{cursor:pointer}[data-edit]:hover{outline:2px dashed rgba(196,149,47,.95);outline-offset:-3px}.oo-sel{outline:3px solid #c4952f!important;outline-offset:-3px}</style></head>
+<body>${STATE.settings.mock ? MOCK : ''}${renderSnippet(STATE, ctx)}</body></html>`;
+  f.srcdoc = html;
+}
+function wireFrame() {
+  const f = $('#frame'); let doc;
+  try { doc = f.contentDocument; } catch { return; }
+  if (!doc) return;
+  try { f.contentWindow.scrollTo(0, frameScroll); } catch {}
+  doc.addEventListener('click', e => {
+    const a = e.target.closest('a'); if (a) e.preventDefault();
+    const t = e.target.closest('[data-edit]'); if (!t) return;
+    const [id, sub] = t.dataset.edit.split(':');
+    select(id, sub, true);
+  }, true);
+  highlight();
+}
+function highlight() {
+  let doc; try { doc = $('#frame').contentDocument; } catch { return; }
+  if (!doc) return;
+  doc.querySelectorAll('.oo-sel').forEach(n => n.classList.remove('oo-sel'));
+  if (!SEL) return;
+  const n = doc.querySelector(`[data-edit="${SEL.id}${SEL.sub ? ':' + SEL.sub : ''}"]`) || doc.querySelector(`[data-edit="${SEL.id}"]`);
+  if (n) n.classList.add('oo-sel');
+}
+function scrollFrameTo(id) {
+  let doc; try { doc = $('#frame').contentDocument; } catch { return; }
+  const n = doc?.querySelector(`[data-edit="${id}"]`) || doc?.querySelector(`[data-edit^="${id}:"]`);
+  n?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ============================================================
+   Panel boczny
+   ============================================================ */
+const OPEN = new Set(); // id bloków / ścieżek list otwartych
+const getK = (o, k) => o[k];
+function select(id, sub, fromFrame = false) {
+  SEL = { id, sub };
+  OPEN.add(id);
+  if (sub) { const parts = sub.split('.'); if (parts.length === 2) OPEN.add(id + ':' + sub); }
+  renderPanel();
+  const card = document.querySelector(`.card[data-id="${id}"]`);
+  const target = (sub && card?.querySelector(`[data-path="${sub}"]`)) || card;
+  if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); target.classList.remove('flash'); void target.offsetWidth; target.classList.add('flash'); }
+  if (fromFrame && matchMedia('(max-width:900px)').matches) setPane('edit');
+  if (!fromFrame) scrollFrameTo(id);
+  highlight();
+}
+
+function renderPanel() {
+  const side = $('#side'); const st = side.scrollTop;
+  side.replaceChildren();
+  side.append(settingsCard());
+  STATE.blocks.forEach((b, i) => side.append(blockCard(b, i)));
+  side.append(el('button', { class: 'add', onclick: openLibrary }, '+ Dodaj sekcję lub widget'));
+  side.scrollTop = st;
+}
+
+function settingsCard() {
+  const s = STATE.settings, id = '__settings';
+  const open = OPEN.has(id);
+  const card = el('div', { class: 'card' + (open ? ' is-open' : ''), 'data-id': id });
+  card.append(el('div', { class: 'card__head', onclick: () => { open ? OPEN.delete(id) : OPEN.add(id); renderPanel(); } },
+    el('span', { class: 'card__name' }, 'Ustawienia strony', el('span', { class: 'card__type' }, 'Kolory, fonty, adres zdjęć, nagłówek sklepu')),
+    el('span', { class: 'ib', 'aria-hidden': 'true' }, open ? '▾' : '▸')));
+  if (open) {
+    const body = el('div', { class: 'card__body' });
+    body.append(
+      textField('Adres folderu ze zdjęciami w Sky-Shop', s, 'prefix', { hint: 'Skopiuj adres jednego wgranego pliku i zostaw tylko część do nazwy pliku, np. /userdata/public/assets/oo-hero/' }),
+      el('div', { class: 'row2' }, numField('Nagłówek sklepu — komputer (px)', s, 'offD', 0, 400), numField('Nagłówek sklepu — telefon (px)', s, 'offM', 0, 300)),
+      rangeField('Fuga między kaflami', s, 'seam', 0, 24, 'px'),
+      el('div', { class: 'row2' }, selectField('Font nagłówków', s, 'fontD', FONTS_D.map(f => [f, f])), selectField('Font tekstu', s, 'fontB', FONTS_B.map(f => [f, f]))),
+      el('div', { class: 'f' }, el('span', { class: 'lbl' }, 'Kolory'),
+        el('div', { class: 'row2' }, ...[['oat', 'Tło i fugi'], ['linen', 'Jasne panele'], ['ink', 'Tekst i przyciski'], ['muted', 'Tekst pomocniczy'], ['taupe', 'Taupe (menu)'], ['clay', 'Akcent']].map(([k, l]) => colorField(l, s.colors, k)))),
+      selectField('Atrapa nagłówka sklepu w podglądzie', s, 'mock', [[true, 'Pokaż'], [false, 'Ukryj']]),
+      el('button', { class: 'btn btn--sm', onclick: () => { s.colors = defaultState().settings.colors; changed(true); } }, 'Przywróć kolory marki')
+    );
+    card.append(body);
+  }
+  return card;
+}
+
+function blockCard(b, i) {
+  const T = TYPES[b.type]; const open = OPEN.has(b.id);
+  const card = el('div', { class: 'card' + (open ? ' is-open' : '') + (SEL?.id === b.id ? ' is-sel' : '') + (b.hidden ? ' is-hidden' : ''), 'data-id': b.id });
+  const name = b.data.title ? String(b.data.title).replace(/\*/g, '') : b.data.main?.title ? String(b.data.main.title).replace(/\*/g, '') : T.label;
+  const stop = fn => e => { e.stopPropagation(); fn(); };
+  card.append(el('div', { class: 'card__head', onclick: () => { if (open) { OPEN.delete(b.id); renderPanel(); } else select(b.id); } },
+    el('span', { class: 'card__name' }, name, el('span', { class: 'card__type' }, `${T.label} · ${T.kind}`)),
+    el('button', { class: 'ib', title: 'W górę', 'aria-label': 'Przesuń w górę', disabled: i === 0, onclick: stop(() => move(STATE.blocks, i, -1, true)) }, '↑'),
+    el('button', { class: 'ib', title: 'W dół', 'aria-label': 'Przesuń w dół', disabled: i === STATE.blocks.length - 1, onclick: stop(() => move(STATE.blocks, i, 1, true)) }, '↓'),
+    el('button', { class: 'ib', title: b.hidden ? 'Pokaż na stronie' : 'Ukryj na stronie', 'aria-label': b.hidden ? 'Pokaż' : 'Ukryj', onclick: stop(() => { b.hidden = !b.hidden; changed(true); }) }, b.hidden ? '◌' : '◉'),
+    el('button', { class: 'ib', title: 'Duplikuj', 'aria-label': 'Duplikuj', onclick: stop(() => { const c = clone(b); c.id = uid(); STATE.blocks.splice(i + 1, 0, c); changed(true); }) }, '⧉'),
+    el('button', { class: 'ib', title: 'Usuń', 'aria-label': 'Usuń sekcję', onclick: stop(() => { if (card.dataset.confirm) { STATE.blocks.splice(i, 1); changed(true); toast('Usunięto sekcję. Cofnij: Ctrl+Z'); } else { card.dataset.confirm = 1; toast('Kliknij kosz jeszcze raz, żeby usunąć sekcję'); setTimeout(() => delete card.dataset.confirm, 2500); } }) }, '🗑')));
+  if (open) {
+    const body = el('div', { class: 'card__body' });
+    buildFields(body, b.data, T.fields, b.id, '');
+    card.append(body);
+  }
+  return card;
+}
+
+function move(arr, i, d, structural) {
+  const j = i + d; if (j < 0 || j >= arr.length) return;
+  [arr[i], arr[j]] = [arr[j], arr[i]]; changed(structural);
+}
+
+function buildFields(container, obj, fields, bid, prefix) {
+  for (const f of fields) {
+    const path = prefix ? prefix + '.' + f.k : f.k;
+    let node;
+    switch (f.t) {
+      case 'text': node = textField(f.label, obj, f.k, f); break;
+      case 'area': node = textField(f.label, obj, f.k, { ...f, area: true }); break;
+      case 'select': node = selectField(f.label, obj, f.k, f.opts); break;
+      case 'range': node = rangeField(f.label, obj, f.k, f.min, f.max, f.unit); break;
+      case 'row': node = el('div', { class: 'row2' }); buildFields(node, obj, f.fields, bid, prefix); break;
+      case 'img': node = imgField(f, obj, f.k); break;
+      case 'group': node = el('div', { class: 'grpbox', 'data-path': path }, el('div', { class: 'gt' }, f.label)); buildFields(node, obj[f.k], f.fields, bid, path); break;
+      case 'list': node = listField(f, obj, bid, path); break;
+      case 'points': node = pointsField(f, obj, bid, path); break;
+    }
+    if (node) { if (!node.dataset.path && f.k) node.dataset.path = path; container.append(node); }
+  }
+}
+
+function textField(label, obj, k, o = {}) {
+  const id = 'f' + uid();
+  const inp = o.area ? el('textarea', { id, rows: 3 }) : el('input', { id, type: 'text' });
+  inp.value = obj[k] ?? '';
+  inp.addEventListener('input', () => { obj[k] = inp.value; changed(); });
+  return el('div', { class: 'f' }, el('label', { for: id }, label), inp, o.hint ? el('span', { class: 'hint' }, o.hint) : null);
+}
+function numField(label, obj, k, min, max) {
+  const id = 'f' + uid(); const inp = el('input', { id, type: 'number', min, max, value: obj[k] });
+  inp.addEventListener('input', () => { const v = +inp.value; if (!isNaN(v)) { obj[k] = v; changed(); } });
+  return el('div', { class: 'f' }, el('label', { for: id }, label), inp);
+}
+function selectField(label, obj, k, opts) {
+  const id = 'f' + uid(); const s = el('select', { id });
+  opts.forEach(([v, l]) => { const o = el('option', { value: String(v) }, l); if (String(obj[k]) === String(v)) o.selected = true; s.append(o); });
+  s.addEventListener('change', () => { const v = opts.find(([x]) => String(x) === s.value)[0]; obj[k] = v; changed(true); });
+  return el('div', { class: 'f' }, el('label', { for: id }, label), s);
+}
+function rangeField(label, obj, k, min, max, unit = '') {
+  const id = 'f' + uid(); const r = el('input', { id, type: 'range', min, max, value: obj[k] });
+  const out = el('output', { for: id }, obj[k] + unit);
+  r.addEventListener('input', () => { obj[k] = +r.value; out.textContent = r.value + unit; changed(); });
+  return el('div', { class: 'f' }, el('label', { for: id }, label), el('div', { class: 'rng' }, r, out));
+}
+function colorField(label, obj, k) {
+  const id = 'f' + uid(); const c = el('input', { id, type: 'color', value: obj[k], style: 'width:100%;height:34px;border:1px solid var(--line);border-radius:7px;background:var(--panel);padding:2px' });
+  c.addEventListener('input', () => { obj[k] = c.value; changed(); });
+  return el('div', { class: 'f' }, el('label', { for: id }, label), c);
+}
+
+/* --- pole zdjęcia: podmiana, biblioteka, kadr komputer/telefon, osobne zdjęcie na telefon --- */
+let pickCb = null;
+$('#fileIn').addEventListener('change', async e => {
+  const file = e.target.files[0]; e.target.value = '';
+  if (!file || !pickCb) return;
+  try { const k = await fileToImage(file); pickCb(k); } catch (err) { toast(err.message || 'Nie udało się wczytać zdjęcia'); }
+});
+function pickFile(cb) { pickCb = cb; $('#fileIn').click(); }
+
+function imgField(f, obj, k) {
+  const im = obj[k];
+  const wrap = el('div', { class: 'f img' }, el('span', { class: 'lbl' }, f.label));
+  const set = key => { im.key = key; changed(true); };
+  const crops = el('div', { class: 'img__crops', style: f.crop === false ? 'grid-template-columns:1fr' : '' });
+  const mkCrop = (mobile) => {
+    const key = mobile && im.km ? im.km : im.key;
+    const pos = mobile ? (im.pm || im.p) : im.p;
+    const box = el('div', { class: 'crop ' + (mobile ? 'crop--m' : 'crop--d'), title: 'Kliknij, żeby ustawić punkt ostrości kadru. Upuść tu plik, żeby podmienić zdjęcie.' },
+      key && IMGS.has(key) ? el('img', { src: imgUrl(key), alt: '', style: `object-position:${pos[0]}% ${pos[1]}%` }) : el('div', { style: 'display:grid;place-items:center;height:100%;color:var(--mute);font-size:12px' }, 'Brak zdjęcia'),
+      el('span', { class: 'crop__tag' }, mobile ? (im.km ? 'Telefon · osobne zdjęcie' : 'Kadr na telefonie') : (f.crop === false ? 'Podgląd' : 'Kadr na komputerze')));
+    if (f.crop !== false) {
+      box.append(el('span', { class: 'crop__dot', style: `left:${pos[0]}%;top:${pos[1]}%` }));
+      box.addEventListener('click', e => {
+        const r = box.getBoundingClientRect();
+        const p = [Math.round((e.clientX - r.left) / r.width * 100), Math.round((e.clientY - r.top) / r.height * 100)].map(v => Math.max(0, Math.min(100, v)));
+        if (mobile) im.pm = p; else im.p = p;
+        box.querySelector('img') && (box.querySelector('img').style.objectPosition = `${p[0]}% ${p[1]}%`);
+        const dot = box.querySelector('.crop__dot'); dot.style.left = p[0] + '%'; dot.style.top = p[1] + '%';
+        changed();
+      });
+    }
+    box.addEventListener('dragover', e => { e.preventDefault(); box.classList.add('is-drop'); });
+    box.addEventListener('dragleave', () => box.classList.remove('is-drop'));
+    box.addEventListener('drop', async e => {
+      e.preventDefault(); box.classList.remove('is-drop');
+      const file = e.dataTransfer.files[0]; if (!file) return;
+      try { const nk = await fileToImage(file); if (mobile && im.km) im.km = nk; else im.key = nk; changed(true); } catch (err) { toast(err.message); }
+    });
+    return box;
+  };
+  crops.append(mkCrop(false));
+  if (f.crop !== false) crops.append(mkCrop(true));
+  wrap.append(crops);
+  const libBox = el('div');
+  wrap.append(el('div', { class: 'img__btns' },
+    el('button', { class: 'btn btn--sm btn--acc', onclick: () => pickFile(set) }, 'Wgraj z dysku'),
+    el('button', { class: 'btn btn--sm', onclick: () => { libBox.firstChild ? libBox.replaceChildren() : libBox.append(library(key => { set(key); })); } }, 'Wybierz z biblioteki'),
+    f.mobile ? (im.km
+      ? el('button', { class: 'btn btn--sm btn--danger', onclick: () => { im.km = ''; changed(true); } }, 'Usuń zdjęcie na telefon')
+      : el('button', { class: 'btn btn--sm', onclick: () => pickFile(key => { im.km = key; changed(true); }) }, 'Inne zdjęcie na telefon')) : null,
+    f.crop !== false && im.pm ? el('button', { class: 'btn btn--sm', onclick: () => { im.pm = null; changed(true); } }, 'Kadr telefonu = komputer') : null));
+  wrap.append(libBox);
+  const altId = 'f' + uid(); const alt = el('input', { id: altId, type: 'text', value: im.alt || '' });
+  alt.addEventListener('input', () => { im.alt = alt.value; changed(); });
+  wrap.append(el('div', { class: 'f' }, el('label', { for: altId }, 'Opis zdjęcia (alt, ważny dla Google)'), alt));
+  return wrap;
+}
+function library(onPick) {
+  const box = el('div', { class: 'lib' });
+  for (const [k, v] of IMGS) box.append(el('button', { title: v.user ? 'Wgrane przez Ciebie' : k, onclick: () => onPick(k) }, el('img', { src: v.url, alt: k, loading: 'lazy' })));
+  return box;
+}
+
+/* --- listy --- */
+function listField(f, obj, bid, path) {
+  const arr = obj[f.k];
+  const wrap = el('div', { class: 'f' }, el('span', { class: 'lbl' }, `${f.label} (${arr.length})`));
+  const list = el('div', { class: 'list' });
+  arr.forEach((it, i) => list.append(listItem(f, arr, it, i, bid, path)));
+  wrap.append(list);
+  if (!f.max || arr.length < f.max) wrap.append(el('button', { class: 'btn btn--sm', onclick: () => {
+    const n = f.add ? f.add() : clone(arr[arr.length - 1]); arr.push(n); OPEN.add(`${bid}:${path}.${arr.length - 1}`); changed(true);
+  } }, '+ Dodaj'));
+  return wrap;
+}
+function listItem(f, arr, it, i, bid, path) {
+  const key = `${bid}:${path}.${i}`; const open = OPEN.has(key);
+  const li = el('div', { class: 'li' + (open ? ' is-open' : ''), 'data-path': `${path}.${i}` });
+  const im = it.img?.key ? imgUrl(it.img.key) : '';
+  const stop = fn => e => { e.stopPropagation(); fn(); };
+  const canDel = arr.length > (f.min ?? 0);
+  li.append(el('div', { class: 'li__head', onclick: () => { open ? OPEN.delete(key) : OPEN.add(key); renderPanel(); } },
+    im ? el('img', { class: 'li__thumb', src: im, alt: '' }) : null,
+    el('span', { class: 'li__name' }, String((f.title && f.title(it)) || `Element ${i + 1}`).replace(/\*/g, '')),
+    el('button', { class: 'ib', 'aria-label': 'W górę', disabled: i === 0, onclick: stop(() => move(arr, i, -1, true)) }, '↑'),
+    el('button', { class: 'ib', 'aria-label': 'W dół', disabled: i === arr.length - 1, onclick: stop(() => move(arr, i, 1, true)) }, '↓'),
+    (!f.max || arr.length < f.max) ? el('button', { class: 'ib', 'aria-label': 'Duplikuj', title: 'Duplikuj', onclick: stop(() => { arr.splice(i + 1, 0, clone(it)); changed(true); }) }, '⧉') : null,
+    canDel ? el('button', { class: 'ib', 'aria-label': 'Usuń', title: 'Usuń', onclick: stop(() => { arr.splice(i, 1); changed(true); }) }, '✕') : null));
+  if (open) { const body = el('div', { class: 'li__body' }); buildFields(body, it, f.item, bid, `${path}.${i}`); li.append(body); }
+  return li;
+}
+
+/* --- punkty na zdjęciu --- */
+const PT_SEL = {};
+function pointsField(f, obj, bid, path) {
+  const pts = obj[f.k], im = obj[f.imgK];
+  const sel = Math.min(PT_SEL[bid] ?? 0, pts.length - 1);
+  const wrap = el('div', { class: 'f' }, el('span', { class: 'lbl' }, 'Rozmieszczenie punktów'),
+    el('span', { class: 'hint' }, 'Wybierz punkt z listy (zaznaczony na złoto), potem kliknij na zdjęciu, gdzie ma stać.'));
+  if (im?.key && IMGS.has(im.key)) {
+    const box = el('div', { class: 'pts' }, el('img', { src: imgUrl(im.key), alt: '' }));
+    pts.forEach((p, i) => box.append(el('span', { class: 'pts__dot' + (i === sel ? ' is-on' : ''), style: `left:${p.x}%;top:${p.y}%` }, String(i + 1))));
+    box.addEventListener('click', e => {
+      if (!pts.length) return;
+      const r = box.getBoundingClientRect();
+      pts[sel].x = Math.round((e.clientX - r.left) / r.width * 1000) / 10;
+      pts[sel].y = Math.round((e.clientY - r.top) / r.height * 1000) / 10;
+      changed(true);
+    });
+    wrap.append(box);
+  }
+  const chooser = el('div', { class: 'img__btns' });
+  pts.forEach((p, i) => chooser.append(el('button', { class: 'btn btn--sm' + (i === sel ? ' btn--acc' : ''), onclick: () => { PT_SEL[bid] = i; renderPanel(); } }, `${i + 1}. ${p.name}`)));
+  wrap.append(chooser);
+  wrap.append(listField({ ...f, t: 'list', label: 'Karty produktów w punktach' }, obj, bid, path));
+  return wrap;
+}
+
+/* ============================================================
+   Biblioteka widgetów
+   ============================================================ */
+function modal(...kids) {
+  const m = el('div', { class: 'modal', onclick: e => { if (e.target === m) m.remove(); } }, el('div', { class: 'dlg', role: 'dialog', 'aria-modal': 'true' }, ...kids));
+  const onKey = e => { if (e.key === 'Escape') { m.remove(); document.removeEventListener('keydown', onKey); } };
+  document.addEventListener('keydown', onKey);
+  document.body.append(m); return m;
+}
+function openLibrary() {
+  const m = modal(el('h2', {}, 'Dodaj sekcję'),
+    el('p', {}, 'Każdy widget działa w Sky-Shop bez skryptów. Nowa sekcja trafi pod zaznaczoną albo na koniec strony.'),
+    el('div', { class: 'types' }, ...Object.entries(TYPES).map(([k, T]) => el('button', { class: 'type', onclick: () => {
+      const data = T.make();
+      // podstaw pierwsze zdjęcia z biblioteki, żeby sekcja od razu dobrze wyglądała
+      const keys = [...IMGS.keys()]; let n = Math.floor(Math.random() * keys.length);
+      (function fill(o) { if (!o || typeof o !== 'object') return; if ('key' in o && Array.isArray(o.p)) { if (!o.key) { o.key = keys[n++ % keys.length]; o.alt = o.alt || 'Produkt Oak&Oats'; } return; } Object.values(o).forEach(fill); })(data);
+      const b = { id: uid(), type: k, hidden: false, data };
+      const at = SEL ? STATE.blocks.findIndex(x => x.id === SEL.id) + 1 : STATE.blocks.length;
+      STATE.blocks.splice(at || STATE.blocks.length, 0, b);
+      m.remove(); OPEN.add(b.id); SEL = { id: b.id }; changed(true);
+      setTimeout(() => { select(b.id); }, 250);
+    } }, el('em', {}, T.kind), el('b', {}, T.label), el('span', {}, T.desc)))),
+    el('div', { class: 'dlg__foot' }, el('button', { class: 'btn', onclick: () => m.remove() }, 'Zamknij')));
+}
+
+/* ============================================================
+   Minimalny zapis ZIP (bez kompresji — JPG i tak jest skompresowany). Bez zewnętrznych bibliotek.
+   ============================================================ */
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = b => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+async function makeZip(entries) { // [{name, data: Blob|string}]
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  const d = new Date(), dt = ((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1)), dd = (((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate());
+  for (const e of entries) {
+    const data = typeof e.data === 'string' ? enc.encode(e.data) : new Uint8Array(await e.data.arrayBuffer());
+    const name = enc.encode(e.name), crc = crc32(data);
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
+    h.setUint16(10, dt, true); h.setUint16(12, dd, true); h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true);
+    h.setUint16(26, name.length, true); h.setUint16(28, 0, true);
+    parts.push(h.buffer, name, data);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(10, 0, true);
+    c.setUint16(12, dt, true); c.setUint16(14, dd, true); c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true);
+    c.setUint16(28, name.length, true); c.setUint32(42, off, true);
+    central.push(c.buffer, name);
+    off += 30 + name.length + data.length;
+  }
+  const csize = central.reduce((a, x) => a + x.byteLength, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, entries.length, true); end.setUint16(10, entries.length, true);
+  end.setUint32(12, csize, true); end.setUint32(16, off, true);
+  return new Blob([...parts, ...central, end.buffer], { type: 'application/zip' });
+}
+
+/* ============================================================
+   Eksport
+   ============================================================ */
+function usedImages() {
+  const out = new Map(); // key -> alt
+  (function walk(o) {
+    if (!o || typeof o !== 'object') return;
+    if ('key' in o && Array.isArray(o.p)) { if (o.key && !out.has(o.key)) out.set(o.key, o.alt); if (o.km && !out.has(o.km)) out.set(o.km, (o.alt || '') + ' telefon'); return; }
+    Object.values(o).forEach(walk);
+  })(STATE.blocks.filter(b => !b.hidden));
+  return out;
+}
+async function hashBlob(blob) {
+  const b = new Uint8Array(await blob.arrayBuffer()); let h = 0x811c9dc5;
+  for (let i = 0; i < b.length; i += 3) { h ^= b[i]; h = Math.imul(h, 16777619); }
+  return (h >>> 0).toString(36).padStart(6, '0').slice(-6);
+}
+async function fileMap() {
+  const files = {};
+  for (const [key, alt] of usedImages()) {
+    const m = IMGS.get(key); if (!m) continue;
+    m.hash = m.hash || await hashBlob(m.blob);
+    files[key] = { base: `oo-${slug(alt)}-${m.hash}`, w: m.w, h: m.h };
+  }
+  return files;
+}
+async function resized(blob, maxW) {
+  const bmp = await createImageBitmap(blob);
+  const s = Math.min(1, maxW / bmp.width);
+  const c = document.createElement('canvas'); c.width = Math.round(bmp.width * s); c.height = Math.round(bmp.height * s);
+  const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(bmp, 0, 0, c.width, c.height); bmp.close();
+  return new Promise(r => c.toBlob(r, 'image/jpeg', maxW > 900 ? .82 : .78));
+}
+async function exportCode() { const files = await fileMap(); return { code: renderSnippet(STATE, makeCtx('export', files)), files }; }
+
+const dlP = (window.claude && typeof window.claude.use === 'function') ? Promise.resolve(window.claude.use('downloads')).catch(() => null) : Promise.resolve(null);
+async function saveFile(name, blob) {
+  const d = await Promise.race([dlP, new Promise(r => setTimeout(() => r(null), 1500))]);
+  if (d) {
+    try { await d.save({ filename: name, data: blob }); return true; }
+    catch (e) { if (e?.code === 'declined') { toast('Anulowano zapis pliku'); return false; } }
+  }
+  const a = el('a', { href: URL.createObjectURL(blob), download: name }); document.body.append(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000); return true;
+}
+async function copyText(t, ta) {
+  try { await navigator.clipboard.writeText(t); toast('Skopiowano kod. Wklej go w Sky-Shop w trybie „Źródło”.'); }
+  catch { if (ta) { ta.focus(); ta.select(); } toast('Zaznaczyłem kod — naciśnij Ctrl+C (na Macu Cmd+C)'); }
+}
+
+async function openCode() {
+  const { code } = await exportCode();
+  const ta = el('textarea', { readonly: true, 'aria-label': 'Kod do Sky-Shop' }); ta.value = code;
+  const m = modal(el('h2', {}, 'Kod do obszaru edytowalnego'),
+    el('p', {}, 'To jest kompletny kod strony. Zdjęcia muszą być wgrane do Sky-Shop pod nazwami z paczki — pobierz ją przyciskiem „Eksport do Sky-Shop”.'),
+    ta, el('div', { class: 'dlg__foot' },
+      el('button', { class: 'btn', onclick: () => m.remove() }, 'Zamknij'),
+      el('button', { class: 'btn btn--acc', onclick: () => copyText(code, ta) }, 'Kopiuj kod')));
+}
+
+async function openExport() {
+  const { code, files } = await exportCode();
+  const prev = new Set(STATE.exported || []);
+  const names = Object.values(files).map(f => f.base);
+  const fresh = names.filter(n => !prev.has(n));
+  const onlyNewId = 'f' + uid();
+  const onlyNew = el('input', { type: 'checkbox', id: onlyNewId, checked: prev.size > 0 && fresh.length < names.length });
+  const list = el('div', { class: 'files' }, ...names.map(n => el('div', {}, el('code', {}, `${n}.jpg + ${n}-m.jpg`), el('span', { class: 'tag' + (prev.has(n) ? '' : ' tag--new') }, prev.has(n) ? 'już eksportowane' : 'nowe'))));
+  const go = el('button', { class: 'btn btn--acc' }, 'Pobierz paczkę ZIP');
+  const m = modal(el('h2', {}, 'Eksport do Sky-Shop'),
+    el('ol', { class: 'steps' },
+      el('li', {}, 'Pobierz paczkę ZIP i rozpakuj ją.'),
+      el('li', {}, 'Wgraj pliki z folderu „zdjecia” do menedżera plików Sky-Shop, do folderu o adresie ', el('code', {}, STATE.settings.prefix), '.'),
+      el('li', {}, 'Otwórz plik „obszar-edytowalny.html”, skopiuj całość i wklej w Sky-Shop: Wygląd → Strona główna → Obszar edytowalny → tryb „Źródło”.'),
+      el('li', {}, 'Zapisz bez przełączania edytora na tryb wizualny.')),
+    el('p', {}, `Zdjęć na stronie: ${names.length}, nowych od ostatniego eksportu: ${fresh.length}. Nazwy plików zmieniają się tylko wtedy, gdy zmieni się zdjęcie, więc stare pliki w Sky-Shop dalej działają.`),
+    list,
+    el('label', { class: 'chk', for: onlyNewId }, onlyNew, 'W paczce tylko nowe zdjęcia'),
+    el('div', { class: 'dlg__foot' },
+      el('button', { class: 'btn', onclick: () => m.remove() }, 'Zamknij'),
+      el('button', { class: 'btn', onclick: () => copyText(code) }, 'Tylko skopiuj kod'),
+      go));
+  go.addEventListener('click', async () => {
+    go.disabled = true; go.textContent = 'Przygotowuję zdjęcia…';
+    try {
+      const entries = [
+        { name: 'obszar-edytowalny.html', data: code },
+        { name: 'INSTRUKCJA.txt', data: `1. Wgraj pliki z folderu "zdjecia" do menedżera plików Sky-Shop (adres folderu: ${STATE.settings.prefix}).\r\n2. Skopiuj cały plik obszar-edytowalny.html i wklej w Sky-Shop: Wygląd > Strona główna > Obszar edytowalny > tryb Źródło.\r\n3. Zapisz bez przełączania na tryb wizualny.\r\n` }];
+      let i = 0;
+      for (const [key, f] of Object.entries(files)) {
+        if (onlyNew.checked && prev.has(f.base)) continue;
+        go.textContent = `Zdjęcia ${++i}/${onlyNew.checked ? fresh.length : names.length}…`;
+        const blob = IMGS.get(key).blob;
+        entries.push({ name: `zdjecia/${f.base}.jpg`, data: await resized(blob, 1600) });
+        entries.push({ name: `zdjecia/${f.base}-m.jpg`, data: await resized(blob, 800) });
+      }
+      go.textContent = 'Pakuję…';
+      const out = await makeZip(entries);
+      const ok = await saveFile(`oakandoats-strona-glowna-${new Date().toISOString().slice(0, 10)}.zip`, out);
+      if (ok) { STATE.exported = [...new Set([...(STATE.exported || []), ...names])]; saveState(); toast('Paczka gotowa'); m.remove(); }
+    } catch (e) { toast('Nie udało się przygotować paczki: ' + (e.message || e)); }
+    go.disabled = false; go.textContent = 'Pobierz paczkę ZIP';
+  });
+}
+
+/* --- projekt --- */
+const blobToData = b => new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); });
+function openProject() {
+  const m = modal(el('h2', {}, 'Projekt'),
+    el('p', {}, 'Projekt zapisuje się sam w tej przeglądarce. Plik projektu przenosi całą pracę razem z wgranymi zdjęciami na inny komputer albo do innej przeglądarki.'),
+    el('div', { class: 'dlg__foot', style: 'justify-content:flex-start' },
+      el('button', { class: 'btn btn--acc', onclick: async () => {
+        const uploads = {}; const used = JSON.stringify(STATE);
+        for (const [k, v] of IMGS) if (v.user && used.includes(`"${k}"`)) uploads[k] = await blobToData(v.blob);
+        await saveFile(`oakandoats-projekt-${new Date().toISOString().slice(0, 10)}.json`, new Blob([JSON.stringify({ app: 'oo-editor', state: STATE, uploads })], { type: 'application/json' }));
+      } }, 'Zapisz plik projektu'),
+      el('button', { class: 'btn', onclick: () => { m.remove(); $('#projIn').click(); } }, 'Wczytaj plik projektu'),
+      el('button', { class: 'btn btn--danger', onclick: e => {
+        if (!e.currentTarget.dataset.c) { e.currentTarget.dataset.c = 1; e.currentTarget.textContent = 'Na pewno? Kliknij ponownie'; return; }
+        STATE = defaultState(); m.remove(); afterLoad(); snapshot(); saveState(); toast('Przywrócono projekt startowy. Cofnij: Ctrl+Z');
+      } }, 'Zacznij od projektu startowego')),
+    el('div', { class: 'dlg__foot' }, el('button', { class: 'btn', onclick: () => m.remove() }, 'Zamknij')));
+}
+$('#projIn').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const j = JSON.parse(await f.text());
+    if (j.app !== 'oo-editor' || !j.state?.blocks) throw new Error('To nie jest plik projektu z tego edytora.');
+    for (const [k, d] of Object.entries(j.uploads || {})) await addImage(k, await dataToBlob(d));
+    await saveUploads();
+    STATE = j.state; afterLoad(); snapshot(); saveState(); toast('Wczytano projekt');
+  } catch (err) { toast(err.message || 'Nie udało się wczytać projektu'); }
+});
+
+/* ============================================================
+   Start
+   ============================================================ */
+function setPane(p) { $('#app').dataset.pane = p; $('#paneEdit').setAttribute('aria-pressed', p === 'edit'); $('#paneView').setAttribute('aria-pressed', p === 'view'); }
+function afterLoad() {
+  // napraw odwołania do zdjęć, których już nie ma
+  (function walk(o) { if (!o || typeof o !== 'object') return; if ('key' in o && Array.isArray(o.p)) { if (o.key && !IMGS.has(o.key)) o.key = ''; if (o.km && !IMGS.has(o.km)) o.km = ''; return; } Object.values(o).forEach(walk); })(STATE.blocks);
+  renderPanel(); renderPreview(); updUndo();
+}
+async function boot() {
+  for (const [k, d] of Object.entries(DEFAULT_IMAGES)) await addImage(k, await dataToBlob(d));
+  const ups = await DB.get('uploads');
+  if (ups) for (const [k, b] of Object.entries(ups)) if (b instanceof Blob) await addImage(k, b);
+  const saved = await DB.get('state');
+  try { STATE = saved ? JSON.parse(saved) : defaultState(); if (!STATE.blocks) throw 0; } catch { STATE = defaultState(); }
+  OPEN.add(STATE.blocks[0]?.id);
+  lastSnap = JSON.stringify(STATE);
+  afterLoad();
+}
+
+$('#frame').addEventListener('load', wireFrame);
+$('#undo').addEventListener('click', undo);
+$('#redo').addEventListener('click', redo);
+$('#codeBtn').addEventListener('click', openCode);
+$('#zipBtn').addEventListener('click', openExport);
+$('#projBtn').addEventListener('click', openProject);
+$('#paneEdit').addEventListener('click', () => setPane('edit'));
+$('#paneView').addEventListener('click', () => { setPane('view'); renderPreview(); });
+document.querySelectorAll('[data-dev]').forEach(b => b.addEventListener('click', () => {
+  if (b.tagName !== 'BUTTON') return;
+  $('#stage').dataset.dev = b.dataset.dev;
+  document.querySelectorAll('button[data-dev]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  if (matchMedia('(max-width:900px)').matches) setPane('view');
+}));
+document.addEventListener('keydown', e => {
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName);
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !typing) { e.preventDefault(); e.shiftKey ? redo() : undo(); }
+});
+boot();
+</script>
