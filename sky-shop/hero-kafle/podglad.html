@@ -1,0 +1,290 @@
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oak&amp;Oats hero kafle</title>
+<style>
+:root{--pv-bg:#ffffff;--pv-ink:#2e2924;--pv-bar:#9c8b78;--pv-note:#2e2924;--pv-note-ink:#f8f4ee}
+body{background:var(--pv-bg);color:var(--pv-ink)}
+.pv-note{background:var(--pv-note);color:var(--pv-note-ink);font:500 12px/1.5 "Jost",system-ui,sans-serif;letter-spacing:.06em;text-align:center;
+  padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.pv-head{height:150px;display:grid;grid-template-rows:1fr auto;background:var(--pv-bg)}
+.pv-logo{display:grid;place-content:center;text-align:center;font:500 26px/1 "Cormorant Garamond",Georgia,serif;letter-spacing:.18em;color:var(--pv-ink)}
+.pv-logo small{display:block;margin-top:6px;font:500 9px/1 "Jost",system-ui,sans-serif;letter-spacing:.5em}
+.pv-nav{background:var(--pv-bar);color:#fff;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 28px;font:500 11px/1 "Jost",system-ui,sans-serif;letter-spacing:.2em;
+  padding-block:13px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+@media (max-width:760px){.pv-head{height:auto}.pv-logo{padding-block:22px}.pv-nav{gap:8px 16px;font-size:10px}}
+</style>
+<div class="pv-note">Podgląd obszaru edytowalnego · nagłówek i pasek menu to atrapa szablonu Vouges</div>
+<header class="pv-head"><div class="pv-logo">OAK&amp;OATS<small>HANDMADE</small></div>
+<nav class="pv-nav"><span>O NAS</span><span>PRODUKTY</span><span>BEZPIECZEŃSTWO</span><span>KONTAKT</span><span>BLOG</span></nav></header>
+<!--
+  OAK&OATS — pełnoekranowe hero kafle + obszar edytowalny strony głównej
+  Sky-Shop · szablon Vouges · Wygląd → Strona główna → Obszar edytowalny → tryb „Źródło”.
+
+  ZANIM WKLEISZ:
+  1. Wgraj pliki z folderu img/ do menedżera plików Sky-Shop (folder oo-hero).
+  2. Sprawdź adres jednego wgranego pliku. Jeśli różni się od
+     img/ — zrób „Znajdź i zamień” tego prefiksu.
+  3. Podmień linki oznaczone w README (szukaj „/pl/c/”).
+  Cały wygląd sterowany jest zmiennymi w bloku .oo { --oo-… } poniżej.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500&family=Jost:wght@400;500&display=swap">
+<style>
+/* Układ: kafle łączone cienką „fugą” w kolorze owsa. Hero = 1 duży kafel + 2 mniejsze na pełną wysokość ekranu,
+   potem pas 4 kategorii, opowieść z pracowni i przewijana galeria. */
+html,body{overflow-x:clip}
+.oo{
+  --oo-oat:#efe8dd;      /* tło, fugi między kaflami */
+  --oo-linen:#f8f4ee;    /* jasne panele, tekst na zdjęciach */
+  --oo-ink:#2e2924;      /* espresso — tekst, przyciski */
+  --oo-muted:#6c6258;    /* tekst pomocniczy */
+  --oo-taupe:#9c8b78;    /* kolor paska menu sklepu */
+  --oo-clay:#b4877b;     /* pudrowa glina z wristletu MAMA — tylko akcenty */
+  --oo-serif:"Cormorant Garamond","Cormorant",Georgia,"Times New Roman",serif;
+  --oo-sans:"Jost","Century Gothic","Avenir Next",system-ui,sans-serif;
+  --oo-offset:150px;     /* wysokość nagłówka sklepu — hero wypełnia resztę ekranu */
+  --oo-seam:6px;         /* szerokość fugi między kaflami */
+  --oo-gutter:max(16px,4vw);
+  position:relative;left:50%;width:100vw;margin-left:-50vw;
+  background:var(--oo-oat);color:var(--oo-ink);
+  font-family:var(--oo-sans);font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.oo *,.oo *::before,.oo *::after{box-sizing:border-box}
+.oo img{display:block;max-width:100%}
+.oo a{color:inherit;text-decoration:none}
+.oo h1,.oo h2,.oo h3,.oo p{margin:0}
+.oo-eyebrow{font:500 .72rem/1.3 var(--oo-sans);letter-spacing:.24em;text-transform:uppercase}
+
+/* ---------- KAFEL (wspólny) ---------- */
+.oo-tile{position:relative;overflow:hidden;display:block;background:var(--oo-taupe);isolation:isolate}
+.oo-tile>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
+.oo-tile::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(46,41,36,0) 45%,rgba(46,41,36,.62) 100%)}
+.oo-tile__text{position:absolute;z-index:2;left:0;right:0;bottom:0;padding:clamp(18px,2.6vw,40px) var(--oo-gutter) clamp(20px,2.8vw,44px);color:var(--oo-linen);display:grid;gap:10px}
+.oo-tile__title{font:500 clamp(1.7rem,2.3vw,2.4rem)/1.08 var(--oo-serif);text-wrap:balance}
+.oo-tile__title em{font-style:italic;font-weight:400}
+.oo-tile__more{display:inline-flex;align-items:center;gap:.6em;font:500 .74rem/1 var(--oo-sans);letter-spacing:.2em;text-transform:uppercase}
+.oo-tile__more::after{content:"";width:28px;height:1px;background:currentColor;transition:width .4s ease}
+a.oo-tile:hover>img,a.oo-tile:focus-visible>img{transform:scale(1.045)}
+a.oo-tile:hover .oo-tile__more::after,a.oo-tile:focus-visible .oo-tile__more::after{width:52px}
+.oo a:focus-visible{outline:2px solid var(--oo-linen);outline-offset:-6px}
+
+/* ---------- 1. HERO ---------- */
+.oo-hero{display:grid;gap:var(--oo-seam);grid-template-columns:1.3fr 1fr;grid-template-rows:1fr 1fr;
+  height:calc(100svh - var(--oo-offset));min-height:600px;max-height:1000px}
+.oo-hero__main{grid-row:1 / span 2}
+.oo-hero__main>img{object-position:42% 30%;animation:oo-settle 1.8s cubic-bezier(.2,.7,.2,1) both}
+.oo-hero__main::after{background:linear-gradient(180deg,rgba(46,41,36,0) 35%,rgba(46,41,36,.72) 100%)}
+.oo-hero__main .oo-tile__text{gap:16px;max-width:42rem;padding-bottom:clamp(28px,4.5vw,64px)}
+.oo-hero h1{font:500 clamp(2.7rem,5vw,5.2rem)/.98 var(--oo-serif);letter-spacing:-.01em;text-wrap:balance}
+.oo-hero h1 em{font-style:italic;font-weight:400}
+.oo-hero__lead{max-width:34em;font-size:clamp(.98rem,1.1vw,1.08rem);opacity:.92}
+.oo-hero__cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.oo-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 26px;
+  font:500 .76rem/1 var(--oo-sans);letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--oo-linen);transition:background .3s,color .3s}
+.oo-btn--solid{background:var(--oo-linen);color:var(--oo-ink)}
+.oo-btn--solid:hover{background:transparent;color:var(--oo-linen)}
+.oo-btn--ghost{color:var(--oo-linen)}
+.oo-btn--ghost:hover{background:var(--oo-linen);color:var(--oo-ink)}
+.oo-hero__side>img{object-position:50% 40%}
+.oo-hero__badge{position:absolute;z-index:2;top:clamp(16px,2vw,28px);left:var(--oo-gutter);color:var(--oo-linen)}
+@keyframes oo-settle{from{transform:scale(1.07)}to{transform:scale(1)}}
+
+/* ---------- 2. KATEGORIE ---------- */
+.oo-cats{display:grid;gap:var(--oo-seam);grid-template-columns:repeat(4,1fr);height:min(88svh,900px);min-height:520px;margin-top:var(--oo-seam)}
+.oo-cats .oo-tile__text{padding-inline:clamp(16px,2vw,32px)}
+.oo-cats .oo-tile__sub{font-size:.92rem;opacity:.9;max-width:22em}
+
+/* ---------- 3. PRACOWNIA ---------- */
+.oo-studio{display:grid;grid-template-columns:1.1fr 1fr;gap:var(--oo-seam);margin-top:var(--oo-seam)}
+.oo-studio__img{min-height:clamp(420px,62vw,760px)}
+.oo-studio__img>img{object-position:50% 50%}
+.oo-studio__img::after{display:none}
+.oo-studio__text{background:var(--oo-linen);display:grid;align-content:center;gap:22px;
+  padding-block:clamp(48px,7vw,110px);padding-inline:clamp(24px,6vw,110px)}
+.oo-studio__text .oo-eyebrow{color:var(--oo-clay)}
+.oo-studio h2{font:500 clamp(2.1rem,3.6vw,3.5rem)/1.04 var(--oo-serif);text-wrap:balance}
+.oo-studio h2 em{font-style:italic;font-weight:400}
+.oo-studio p{color:var(--oo-muted);max-width:32em}
+.oo-sign{font:italic 400 1.5rem/1.2 var(--oo-serif);color:var(--oo-ink)}
+.oo-sign small{display:block;margin-top:4px;font:500 .7rem/1.3 var(--oo-sans);letter-spacing:.22em;text-transform:uppercase;color:var(--oo-muted)}
+.oo-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:6px 0 0;padding:22px 0 0;border-top:1px solid rgba(46,41,36,.14);list-style:none}
+.oo-facts li{display:grid;gap:4px;min-width:0}
+.oo-facts b{font:500 1.25rem/1.15 var(--oo-serif)}
+.oo-facts span{font-size:.84rem;color:var(--oo-muted);line-height:1.45}
+
+/* ---------- 4. GALERIA ---------- */
+.oo-gallery{padding-block:clamp(56px,7vw,104px) clamp(40px,5vw,72px)}
+.oo-gallery__head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px 40px;padding-inline:var(--oo-gutter);margin-bottom:clamp(24px,3vw,40px)}
+.oo-gallery__head h2{font:500 clamp(2rem,3.4vw,3.2rem)/1.04 var(--oo-serif);text-wrap:balance}
+.oo-gallery__head h2 em{font-style:italic;font-weight:400}
+.oo-gallery__head .oo-eyebrow{color:var(--oo-clay);margin-bottom:12px}
+.oo-link{font:500 .76rem/1 var(--oo-sans);letter-spacing:.2em;text-transform:uppercase;padding-bottom:6px;border-bottom:1px solid currentColor}
+.oo-strip{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(220px,22vw,360px);gap:var(--oo-seam);overflow-x:auto;scroll-snap-type:x mandatory;
+  padding-inline:var(--oo-gutter);scroll-padding-inline:var(--oo-gutter);scrollbar-width:thin;scrollbar-color:var(--oo-taupe) transparent;padding-bottom:14px}
+.oo-strip figure{margin:0;scroll-snap-align:start;display:grid;gap:10px}
+.oo-strip .oo-tile{aspect-ratio:4/5;max-width:100%}
+.oo-strip .oo-tile::after{display:none}
+.oo-strip figcaption{font-size:.86rem;color:var(--oo-muted)}
+
+/* ---------- MOBILE / TABLET ---------- */
+@media (max-width:1024px){
+  .oo-cats{grid-template-columns:repeat(2,1fr);height:auto;min-height:0}
+  .oo-cats .oo-tile{aspect-ratio:4/5}
+}
+@media (max-width:760px){
+  .oo{--oo-seam:4px;--oo-offset:110px}
+  .oo-hero{grid-template-columns:1fr 1fr;grid-template-rows:auto auto;height:auto;min-height:0;max-height:none}
+  .oo-hero__main{grid-column:1 / span 2;grid-row:auto;height:calc(86svh - var(--oo-offset));min-height:520px}
+  .oo-hero__side{aspect-ratio:4/5}
+  .oo-hero__side .oo-tile__title{font-size:1.35rem}
+  .oo-hero__side .oo-tile__text{padding:14px 14px 16px;gap:8px}
+  .oo-hero__side .oo-tile__more{font-size:.66rem;letter-spacing:.16em}
+  .oo-hero__side .oo-tile__more::after{width:16px}
+  .oo-cats .oo-tile__sub{display:none}
+  .oo-cats .oo-tile__title{font-size:1.4rem}
+  .oo-cats .oo-tile__text{padding:14px 14px 16px}
+  .oo-studio{grid-template-columns:1fr}
+  .oo-studio__img{min-height:0;aspect-ratio:4/3}
+  .oo-facts{grid-template-columns:1fr;gap:14px}
+  .oo-strip{grid-auto-columns:68vw}
+}
+@media (prefers-reduced-motion:reduce){
+  .oo *{animation:none!important;transition:none!important}
+}
+</style>
+
+<div class="oo">
+
+  <!-- 1. HERO — pełny ekran: duży kafel + dwa mniejsze -->
+  <section class="oo-hero" aria-label="Nowa kolekcja Oak&amp;Oats">
+    <a class="oo-tile oo-hero__main" href="/pl/c/naszyjniki">
+      <img src="img/01-hero-naszyjnik.jpg"
+           srcset="img/01-hero-naszyjnik-m.jpg 800w, img/01-hero-naszyjnik.jpg 1254w"
+           sizes="(max-width:760px) 100vw, 57vw" width="1254" height="1254"
+           alt="Kobieta w lnianej koszuli z naszyjnikiem z drewnianych i silikonowych koralików" fetchpriority="high">
+      <div class="oo-tile__text">
+        <span class="oo-eyebrow">Manufaktura Oak&amp;Oats · ręcznie w Polsce</span>
+        <h1>Noszone <em>blisko</em></h1>
+        <span class="oo-hero__lead">Naszyjniki z drewna bukowego i matowego silikonu. Biżuteria, którą zakładasz dla siebie, a która spokojnie zostaje z Tobą także wtedy, gdy obok jest dziecko.</span>
+        <span class="oo-hero__cta">
+          <span class="oo-btn oo-btn--solid">Odkryj naszyjniki</span>
+        </span>
+      </div>
+    </a>
+
+    <a class="oo-tile oo-hero__side" href="/pl/c/breloki">
+      <img src="img/02-hero-brelok-torebka.jpg"
+           srcset="img/02-hero-brelok-torebka-m.jpg 800w, img/02-hero-brelok-torebka.jpg 1086w"
+           sizes="(max-width:760px) 50vw, 43vw" width="1086" height="1448"
+           alt="Klucze z kwiatowym brelokiem z koralików nad plecioną torebką">
+      <span class="oo-tile__text">
+        <span class="oo-tile__title">Do kluczy, <em>do torebki</em></span>
+        <span class="oo-tile__more">Breloki i wristlety</span>
+      </span>
+    </a>
+
+    <a class="oo-tile oo-hero__side" href="/pl/c/imienne">
+      <img src="img/03-hero-imienne.jpg"
+           srcset="img/03-hero-imienne-m.jpg 800w, img/03-hero-imienne.jpg 1254w"
+           sizes="(max-width:760px) 50vw, 43vw" width="1254" height="1254"
+           alt="Brelok z drewnianymi literami układającymi imię ZOSIA i białymi stokrotkami">
+      <span class="oo-tile__text">
+        <span class="oo-tile__title">Z imieniem, <em>które znaczy najwięcej</em></span>
+        <span class="oo-tile__more">Linia IMIENNE</span>
+      </span>
+    </a>
+  </section>
+
+  <!-- 2. KATEGORIE — pas czterech kafli -->
+  <nav class="oo-cats" aria-label="Kategorie">
+    <a class="oo-tile" href="/pl/c/naszyjniki">
+      <img src="img/10-kat-naszyjniki.jpg"
+           srcset="img/10-kat-naszyjniki-m.jpg 800w, img/10-kat-naszyjniki.jpg 1084w"
+           sizes="(max-width:1024px) 50vw, 25vw" width="1084" height="1451" loading="lazy"
+           alt="Cztery naszyjniki z koralików w odcieniach bieli, szarości i buku na marmurowej płycie">
+      <span class="oo-tile__text">
+        <span class="oo-tile__title">Naszyjniki</span>
+        <span class="oo-tile__sub">Biżuteria z buku i matowego silikonu</span>
+        <span class="oo-tile__more">Zobacz</span>
+      </span>
+    </a>
+    <a class="oo-tile" href="/pl/c/mama">
+      <img src="img/11-kat-mama.jpg"
+           srcset="img/11-kat-mama-m.jpg 800w, img/11-kat-mama.jpg 1122w"
+           sizes="(max-width:1024px) 50vw, 25vw" width="1122" height="1402" loading="lazy"
+           alt="Dłoń trzymająca wristlet z różowych i drewnianych koralików z literami MAMA">
+      <span class="oo-tile__text">
+        <span class="oo-tile__title">Wristlet <em>MAMA</em></span>
+        <span class="oo-tile__sub">Na nadgarstek, do kluczy, na co dzień</span>
+        <span class="oo-tile__more">Zobacz</span>
+      </span>
+    </a>
+    <a class="oo-tile" href="/pl/c/breloki">
+      <img src="img/12-kat-breloki.jpg"
+           srcset="img/12-kat-breloki-m.jpg 800w, img/12-kat-breloki.jpg 1122w"
+           sizes="(max-width:1024px) 50vw, 25vw" width="1122" height="1402" loading="lazy"
+           alt="Brelok z koralików przypięty do paska lnianej torebki">
+      <span class="oo-tile__text">
+        <span class="oo-tile__title">Dodatki <em>do torebki</em></span>
+        <span class="oo-tile__sub">Breloki z imieniem, inicjałami i kwiatami</span>
+        <span class="oo-tile__more">Zobacz</span>
+      </span>
+    </a>
+    <a class="oo-tile" href="/pl/c/dla-dziecka">
+      <img src="img/13-kat-dziecko.jpg"
+           srcset="img/13-kat-dziecko-m.jpg 800w, img/13-kat-dziecko.jpg 1254w"
+           sizes="(max-width:1024px) 50vw, 25vw" width="1254" height="1254" loading="lazy"
+           alt="Zestaw: zawieszka do smoczka i gryzak z drewnianym kółkiem na lnianym woreczku">
+      <span class="oo-tile__text">
+        <span class="oo-tile__title">Dla dziecka</span>
+        <span class="oo-tile__sub">Zawieszki, gryzaki, grzechotki i zestawy prezentowe</span>
+        <span class="oo-tile__more">Zobacz</span>
+      </span>
+    </a>
+  </nav>
+
+  <!-- 3. PRACOWNIA — opowieść podpisana przez Wiktorię -->
+  <section class="oo-studio" aria-label="Pracownia">
+    <div class="oo-tile oo-studio__img">
+      <img src="img/20-pracownia.jpg"
+           srcset="img/20-pracownia-m.jpg 800w, img/20-pracownia.jpg 1448w"
+           sizes="(max-width:760px) 100vw, 53vw" width="1448" height="1086" loading="lazy"
+           alt="Jasna pracownia z drewnianym stołem, półkami z koralikami i pudełkami do pakowania">
+    </div>
+    <div class="oo-studio__text">
+      <span class="oo-eyebrow">Z pracowni</span>
+      <h2>Każdy egzemplarz <em>przechodzi przez moje ręce</em></h2>
+      <p>Koraliki dobieram po kolorze i usłojeniu, nawlekam ręcznie i sprawdzam każde zapięcie, zanim zamówienie trafi do pudełka. Dlatego dwa naszyjniki z tej samej kolekcji nigdy nie są identyczne.</p>
+      <p class="oo-sign">Wiktoria<small>Oak&amp;Oats</small></p>
+      <ul class="oo-facts">
+        <li><b>Buk</b><span>naturalne drewno, wykończone na gładko</span></li>
+        <li><b>Silikon</b><span>matowy, w stonowanych odcieniach</span></li>
+        <li><b>Imię</b><span>litery układamy pod Twoje zamówienie</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4. GALERIA — przewijany pas kafli -->
+  <section class="oo-gallery" aria-label="Na co dzień">
+    <div class="oo-gallery__head">
+      <div>
+        <p class="oo-eyebrow">Na co dzień</p>
+        <h2>Drobiazgi, <em>które zostają z Tobą</em></h2>
+      </div>
+      <a class="oo-link" href="/pl/c/nowosci">Wszystkie produkty</a>
+    </div>
+    <div class="oo-strip">
+      <figure><a class="oo-tile" href="/pl/c/mama"><img src="img/30-galeria-klucze-m.jpg" width="800" height="1000" loading="lazy" alt="Brelok MAMA przy kluczach trzymanych w dłoni"></a><figcaption>Brelok MAMA przy kluczach</figcaption></figure>
+      <figure><a class="oo-tile" href="/pl/c/mama"><img src="img/31-galeria-mama-dlon-m.jpg" width="800" height="1000" loading="lazy" alt="Wristlet MAMA na otwartej dłoni w ciepłym świetle"></a><figcaption>Wristlet MAMA</figcaption></figure>
+      <figure><a class="oo-tile" href="/pl/c/naszyjniki"><img src="img/32-galeria-naszyjnik-m.jpg" width="800" height="1075" loading="lazy" alt="Naszyjnik z beżowych i drewnianych koralików na marmurze"></a><figcaption>Naszyjnik z buku i silikonu</figcaption></figure>
+      <figure><a class="oo-tile" href="/pl/c/imienne"><img src="img/33-galeria-asm-m.jpg" width="800" height="800" loading="lazy" alt="Perłowo-różowy brelok z drewnianymi literami ASM"></a><figcaption>Brelok z inicjałami</figcaption></figure>
+      <figure><a class="oo-tile" href="/pl/c/naszyjniki"><img src="img/36-galeria-naszyjniki-trio-m.jpg" width="800" height="1075" loading="lazy" alt="Trzy naszyjniki w naturalnych tonach ułożone na marmurze"></a><figcaption>Naszyjniki w naturalnych tonach</figcaption></figure>
+      <figure><a class="oo-tile" href="/pl/c/mama"><img src="img/37-galeria-mama-len-m.jpg" width="800" height="450" loading="lazy" alt="Różowy wristlet MAMA na lnianej tkaninie"></a><figcaption>MAMA na lnie</figcaption></figure>
+      <figure><a class="oo-tile" href="/pl/c/dla-dziecka"><img src="img/34-galeria-kwiaty-m.jpg" width="800" height="1067" loading="lazy" alt="Trzy kwiatowe zawieszki do smoczka: błękitna, szara i biała"></a><figcaption>Zawieszki kwiatowe</figcaption></figure>
+      <figure><a class="oo-tile" href="/pl/c/dla-dziecka"><img src="img/35-galeria-zawieszka-m.jpg" width="800" height="1199" loading="lazy" alt="Pudroworóżowa kwiatowa zawieszka z drewnianym klipsem na lnianym woreczku"></a><figcaption>Zawieszka w pudrowym różu</figcaption></figure>
+    </div>
+  </section>
+
+</div>
