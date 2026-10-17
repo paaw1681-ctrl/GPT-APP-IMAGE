@@ -3,6 +3,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400&family=Jost:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,400&family=Bodoni+Moda:ital,wght@0,500;1,400&family=EB+Garamond:ital,wght@0,500;1,400&family=Lora:ital,wght@0,500;1,400&family=Fraunces:ital,wght@0,500;1,400&family=DM+Serif+Display:ital@0;1&family=Cinzel:wght@500&family=Italiana&family=Marcellus&display=swap">
 <style>
 /* Układ: dwa panele — po lewej lista sekcji z polami, po prawej podgląd na żywo w ramce o szerokości urządzenia.
    Na telefonie przełącznik „Edycja / Podgląd”. */
@@ -59,7 +60,7 @@ button{cursor:pointer}
 .card__type{display:block;font-weight:400;font-size:11px;color:var(--mute);letter-spacing:.04em}
 .ib{width:28px;height:28px;display:grid;place-items:center;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--mute);font-size:14px}
 .ib:hover{border-color:var(--line);color:var(--fg)}
-.card__body{padding:4px 12px 14px;border-top:1px solid var(--line);display:grid;gap:12px}
+.card__body{padding:4px 12px 14px;border-top:1px solid var(--line);display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
 .card:not(.is-open) .card__body{display:none}
 
 .f{display:grid;gap:5px;min-width:0}
@@ -74,7 +75,7 @@ button{cursor:pointer}
 .flash{animation:flash 1.2s}
 @keyframes flash{0%,40%{box-shadow:0 0 0 3px var(--sel)}100%{box-shadow:0 0 0 0 transparent}}
 
-.list{display:grid;gap:8px}
+.list{display:grid;gap:8px;grid-template-columns:minmax(0,1fr)}
 .li{border:1px solid var(--line);border-radius:9px;background:var(--panel)}
 .li__head{display:flex;align-items:center;gap:4px;padding:6px 6px 6px 10px;cursor:pointer}
 .li__name{flex:1;min-width:0;font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -128,6 +129,49 @@ button{cursor:pointer}
 .chk{display:flex;gap:8px;align-items:center;font-size:13px}
 .steps{margin:0;padding-left:20px;display:grid;gap:4px;color:var(--fg)}
 
+/* szuflada szablonów */
+.drawer{position:fixed;z-index:40;top:0;bottom:0;left:0;width:min(460px,100%);background:var(--panel);border-right:1px solid var(--line);box-shadow:12px 0 40px rgba(0,0,0,.18);
+  transform:translateX(-102%);transition:transform .32s cubic-bezier(.2,.7,.2,1);display:grid;grid-template-rows:auto 1fr;
+  padding-left:env(safe-area-inset-left,0px)}
+.drawer.is-open{transform:none}
+.drawer__head{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;border-bottom:1px solid var(--line)}
+.drawer__head h2{margin:0;flex:1;font:500 26px/1 var(--disp)}
+.drawer__list{overflow-y:auto;grid-auto-rows:max-content;padding:14px 16px 40px;display:grid;gap:14px;align-content:start}
+.drawer__intro{margin:0;color:var(--mute);font-size:13px}
+.tpl{border:1px solid var(--line);border-radius:12px;background:var(--field);padding:0;text-align:left;overflow:hidden;display:grid}
+.tpl:hover{border-color:var(--acc)}
+.tpl.is-on{border-color:var(--sel);box-shadow:0 0 0 2px var(--sel)}
+.tpl__pv{height:150px;display:grid;grid-template-columns:1.1fr 1fr;gap:var(--s);background:var(--b);padding:var(--s)}
+.tpl__hero{background:var(--l);display:grid;align-content:center;gap:7px;padding:14px;border-radius:var(--r)}
+.tpl__eb{font:600 7.5px/1 var(--ui);letter-spacing:.24em;text-transform:uppercase;color:var(--a)}
+.tpl__t{font-size:24px;line-height:1;color:var(--i)}
+.tpl__btn{justify-self:start;font:600 7px/1 var(--ui);letter-spacing:.18em;text-transform:uppercase;padding:7px 10px;border:1px solid var(--i);color:var(--i);border-radius:var(--br)}
+.tpl__btn.is-solid{background:var(--i);color:var(--l)}
+.tpl__tiles{display:grid;grid-template-columns:1fr 1fr;gap:var(--s)}
+.tpl__tiles span{border-radius:var(--r);background:linear-gradient(160deg,var(--t),var(--a))}
+.tpl__meta{padding:12px 14px;display:grid;gap:4px}
+.tpl__meta b{font:500 19px/1.1 var(--disp)}
+.tpl__meta span{font-size:12.5px;color:var(--mute)}
+.tpl__sw{display:flex;gap:4px;margin-top:4px}.tpl__sw i{width:16px;height:16px;border-radius:50%;border:1px solid rgba(0,0,0,.1)}
+
+/* generator tekstów */
+.lblrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ai{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:2px 7px;font-size:11.5px;font-weight:600;color:var(--acc);line-height:1.5}
+.ai:hover{border-color:var(--acc)}
+.aibox{border:1px solid var(--sel);border-radius:9px;background:var(--panel);padding:10px;display:grid;gap:8px}
+.aibox__acts{display:flex;flex-wrap:wrap;gap:5px}
+.aibox__out{display:grid;gap:6px}
+.aibox__opt{text-align:left;border:1px solid var(--line);background:var(--field);border-radius:7px;padding:8px 10px;font-size:13px;line-height:1.4;white-space:pre-wrap}
+.aibox__opt:hover{border-color:var(--sel)}
+.aibox__st{font-size:12px;color:var(--mute)}
+.secai{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.cat{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:300px;overflow:auto;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.cat button{border:1px solid var(--line);background:var(--field);border-radius:7px;padding:4px;display:grid;gap:3px;text-align:left;font-size:10.5px;line-height:1.25}
+.cat button:hover{border-color:var(--sel)}
+.cat img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;display:block}
+.note{font-size:12px;color:var(--mute);background:var(--bg);border-radius:8px;padding:8px 10px;border:1px solid var(--line)}
+.note--warn{border-color:var(--sel)}
+
 .toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:9px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:calc(100% - 32px)}
 
 @media (max-width:900px){
@@ -156,8 +200,10 @@ button{cursor:pointer}
       <button class="btn hide-sm" data-dev="tablet" aria-pressed="false">Tablet</button>
       <button class="btn" data-dev="phone" aria-pressed="false">Telefon</button>
     </div>
+    <button class="btn btn--acc" id="tplBtn" aria-expanded="false" aria-controls="drawer">Szablony</button>
     <span class="sp"></span>
     <span class="status" id="status">Zapisano w przeglądarce</span>
+    <button class="btn" id="importBtn" title="Wczytaj obecną stronę z kodu źródłowego">Wczytaj stronę</button>
     <button class="btn" id="projBtn">Projekt</button>
     <button class="btn" id="codeBtn">Kod</button>
     <button class="btn btn--acc" id="zipBtn">Eksport do Sky-Shop</button>
@@ -169,7 +215,11 @@ button{cursor:pointer}
     </section>
   </div>
 </div>
-<input type="file" id="fileIn" accept="image/jpeg,image/png,image/webp,image/avif" hidden>
+<aside class="drawer" id="drawer" aria-label="Szablony" aria-hidden="true">
+  <div class="drawer__head"><h2>Szablony</h2><button class="btn" id="tplClose">Zamknij</button></div>
+  <div class="drawer__list" id="tplList"></div>
+</aside>
+<input type="file" id="fileIn"accept="image/jpeg,image/png,image/webp,image/avif" hidden>
 <input type="file" id="projIn" accept="application/json,.json" hidden>
 
 <script>
@@ -178,6 +228,15 @@ button{cursor:pointer}
    Dane domyślne: zdjęcia wstrzykiwane przez build-edytor.py
    ============================================================ */
 const DEFAULT_IMAGES = /*@@IMAGES@@*/{};
+/* Katalog z kopii Sky-Shop API (24.08.2026): id -> {name, price, cats, remote, desc}. Zdjęcia p{id} to wycinki z siatki produktów;
+   w eksporcie produktowe zdjęcia wskazują na oryginały w Sky-Shop (remote), więc nie trzeba ich wgrywać. */
+const CATALOG = /*@@CATALOG@@*/{};
+const SHOP = 'https://oakandoats.pl';
+const CATS = {
+  '37': ['Wszystkie produkty', '/WSZYSTKIE-PRODUKTY-c37'], '30': ['Gryzaki', '/GRYZAKI-c30'], '32': ['Zawieszki do smoczka', '/ZAWIESZKI-DO-SMOCZKA-c32'],
+  '36': ['Zestawy', '/ZESTAWY-c36'], '40': ['Personalizowane', '/PERSONALIZOWANE-c40'], '41': ['Breloki', '/BRELOKI-c41'] };
+const prodHref = id => `/${CATALOG[id].name.trim().replace(/\s+/g, '-')}-p${id}`;
+const prodPrice = id => (+CATALOG[id].price).toFixed(2).replace('.', ',') + ' zł';
 
 /* ============================================================
    Narzędzia
@@ -218,7 +277,18 @@ async function addImage(key, blob) {
   let w = 0, h = 0;
   try { const b = await createImageBitmap(blob); w = b.width; h = b.height; b.close(); }
   catch { await new Promise(r => { const i = new Image(); i.onload = () => { w = i.naturalWidth; h = i.naturalHeight; r(); }; i.onerror = r; i.src = url; }); }
-  IMGS.set(key, { blob, url, w, h, user: !(key in DEFAULT_IMAGES) });
+  IMGS.set(key, { blob, url, w, h, user: !(key in DEFAULT_IMAGES), remote: CATALOG[key.slice(1)] && key[0] === 'p' ? CATALOG[key.slice(1)].remote : '' });
+  return key;
+}
+/* zdjęcie, które już jest w Sky-Shop (np. z importu strony): w podglądzie ładowane z adresu, w eksporcie zostaje adres */
+function addRemote(url) {
+  let h = 0; for (const ch of url) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  const key = 'r' + (h >>> 0).toString(36);
+  if (!IMGS.has(key)) {
+    const rec = { blob: null, url, w: 0, h: 0, user: true, remote: url };
+    IMGS.set(key, rec);
+    const i = new Image(); i.onload = () => { rec.w = i.naturalWidth; rec.h = i.naturalHeight; }; i.src = url;
+  }
   return key;
 }
 const dataToBlob = async d => (await fetch(d)).blob();
@@ -243,11 +313,27 @@ const TITLE_HINT = 'Słowo w *gwiazdkach* będzie kursywą.';
 const tileText = (c, title, sub, more) =>
   `<span class="oo-tile__text"><span class="oo-tile__title">${c.t(title)}</span>${sub ? `<span class="oo-tile__sub">${c.t(sub)}</span>` : ''}${more ? `<span class="oo-tile__more">${c.e(more)}</span>` : ''}</span>`;
 const head = (c, d, link) => (d.eyebrow || d.title || link) ?
-  `<div class="oo-head"><div>${d.eyebrow ? `<span class="oo-eyebrow">${c.e(d.eyebrow)}</span>` : ''}${d.title ? `<h2 class="oo-h2">${c.t(d.title)}</h2>` : ''}</div>${link || ''}</div>` : '';
+  `<div class="oo-head"><div>${d.eyebrow ? `<span class="oo-eyebrow">${c.e(d.eyebrow)}</span>` : ''}${d.title ? `<h2 class="oo-h2">${c.t(d.title)}</h2>` : ''}${d.sub ? `<p class="oo-head__sub">${c.t(d.sub)}</p>` : ''}</div>${link || ''}</div>` : '';
 const HEAD_FIELDS = [
   { t: 'text', k: 'eyebrow', label: 'Nadtytuł' },
   { t: 'text', k: 'title', label: 'Tytuł sekcji', hint: TITLE_HINT },
+  { t: 'area', k: 'sub', label: 'Podtytuł (opcja)' },
 ];
+const ICONS = {
+  leaf: '<path d="M5 19c8 0 14-6 14-14C11 5 5 11 5 19Zm0 0 7-7"/>',
+  shield: '<path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/>',
+  gift: '<path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13"/><path d="M12 7c-2-3-6-3-6-1s3 1 6 1Zm0 0c2-3 6-3 6-1s-3 1-6 1Z"/>',
+  pin: '<path d="M12 21s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/>',
+  badge: '<circle cx="12" cy="10" r="6"/><path d="m9 10 2 2 4-4M8.5 15 7 21l5-2 5 2-1.5-6"/>',
+  heart: '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z"/>',
+  hand: '<path d="M7 11V6a1.5 1.5 0 0 1 3 0v4m0-5a1.5 1.5 0 0 1 3 0v5m0-4a1.5 1.5 0 0 1 3 0v6c0 4-2.5 7-6 7-2.5 0-4-1.5-5.5-4L5 13.5a1.5 1.5 0 0 1 2.5-1.6L9 14"/>',
+  truck: '<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
+  spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>',
+  letters: '<rect x="3" y="7" width="8" height="10" rx="1"/><rect x="13" y="7" width="8" height="10" rx="1"/><path d="M5.5 14l1.5-5 1.5 5M6 12.5h2M16 9v5h2.5"/>',
+};
+const ICON_OPTS = [['leaf', 'Liść'], ['shield', 'Tarcza'], ['gift', 'Prezent'], ['pin', 'Polska / miejsce'], ['badge', 'Certyfikat'], ['heart', 'Serce'], ['hand', 'Ręczna robota'], ['truck', 'Dostawa'], ['spark', 'Błysk'], ['letters', 'Litery / imię']];
+const svgIcon = k => `<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k] || ICONS.leaf}</svg>`;
+const CATALOG_FIELD = { t: 'catalog', label: 'Wypełnij z katalogu Sky-Shop' };
 
 const TYPES = {
   heroTiles: {
@@ -306,8 +392,9 @@ ${d.side.map((s, i) => `<a class="oo-tile oo-hero__side" href="${c.href(s.href)}
 
   heroSingle: {
     label: 'Hero jednym zdjęciem', kind: 'Pełny ekran', desc: 'Jedno zdjęcie na cały ekran, tekst po lewej, na środku lub po prawej, do dwóch przycisków.',
-    make: () => ({ img: I('', ''), eyebrow: 'Nowa kolekcja', title: 'Nagłówek *strony*', lead: 'Krótki opis kolekcji.', cta: 'Zobacz kolekcję', href: '/', cta2: '', href2: '', align: 'left', shade: 55, h: 100, hm: 88 }),
+    make: () => ({ img: I('', ''), eyebrow: 'Nowa kolekcja', title: 'Nagłówek *strony*', lead: 'Krótki opis kolekcji.', cta: 'Zobacz kolekcję', href: '/', cta2: '', href2: '', align: 'left', shade: 55, h: 100, hm: 88, layout: 'full' }),
     fields: [
+      { t: 'select', k: 'layout', label: 'Układ', opts: [['full', 'Zdjęcie na cały ekran, tekst na zdjęciu'], ['split', 'Pół na pół: tekst obok zdjęcia']] },
       { t: 'img', k: 'img', label: 'Zdjęcie', mobile: true },
       ...HEAD_FIELDS.slice(0, 1), { t: 'text', k: 'title', label: 'Nagłówek H1', hint: TITLE_HINT },
       { t: 'area', k: 'lead', label: 'Opis' },
@@ -326,8 +413,23 @@ ${d.side.map((s, i) => `<a class="oo-tile oo-hero__side" href="${c.href(s.href)}
 .oo-hs1 h1{font:500 clamp(2.6rem,5.4vw,5.6rem)/.98 var(--oo-serif);text-wrap:balance}
 .oo-hs1__lead{max-width:34em;opacity:.92}
 .oo-hs1__cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
-@keyframes oo-settle{from{transform:scale(1.07)}to{transform:scale(1)}}`,
+.oo-hs1--split{grid-template-columns:1fr 1.15fr;align-items:stretch;background:var(--oo-linen);color:var(--oo-ink)}
+.oo-hs1--split::after{display:none}
+.oo-hs1--split .oo-hs1__media{position:relative;overflow:hidden;order:2}
+.oo-hs1--split .oo-hs1__in{align-self:center;margin:0;padding:clamp(32px,6vw,110px)}
+.oo-hs1--split .oo-eyebrow{color:var(--oo-clay)}
+.oo-hs1--split .oo-hs1__lead{color:var(--oo-muted)}
+.oo .oo-hs1--split .oo-btn--solid{background:var(--oo-ink);color:var(--oo-linen);border-color:var(--oo-ink)}
+.oo .oo-hs1--split .oo-btn--ghost{color:var(--oo-ink);border-color:var(--oo-ink)}
+@keyframes oo-settle{from{transform:scale(1.07)}to{transform:scale(1)}}
+@media (max-width:760px){.oo-hs1--split{grid-template-columns:1fr;height:auto!important}.oo-hs1--split .oo-hs1__media{order:0;aspect-ratio:4/5}}`,
     render: (d, c, id) => {
+      if (d.layout === 'split') {
+        c.rule(`.oo-b${id}{height:calc(${d.h}svh - var(--oo-offset))}`);
+        return `<section class="oo-hs1 oo-hs1--split oo-b${id}"${c.edit(id)}><div class="oo-hs1__media">${c.img(d.img, '(max-width:760px) 100vw, 54vw', true)}</div>
+<div class="oo-hs1__in">${d.eyebrow ? `<span class="oo-eyebrow">${c.e(d.eyebrow)}</span>` : ''}<h1>${c.t(d.title)}</h1>${d.lead ? `<p class="oo-hs1__lead">${c.t(d.lead)}</p>` : ''}
+<div class="oo-hs1__cta">${d.cta ? `<a class="oo-btn oo-btn--solid" href="${c.href(d.href)}">${c.e(d.cta)}</a>` : ''}${d.cta2 ? `<a class="oo-btn oo-btn--ghost" href="${c.href(d.href2)}">${c.e(d.cta2)}</a>` : ''}</div></div></section>`;
+      }
       c.rule(`.oo-b${id}{height:calc(${d.h}svh - var(--oo-offset))}.oo-b${id}::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(${d.align === 'center' ? '180deg' : d.align === 'right' ? '270deg' : '90deg'},rgba(30,26,22,${(d.shade / 100).toFixed(2)}) 0%,rgba(30,26,22,${(d.shade / 250).toFixed(2)}) 55%,rgba(30,26,22,0) 100%)}`);
       c.ruleM(`.oo-b${id}{height:calc(${d.hm}svh - var(--oo-offset))}.oo-b${id}::after{background:linear-gradient(180deg,rgba(30,26,22,0) 30%,rgba(30,26,22,${(d.shade / 100).toFixed(2)}) 100%)}`);
       return `<section class="oo-hs1 oo-hs1--${d.align} oo-b${id}"${c.edit(id)}>${c.img(d.img, '100vw', true)}
@@ -614,22 +716,322 @@ ${d.cta ? `<a class="oo-btn oo-btn--dark" href="${c.href(d.href)}">${c.e(d.cta)}
 .oo-promo--center .oo-promo__code{justify-self:center}`,
     render: (d, c, id) => `<section class="oo-promo oo-promo--${d.align} oo-b${id}"${c.edit(id)}>${c.img(d.img, '100vw')}<div class="oo-promo__in">${d.eyebrow ? `<span class="oo-eyebrow">${c.e(d.eyebrow)}</span>` : ''}${d.title ? `<h2 class="oo-h2">${c.t(d.title)}</h2>` : ''}${d.text ? `<p>${c.t(d.text)}</p>` : ''}${d.code ? `<span class="oo-promo__code">${c.e(d.code)}</span>` : ''}${d.cta ? `<a class="oo-btn oo-btn--solid" href="${c.href(d.href)}">${c.e(d.cta)}</a>` : ''}</div></section>`
   },
+
+  text: {
+    label: 'Tekst', kind: 'Treść', desc: 'Nagłówek, akapit i przycisk na środku. Do krótkich zapowiedzi i opisów kolekcji.',
+    make: () => ({ eyebrow: 'Nadtytuł', title: 'Tytuł *sekcji*', text: 'Treść.', cta: '', href: '', bg: 'linen' }),
+    fields: [...HEAD_FIELDS.slice(0, 2), { t: 'area', k: 'text', label: 'Treść' },
+      { t: 'row', fields: [{ t: 'text', k: 'cta', label: 'Przycisk (opcja)' }, { t: 'text', k: 'href', label: 'Link' }] },
+      { t: 'select', k: 'bg', label: 'Tło', opts: [['linen', 'Jasne'], ['oat', 'Jak strona'], ['ink', 'Ciemne']] }],
+    css: `.oo-txt{padding:calc(var(--oo-sec) * .9) var(--oo-gutter);text-align:center;display:grid;justify-items:center;gap:18px}
+.oo-txt--linen{background:var(--oo-linen)}.oo-txt--ink{background:var(--oo-ink);color:var(--oo-linen)}
+.oo-txt .oo-eyebrow{color:var(--oo-clay)}
+.oo-txt p{max-width:40em;color:var(--oo-muted)}.oo-txt--ink p{color:inherit;opacity:.8}`,
+    render: (d, c, id) => `<section class="oo-txt oo-txt--${d.bg} oo-b${id}"${c.edit(id)}>${d.eyebrow ? `<span class="oo-eyebrow">${c.e(d.eyebrow)}</span>` : ''}${d.title ? `<h2 class="oo-h2">${c.t(d.title)}</h2>` : ''}${d.text ? `<p>${c.t(d.text)}</p>` : ''}${d.cta ? `<a class="oo-btn ${d.bg === 'ink' ? 'oo-btn--solid' : 'oo-btn--dark'}" href="${c.href(d.href)}">${c.e(d.cta)}</a>` : ''}</section>`
+  },
+
+  usp: {
+    label: 'Liczby i atuty', kind: 'Zaufanie', desc: 'Pas 3–5 krótkich atutów z dużą liczbą lub słowem, np. „500+ mam nam ufa”, „darmowa dostawa od 150 zł”.',
+    make: () => ({ tone: 'linen', items: [{ big: '100%', label: 'ręcznie' }, { big: 'PL', label: 'polska pracownia' }, { big: '24 h', label: 'wysyłka' }] }),
+    fields: [{ t: 'list', k: 'items', label: 'Atuty', min: 2, max: 5, title: it => `${it.big} ${it.label}`, add: () => ({ big: '1', label: 'atut' }), item: [
+      { t: 'row', fields: [{ t: 'text', k: 'big', label: 'Duży tekst' }, { t: 'text', k: 'label', label: 'Podpis' }] }] },
+      { t: 'select', k: 'tone', label: 'Tło', opts: [['linen', 'Jasne'], ['oat', 'Jak strona'], ['ink', 'Ciemne'], ['taupe', 'Taupe']] }],
+    css: `.oo-usp{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;padding-inline:var(--oo-gutter)}
+.oo-usp--linen{background:var(--oo-linen)}.oo-usp--ink{background:var(--oo-ink);color:var(--oo-linen)}.oo-usp--taupe{background:var(--oo-taupe);color:#fff}
+.oo-usp__i{display:grid;justify-items:center;text-align:center;gap:6px;padding:clamp(26px,3.4vw,46px) 12px}
+.oo-usp__i+.oo-usp__i{border-left:1px solid color-mix(in srgb,currentColor 16%,transparent)}
+.oo-usp__i b{font:var(--oo-head-weight) clamp(1.8rem,3vw,2.8rem)/1 var(--oo-serif);letter-spacing:var(--oo-head-track)}
+.oo-usp__i span{font:500 .7rem/1.4 var(--oo-sans);letter-spacing:.2em;text-transform:uppercase;opacity:.8}
+@media (max-width:760px){.oo-usp{grid-auto-flow:row;grid-template-columns:1fr 1fr}.oo-usp__i+.oo-usp__i{border-left:0}.oo-usp__i:nth-child(even){border-left:1px solid color-mix(in srgb,currentColor 16%,transparent)}.oo-usp__i:nth-child(n+3){border-top:1px solid color-mix(in srgb,currentColor 16%,transparent)}}`,
+    render: (d, c, id) => `<section class="oo-usp oo-usp--${d.tone} oo-b${id}" aria-label="Atuty"${c.edit(id)}>${d.items.map((it, i) => `<div class="oo-usp__i"${c.edit(id, 'items.' + i)}><b>${c.e(it.big)}</b><span>${c.e(it.label)}</span></div>`).join('')}</section>`
+  },
+
+  features: {
+    label: 'Dlaczego my (ikony)', kind: 'Zaufanie', desc: 'Siatka 3–6 wartości z ikonami: materiały, bezpieczeństwo, ręczna robota, pakowanie na prezent.',
+    make: () => ({ eyebrow: 'Nasze wartości', title: 'Dlaczego *my*', sub: '', items: [{ icon: 'leaf', title: 'Wartość', text: 'Opis.' }, { icon: 'hand', title: 'Wartość', text: 'Opis.' }, { icon: 'gift', title: 'Wartość', text: 'Opis.' }] }),
+    fields: [...HEAD_FIELDS, { t: 'list', k: 'items', label: 'Wartości', min: 2, max: 6, title: it => it.title, add: () => ({ icon: 'spark', title: 'Wartość', text: 'Opis.' }), item: [
+      { t: 'select', k: 'icon', label: 'Ikona', opts: ICON_OPTS }, { t: 'text', k: 'title', label: 'Tytuł' }, { t: 'area', k: 'text', label: 'Opis' }] }],
+    css: `.oo-feat{padding-block:var(--oo-sec);background:var(--oo-linen)}
+.oo-feat .oo-head{justify-content:center;text-align:center}
+.oo-feat__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:clamp(16px,2vw,28px);padding-inline:var(--oo-gutter);max-width:1320px;margin-inline:auto}
+.oo-feat__i{display:grid;gap:10px;align-content:start;padding:clamp(20px,2.4vw,32px);background:var(--oo-oat);border-radius:var(--oo-radius)}
+.oo-feat__i svg{color:var(--oo-clay)}
+.oo-feat__i h3{font:var(--oo-head-weight) 1.35rem/1.15 var(--oo-serif);letter-spacing:var(--oo-head-track);text-transform:var(--oo-head-transform)}
+.oo-feat__i p{font-size:.92rem;color:var(--oo-muted)}`,
+    render: (d, c, id) => `<section class="oo-feat oo-b${id}"${c.edit(id)}>${head(c, d)}<div class="oo-feat__grid">${d.items.map((it, i) => `<div class="oo-feat__i"${c.edit(id, 'items.' + i)}>${svgIcon(it.icon)}<h3>${c.e(it.title)}</h3><p>${c.t(it.text)}</p></div>`).join('')}</div></section>`
+  },
+
+  giftFinder: {
+    label: 'Doradca prezentowy', kind: 'Pomaga kupić', desc: 'Klientka odpowiada na dwa pytania (dla kogo, z imieniem czy bez) i od razu widzi pasujące produkty. Działa bez skryptów.',
+    make: () => ({ eyebrow: 'Doradca', title: 'Znajdź *idealny prezent*', sub: '', hint: 'Zaznacz obie odpowiedzi, a pokażę pasujące produkty.',
+      q1: { label: 'Dla kogo szukasz?', opts: [{ v: 'a', label: 'Opcja A' }, { v: 'b', label: 'Opcja B' }] },
+      q2: { label: 'Co jest ważne?', opts: [{ v: 'x', label: 'Opcja X' }, { v: 'y', label: 'Opcja Y' }] },
+      results: [{ w1: 'a', w2: '*', title: 'Propozycja', text: '', items: [] }] }),
+    fields: [
+      ...HEAD_FIELDS, { t: 'text', k: 'hint', label: 'Podpowiedź przed wyborem' },
+      { t: 'group', k: 'q1', label: 'Pytanie 1', fields: [{ t: 'text', k: 'label', label: 'Treść pytania' },
+        { t: 'list', k: 'opts', label: 'Odpowiedzi', min: 2, max: 6, title: it => it.label, add: () => ({ v: uid(), label: 'Nowa odpowiedź' }), item: [{ t: 'text', k: 'label', label: 'Odpowiedź' }] }] },
+      { t: 'group', k: 'q2', label: 'Pytanie 2', fields: [{ t: 'text', k: 'label', label: 'Treść pytania' },
+        { t: 'list', k: 'opts', label: 'Odpowiedzi', min: 2, max: 6, title: it => it.label, add: () => ({ v: uid(), label: 'Nowa odpowiedź' }), item: [{ t: 'text', k: 'label', label: 'Odpowiedź' }] }] },
+      { t: 'list', k: 'results', label: 'Wyniki (który wynik przy których odpowiedziach)', min: 1, max: 16, title: it => it.title,
+        add: () => ({ w1: '*', w2: '*', title: 'Nowy wynik', text: '', items: [] }), item: [
+          { t: 'row', fields: [
+            { t: 'pick', k: 'w1', label: 'Gdy pytanie 1 =', opts: r => [['*', 'dowolna'], ...r.q1.opts.map(o => [o.v, o.label])] },
+            { t: 'pick', k: 'w2', label: 'Gdy pytanie 2 =', opts: r => [['*', 'dowolna'], ...r.q2.opts.map(o => [o.v, o.label])] }] },
+          { t: 'text', k: 'title', label: 'Nagłówek wyniku', hint: TITLE_HINT }, { t: 'area', k: 'text', label: 'Opis wyniku' },
+          { t: 'list', k: 'items', label: 'Polecane produkty', min: 0, max: 4, title: it => it.name, add: () => ({ img: I('', ''), name: 'Produkt', price: '', href: '/' }), item: [
+            CATALOG_FIELD, { t: 'img', k: 'img', label: 'Zdjęcie', crop: false }, { t: 'text', k: 'name', label: 'Nazwa' },
+            { t: 'row', fields: [{ t: 'text', k: 'price', label: 'Cena' }, { t: 'text', k: 'href', label: 'Link' }] }] }] },
+    ],
+    css: `.oo-gf{padding-block:var(--oo-sec);background:var(--oo-linen)}
+.oo-gf .oo-head{justify-content:center;text-align:center}
+.oo-gf__box{max-width:1080px;margin-inline:auto;padding-inline:var(--oo-gutter);display:grid;gap:26px}
+.oo-gf__q{display:grid;gap:12px;justify-items:center;text-align:center}
+.oo-gf__ql{font:500 .74rem/1.3 var(--oo-sans);letter-spacing:.2em;text-transform:uppercase;color:var(--oo-muted)}
+.oo-gf__opts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.oo-gf__opts input{position:absolute;opacity:0;pointer-events:none}
+.oo-gf__opts label{cursor:pointer;padding:12px 20px;border:1px solid color-mix(in srgb,var(--oo-ink) 25%,transparent);border-radius:var(--oo-btn-radius);font-size:.95rem;transition:background .25s,color .25s,border-color .25s}
+.oo-gf__opts label:hover{border-color:var(--oo-ink)}
+.oo-gf__opts input:checked+label{background:var(--oo-ink);color:var(--oo-linen);border-color:var(--oo-ink)}
+.oo-gf__opts input:focus-visible+label{outline:2px solid var(--oo-clay);outline-offset:2px}
+.oo-gf__hint{text-align:center;color:var(--oo-muted);font-style:italic}
+.oo-gf__r{display:none;gap:18px;padding-top:24px;border-top:1px solid color-mix(in srgb,var(--oo-ink) 14%,transparent);animation:oo-fade .5s ease}
+.oo-gf__r h3{font:var(--oo-head-weight) clamp(1.5rem,2.4vw,2.2rem)/1.1 var(--oo-serif);text-align:center;text-transform:var(--oo-head-transform);letter-spacing:var(--oo-head-track)}
+.oo-gf__r>p{text-align:center;color:var(--oo-muted);max-width:40em;margin-inline:auto}
+.oo-gf__items{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,240px));justify-content:center;gap:16px}
+.oo-gf__items a{display:grid;gap:8px}
+.oo-gf__items img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--oo-radius);background:var(--oo-oat)}
+.oo-gf__items b{font:500 1.05rem/1.2 var(--oo-serif)}
+.oo-gf__items span{font-size:.88rem;color:var(--oo-muted);font-variant-numeric:tabular-nums}
+@keyframes oo-fade{from{opacity:.25}to{opacity:1}}`,
+    render: (d, c, id) => {
+      const n = `oo-gf${id}`, sel = `.oo-b${id}`;
+      const q = (k, qq) => `<div class="oo-gf__q"><p class="oo-gf__ql">${c.e(qq.label)}</p><div class="oo-gf__opts" role="radiogroup" aria-label="${c.e(qq.label)}">${qq.opts.map(o => `<input type="radio" name="${n}-${k}" id="${n}-${k}-${c.e(o.v)}"><label for="${n}-${k}-${c.e(o.v)}">${c.e(o.label)}</label>`).join('')}</div></div>`;
+      c.rule(`${sel}:has([name="${n}-1"]:checked):has([name="${n}-2"]:checked) .oo-gf__hint{display:none}`);
+      d.results.forEach((r, i) => {
+        const conds = (r.w1 !== '*' ? `:has(#${n}-1-${r.w1}:checked)` : `:has([name="${n}-1"]:checked)`) + (r.w2 !== '*' ? `:has(#${n}-2-${r.w2}:checked)` : `:has([name="${n}-2"]:checked)`);
+        c.rule(`${sel}${conds} .oo-gf__r${i}{display:grid}`);
+      });
+      return `<section class="oo-gf oo-b${id}"${c.edit(id)}>${head(c, d)}<div class="oo-gf__box">${q(1, d.q1)}${q(2, d.q2)}
+<p class="oo-gf__hint">${c.e(d.hint)}</p>
+${d.results.map((r, i) => `<div class="oo-gf__r oo-gf__r${i}" aria-live="polite"${c.edit(id, 'results.' + i)}><h3>${c.t(r.title)}</h3>${r.text ? `<p>${c.t(r.text)}</p>` : ''}<div class="oo-gf__items">${r.items.map(p => `<a href="${c.href(p.href)}">${c.img(p.img, '240px', false, 'plain')}<b>${c.e(p.name)}</b>${p.price ? `<span>${c.e(p.price)}</span>` : ''}</a>`).join('')}</div></div>`).join('')}
+</div></section>`;
+    }
+  },
+
+  nameBeads: {
+    label: 'Podgląd imienia na koralikach', kind: 'Pomaga kupić', desc: 'Klientka wpisuje imię i od razu widzi je ułożone z drewnianych kostek, w wybranej palecie kolorów. Zawiera mały skrypt.',
+    make: () => ({ eyebrow: 'Personalizacja', title: 'Zobacz *imię* na zawieszce', sub: 'Wpisz imię i wybierz kolory.', name: 'ZOSIA', max: 6,
+      label: 'Imię dziecka', note: '', cta: 'Zamów z tym imieniem', href: '/PERSONALIZOWANE-c40',
+      pal: [{ name: 'Beż', a: '#e7dccd', b: '#c9b49a' }, { name: 'Róż', a: '#e9c9c4', b: '#c99a92' }, { name: 'Błękit', a: '#c9d8e6', b: '#8fa9c2' }] }),
+    fields: [...HEAD_FIELDS,
+      { t: 'row', fields: [{ t: 'text', k: 'name', label: 'Imię na start' }, { t: 'text', k: 'label', label: 'Etykieta pola' }] },
+      { t: 'range', k: 'max', label: 'Najwięcej liter', min: 3, max: 12, unit: '' },
+      { t: 'area', k: 'note', label: 'Informacja pod polem (opcja)' },
+      { t: 'row', fields: [{ t: 'text', k: 'cta', label: 'Przycisk' }, { t: 'text', k: 'href', label: 'Link' }] },
+      { t: 'list', k: 'pal', label: 'Palety kolorów silikonu', min: 1, max: 6, title: it => it.name, add: () => ({ name: 'Nowa', a: '#e7dccd', b: '#c9b49a' }), item: [
+        { t: 'text', k: 'name', label: 'Nazwa' }, { t: 'row', fields: [{ t: 'color', k: 'a', label: 'Kolor 1' }, { t: 'color', k: 'b', label: 'Kolor 2' }] }] }],
+    css: `.oo-nb{padding-block:var(--oo-sec);background:var(--oo-oat)}
+.oo-nb__grid{display:grid;grid-template-columns:1.3fr 1fr;gap:clamp(24px,4vw,64px);align-items:center;padding-inline:var(--oo-gutter);max-width:1240px;margin-inline:auto}
+.oo-nb__stage{background:var(--oo-linen);border-radius:var(--oo-radius);min-height:260px;display:grid;place-items:center;padding:30px 12px;overflow:hidden}
+.oo-nb__line{display:flex;align-items:center;justify-content:center;flex-wrap:nowrap;gap:2px;max-width:100%;--a:#e7dccd;--b:#c9b49a}
+.oo-nb__clip{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e8cfa8,#b88d5c);box-shadow:inset 0 0 0 3px #c79e6c;margin-right:4px;flex:none}
+.oo-nb__s{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--a) 70%,#fff),var(--a));flex:none}
+.oo-nb__s.b{background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--b) 70%,#fff),var(--b))}
+.oo-nb__w{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ecd3ad,#c39a6a);flex:none}
+.oo-nb__l{width:clamp(30px,5vw,40px);height:clamp(30px,5vw,40px);border-radius:5px;background:linear-gradient(145deg,#e6c79c,#c99e6c);color:#5b3f27;display:grid;place-items:center;font:600 clamp(.9rem,1.6vw,1.15rem)/1 Georgia,serif;flex:none;box-shadow:inset 0 -2px 0 rgba(0,0,0,.08)}
+.oo-nb__form{display:grid;gap:14px}
+.oo-nb__form .oo-eyebrow{color:var(--oo-clay)}
+.oo-nb__form label{font:500 .72rem/1 var(--oo-sans);letter-spacing:.2em;text-transform:uppercase;color:var(--oo-muted)}
+.oo-nb__in{width:100%;border:1px solid color-mix(in srgb,var(--oo-ink) 25%,transparent);background:var(--oo-linen);border-radius:var(--oo-btn-radius);padding:14px 16px;font:500 1.3rem/1 var(--oo-sans);letter-spacing:.3em;text-transform:uppercase;color:var(--oo-ink)}
+.oo-nb__pal{display:flex;flex-wrap:wrap;gap:8px}
+.oo-nb__pal button{cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid color-mix(in srgb,var(--oo-ink) 22%,transparent);background:transparent;border-radius:var(--oo-btn-radius);font:inherit;font-size:.88rem;color:var(--oo-ink)}
+.oo-nb__pal button[aria-pressed="true"]{border-color:var(--oo-ink);box-shadow:inset 0 0 0 1px var(--oo-ink)}
+.oo-nb__pal i{width:14px;height:14px;border-radius:50%}
+.oo-nb__note{font-size:.88rem;color:var(--oo-muted)}
+.oo-nb__form .oo-btn{justify-self:start}
+@media (max-width:860px){.oo-nb__grid{grid-template-columns:1fr}.oo-nb__s{width:22px;height:22px}.oo-nb__w{width:16px;height:16px}.oo-nb__clip{width:32px;height:32px}}`,
+    render: (d, c, id) => {
+      const clean = s => String(s || '').toUpperCase().replace(/[^A-ZĄĆĘŁŃÓŚŹŻ]/g, '').slice(0, d.max);
+      const beads = nm => `<span class="oo-nb__clip"></span><span class="oo-nb__s"></span><span class="oo-nb__w"></span><span class="oo-nb__s b"></span>${[...clean(nm)].map(ch => `<span class="oo-nb__l">${ch}</span>`).join('')}<span class="oo-nb__s b"></span><span class="oo-nb__w"></span><span class="oo-nb__s"></span><span class="oo-nb__s b"></span>`;
+      const p0 = d.pal[0] || { a: '#e7dccd', b: '#c9b49a' };
+      c.rule(`.oo-b${id} .oo-nb__line{--a:${p0.a};--b:${p0.b}}`);
+      const sid = `oo-nb${id}`;
+      return `<section class="oo-nb oo-b${id}" id="${sid}"${c.edit(id)}><div class="oo-nb__grid"><div class="oo-nb__stage"><div class="oo-nb__line" aria-hidden="true">${beads(d.name)}</div></div>
+<div class="oo-nb__form">${d.eyebrow ? `<span class="oo-eyebrow">${c.e(d.eyebrow)}</span>` : ''}${d.title ? `<h2 class="oo-h2">${c.t(d.title)}</h2>` : ''}${d.sub ? `<p class="oo-nb__note">${c.t(d.sub)}</p>` : ''}
+<label for="${sid}-in">${c.e(d.label)}</label><input class="oo-nb__in" id="${sid}-in" maxlength="${d.max}" value="${c.e(clean(d.name))}" autocomplete="off" spellcheck="false">
+<div class="oo-nb__pal">${d.pal.map((p, i) => `<button type="button" data-a="${c.e(p.a)}" data-b="${c.e(p.b)}" aria-pressed="${i === 0}"><i style="background:${c.e(p.a)}"></i>${c.e(p.name)}</button>`).join('')}</div>
+${d.note ? `<p class="oo-nb__note">${c.t(d.note)}</p>` : ''}${d.cta ? `<a class="oo-btn oo-btn--dark" href="${c.href(d.href)}">${c.e(d.cta)}</a>` : ''}</div></div>
+<script>(function(){var r=document.getElementById(${JSON.stringify(sid)});if(!r)return;var i=r.querySelector('.oo-nb__in'),l=r.querySelector('.oo-nb__line'),m=${+d.max};
+function c(s){return (s||'').toUpperCase().replace(/[^A-ZĄĆĘŁŃÓŚŹŻ]/g,'').slice(0,m)}
+function b(n){var h='<span class="oo-nb__clip"></span><span class="oo-nb__s"></span><span class="oo-nb__w"></span><span class="oo-nb__s b"></span>';c(n).split('').forEach(function(x){h+='<span class="oo-nb__l">'+x+'</span>'});return h+'<span class="oo-nb__s b"></span><span class="oo-nb__w"></span><span class="oo-nb__s"></span><span class="oo-nb__s b"></span>'}
+i.addEventListener('input',function(){var v=c(i.value);if(v!==i.value)i.value=v;l.innerHTML=b(v)});
+r.querySelectorAll('.oo-nb__pal button').forEach(function(t){t.addEventListener('click',function(){l.style.setProperty('--a',t.dataset.a);l.style.setProperty('--b',t.dataset.b);r.querySelectorAll('.oo-nb__pal button').forEach(function(x){x.setAttribute('aria-pressed',x===t)})})})})();<\/script></section>`;
+    }
+  },
+
+  stories: {
+    label: 'Historie (stories)', kind: 'Interaktywny', desc: 'Okrągłe miniatury jak na Instagramie. Kliknięcie otwiera pełnoekranową historię z tekstem i przyciskiem. Działa bez skryptów.',
+    make: () => ({ items: [{ img: I('', ''), label: 'Nowości', title: 'Nowości', text: '', cta: 'Zobacz', href: '/' }, { img: I('', ''), label: 'Na prezent', title: 'Na prezent', text: '', cta: 'Zobacz', href: '/' }] }),
+    fields: [{ t: 'list', k: 'items', label: 'Historie', min: 1, max: 10, title: it => it.label, add: () => ({ img: I('', ''), label: 'Nowa', title: 'Tytuł', text: '', cta: 'Zobacz', href: '/' }), item: [
+      { t: 'img', k: 'img', label: 'Zdjęcie (pionowe najlepiej)', mobile: false }, { t: 'text', k: 'label', label: 'Podpis pod kółkiem' },
+      { t: 'text', k: 'title', label: 'Tytuł historii', hint: TITLE_HINT }, { t: 'area', k: 'text', label: 'Tekst historii' },
+      { t: 'row', fields: [{ t: 'text', k: 'cta', label: 'Przycisk' }, { t: 'text', k: 'href', label: 'Link' }] }] }],
+    css: `.oo-st{padding-block:26px;overflow-x:auto;scrollbar-width:none;background:var(--oo-oat)}
+.oo-st__row{display:flex;gap:clamp(14px,2vw,26px);padding-inline:var(--oo-gutter);width:max-content;margin-inline:auto}
+.oo-st__b{display:grid;justify-items:center;gap:8px;width:86px;text-align:center;font:500 .72rem/1.25 var(--oo-sans);letter-spacing:.06em}
+.oo-st__ring{width:78px;height:78px;border-radius:50%;padding:3px;background:conic-gradient(from 200deg,var(--oo-clay),var(--oo-taupe),var(--oo-clay))}
+.oo-st__ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--oo-oat)}
+.oo-st__v{position:fixed;inset:0;z-index:2147483000;display:none;place-items:center;background:rgba(18,14,11,.9);padding:16px}
+.oo-st__v:target{display:grid}
+.oo-st__card{position:relative;width:min(420px,100%);height:min(746px,calc(100svh - 32px));overflow:hidden;border-radius:16px;background:#111;color:#fff}
+.oo-st__card .oo-fill{animation:oo-kb 7s ease-out both}
+.oo-st__card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,0) 22%,rgba(0,0,0,0) 50%,rgba(0,0,0,.72))}
+.oo-st__bar{position:absolute;z-index:3;top:12px;left:12px;right:12px;height:3px;border-radius:2px;background:rgba(255,255,255,.3);overflow:hidden}
+.oo-st__bar i{display:block;height:100%;background:#fff;animation:oo-bar 7s linear both}
+.oo-st__x{position:absolute;z-index:4;top:22px;right:14px;width:36px;height:36px;display:grid;place-items:center;font-size:26px;line-height:1;color:#fff}
+.oo-st__nav{position:absolute;z-index:3;top:0;bottom:30%;width:36%}.oo-st__nav--p{left:0}.oo-st__nav--n{right:0}
+.oo-st__txt{position:absolute;z-index:3;left:0;right:0;bottom:0;padding:22px;display:grid;gap:10px}
+.oo-st__txt h3{font:var(--oo-head-weight) 1.9rem/1.05 var(--oo-serif);text-transform:var(--oo-head-transform);letter-spacing:var(--oo-head-track)}
+.oo-st__txt p{opacity:.88;font-size:.95rem}
+.oo-st__txt .oo-btn{justify-self:start}
+@keyframes oo-bar{from{width:0}to{width:100%}}@keyframes oo-kb{from{transform:scale(1.08)}to{transform:scale(1)}}`,
+    render: (d, c, id) => {
+      const n = `oo-s${id}`;
+      return `<section class="oo-st oo-b${id}" id="${n}" aria-label="Historie"${c.edit(id)}><div class="oo-st__row">${d.items.map((s, i) => `<a class="oo-st__b" href="#${n}-${i}"${c.edit(id, 'items.' + i)}><span class="oo-st__ring">${c.img(s.img, '80px', false, 'plain')}</span>${c.e(s.label)}</a>`).join('')}</div>
+${d.items.map((s, i) => `<div class="oo-st__v" id="${n}-${i}" role="dialog" aria-label="${c.e(s.label)}"><div class="oo-st__card">${c.img(s.img, '420px')}<div class="oo-st__bar"><i></i></div><a class="oo-st__x" href="#${n}" aria-label="Zamknij">×</a>${i > 0 ? `<a class="oo-st__nav oo-st__nav--p" href="#${n}-${i - 1}" aria-label="Poprzednia"></a>` : ''}${i < d.items.length - 1 ? `<a class="oo-st__nav oo-st__nav--n" href="#${n}-${i + 1}" aria-label="Następna"></a>` : ''}<div class="oo-st__txt">${s.title ? `<h3>${c.t(s.title)}</h3>` : ''}${s.text ? `<p>${c.t(s.text)}</p>` : ''}${s.cta ? `<a class="oo-btn oo-btn--solid" href="${c.href(s.href)}">${c.e(s.cta)}</a>` : ''}</div></div></div>`).join('')}</section>`;
+    }
+  },
 };
+/* dodaj do kart produktów i punktów wybór z katalogu */
+TYPES.products.fields.find(f => f.k === 'items').item.unshift(CATALOG_FIELD);
+TYPES.hotspots.fields.find(f => f.k === 'points').item.unshift(CATALOG_FIELD);
 
 /* ============================================================
    Strona startowa: obecny projekt Oak&Oats
    ============================================================ */
-const FONTS_D = ['Cormorant Garamond', 'Playfair Display', 'EB Garamond', 'Lora', 'Fraunces'];
-const FONTS_B = ['Jost', 'Montserrat', 'Lato', 'Karla', 'Nunito Sans'];
-function defaultState() {
+const FONTS_D = ['Cormorant Garamond', 'Playfair Display', 'Bodoni Moda', 'EB Garamond', 'Lora', 'Fraunces', 'DM Serif Display', 'Cinzel', 'Italiana', 'Marcellus'];
+const FONTS_B = ['Jost', 'Montserrat', 'Lato', 'Karla', 'Nunito Sans', 'Work Sans', 'DM Sans', 'Manrope', 'Raleway', 'EB Garamond'];
+const FONT_SPEC = { 'Cormorant Garamond': 'ital,wght@0,500;0,600;1,400;1,500', 'Playfair Display': 'ital,wght@0,400;0,500;1,400;1,500', 'Bodoni Moda': 'ital,wght@0,400;0,500;1,400;1,500',
+  'EB Garamond': 'ital,wght@0,400;0,500;1,400;1,500', 'Lora': 'ital,wght@0,400;0,500;1,400;1,500', 'Fraunces': 'ital,wght@0,400;0,500;1,400;1,500', 'DM Serif Display': 'ital@0;1',
+  'Cinzel': 'wght@400;500;600', 'Italiana': '', 'Marcellus': '', 'Jost': 'wght@400;500', 'Montserrat': 'wght@400;500', 'Lato': 'wght@400;700', 'Karla': 'wght@400;500',
+  'Nunito Sans': 'wght@400;600', 'Work Sans': 'wght@400;500', 'DM Sans': 'wght@400;500', 'Manrope': 'wght@400;500', 'Raleway': 'wght@400;500' };
+const THEME_KEYS = ['fontD', 'fontB', 'colors', 'radius', 'btnRadius', 'btn', 'cap', 'headUpper', 'headTrack', 'headWeight', 'seam', 'space', 'overlay'];
+
+/* 10 szablonów. Każdy zmienia wygląd (kolory, fonty, przyciski, zaokrąglenia, podpisy kafli, rytm) i układ hero.
+   Treść, zdjęcia i linki zostają. */
+const TEMPLATES = [
+  { id: 'current', name: 'Oak&Oats — obecny', desc: 'Wygląd obecnej strony: zdjęcie na cały ekran, kursywa Playfair, białe przyciski, taupe z menu.',
+    hero: 'full', align: 'center', catsMobile: 'grid',
+    s: { fontD: 'Playfair Display', fontB: 'Montserrat', radius: 0, btnRadius: 0, btn: 'solid', cap: 'overlay', headUpper: false, headTrack: 0, headWeight: 400, seam: 6, space: 1, overlay: .6,
+      colors: { oat: '#faf8f5', linen: '#f3eee8', ink: '#2b2622', muted: '#6f655c', taupe: '#a8998a', clay: '#a08d7c' } } },
+  { id: 'atelier', name: 'Atelier Pastel', desc: 'Pudrowy róż i dużo powietrza, jak butik z biżuterią. Hero pół na pół, podpisy pod zdjęciami, przyciski z obrysem.',
+    hero: 'split', catsMobile: 'swipe',
+    s: { fontD: 'Cormorant Garamond', fontB: 'Montserrat', radius: 0, btnRadius: 0, btn: 'outline', cap: 'below', headUpper: false, headTrack: 0, headWeight: 500, seam: 14, space: 1.2, overlay: .5,
+      colors: { oat: '#fbf6f3', linen: '#f3e6e1', ink: '#4a3d3a', muted: '#86746f', taupe: '#d9bfb7', clay: '#b98b82' } } },
+  { id: 'luxury', name: 'Quiet Luxury', desc: 'Kość słoniowa, espresso i mosiądz. Wysoki kontrast liter Bodoni, dużo światła, zero zaokrągleń.',
+    hero: 'full', align: 'left', catsMobile: 'swipe',
+    s: { fontD: 'Bodoni Moda', fontB: 'Jost', radius: 0, btnRadius: 0, btn: 'outline', cap: 'below', headUpper: false, headTrack: -.01, headWeight: 400, seam: 0, space: 1.35, overlay: .55,
+      colors: { oat: '#f6f2ec', linen: '#efe8de', ink: '#1f1b17', muted: '#766c61', taupe: '#b9a78f', clay: '#9a7b4f' } } },
+  { id: 'nordic', name: 'Nordic Linen', desc: 'Skandynawski len i szałwia. Jeden krój bez szeryfów, kafle z fugą, spokojna siatka.',
+    hero: 'tiles', catsMobile: 'grid',
+    s: { fontD: 'Jost', fontB: 'Jost', radius: 2, btnRadius: 2, btn: 'solid', cap: 'overlay', headUpper: false, headTrack: -.02, headWeight: 400, seam: 8, space: 1, overlay: .55,
+      colors: { oat: '#f2f0ec', linen: '#e9e6e0', ink: '#33302c', muted: '#75706a', taupe: '#a9a59c', clay: '#7f9184' } } },
+  { id: 'editorial', name: 'Editorial', desc: 'Jak okładka magazynu: duże wersaliki, ciepły grafit, ostre krawędzie i podpisy pod zdjęciami.',
+    hero: 'full', align: 'left', catsMobile: 'stack',
+    s: { fontD: 'Playfair Display', fontB: 'Work Sans', radius: 0, btnRadius: 0, btn: 'solid', cap: 'below', headUpper: true, headTrack: .02, headWeight: 400, seam: 2, space: 1.1, overlay: .65,
+      colors: { oat: '#f4f1ec', linen: '#ebe6df', ink: '#26221f', muted: '#6d655d', taupe: '#8c8178', clay: '#8a6a52' } } },
+  { id: 'terracotta', name: 'Terracotta Sun', desc: 'Ciepła glina i piasek. Miękkie zaokrąglenia, przyciski-pastylki, Fraunces z charakterem.',
+    hero: 'split', catsMobile: 'swipe',
+    s: { fontD: 'Fraunces', fontB: 'Karla', radius: 14, btnRadius: 999, btn: 'pill', cap: 'below', headUpper: false, headTrack: -.01, headWeight: 400, seam: 12, space: 1.1, overlay: .55,
+      colors: { oat: '#f4ebe1', linen: '#ecdccb', ink: '#3b2a22', muted: '#7d6658', taupe: '#cba68b', clay: '#b4643e' } } },
+  { id: 'sage', name: 'Sage Botanica', desc: 'Przygaszona szałwia i krem. Lora, zaokrąglone kafle, naturalny, ogrodowy nastrój.',
+    hero: 'tiles', catsMobile: 'grid',
+    s: { fontD: 'Lora', fontB: 'Nunito Sans', radius: 10, btnRadius: 999, btn: 'pill', cap: 'overlay', headUpper: false, headTrack: 0, headWeight: 500, seam: 10, space: 1.05, overlay: .55,
+      colors: { oat: '#eef0ea', linen: '#e3e7dd', ink: '#2f352f', muted: '#6b736a', taupe: '#a3ad9c', clay: '#6f8566' } } },
+  { id: 'gallery', name: 'Gallery White', desc: 'Białe ściany galerii. Zdjęcia grają główną rolę, cienkie fugi, EB Garamond i proste obrysy.',
+    hero: 'full', align: 'center', catsMobile: 'swipe',
+    s: { fontD: 'EB Garamond', fontB: 'Montserrat', radius: 0, btnRadius: 0, btn: 'outline', cap: 'below', headUpper: false, headTrack: 0, headWeight: 400, seam: 2, space: 1.25, overlay: .5,
+      colors: { oat: '#ffffff', linen: '#f5f4f2', ink: '#1d1d1d', muted: '#6e6e6e', taupe: '#b5aca2', clay: '#9c8b78' } } },
+  { id: 'boutique', name: 'Soft Boutique', desc: 'Słodki, ale dojrzały butik. Duże zaokrąglenia, DM Serif, pudrowe akcenty i pastylkowe przyciski.',
+    hero: 'split', catsMobile: 'swipe',
+    s: { fontD: 'DM Serif Display', fontB: 'DM Sans', radius: 22, btnRadius: 999, btn: 'pill', cap: 'below', headUpper: false, headTrack: -.01, headWeight: 400, seam: 14, space: 1.1, overlay: .5,
+      colors: { oat: '#f7f1ea', linen: '#efe3d8', ink: '#4b3b33', muted: '#85726a', taupe: '#d8c0b3', clay: '#c98f86' } } },
+  { id: 'heritage', name: 'Heritage Paper', desc: 'Papier czerpany i rzemiosło. Wersaliki Cinzel, ramki, szersze fugi, klasyczna elegancja.',
+    hero: 'tiles', catsMobile: 'grid',
+    s: { fontD: 'Cinzel', fontB: 'EB Garamond', radius: 0, btnRadius: 0, btn: 'outline', cap: 'overlay', headUpper: true, headTrack: .06, headWeight: 400, seam: 12, space: 1.15, overlay: .6,
+      colors: { oat: '#efe7da', linen: '#e6dbc9', ink: '#3a3128', muted: '#75685a', taupe: '#b29f86', clay: '#8a6d4b' } } },
+];
+
+function baseSettings(t = 'current') {
+  const T = TEMPLATES.find(x => x.id === t) || TEMPLATES[0];
+  return { prefix: '/userdata/public/assets/oo-hero/', offD: 150, offM: 110, mock: true, template: T.id, ...clone(T.s) };
+}
+
+/* ---------- obecna strona oakandoats.pl (zrzut strony głównej, kody z panelu, katalog Sky-Shop) ---------- */
+function currentState() {
+  const b = (type, data, hidden = false) => ({ id: uid(), type, hidden, data });
+  const P = id => I('p' + id, CATALOG[id].name);
+  const card = id => ({ img: P(id), name: CATALOG[id].name, price: prodPrice(id), badge: '', href: prodHref(id) });
+  const gp = id => ({ img: P(id), name: CATALOG[id].name, price: prodPrice(id), href: prodHref(id) });
+  return {
+    v: 3, start: 'current',
+    settings: baseSettings('current'),
+    blocks: [
+      b('marquee', { items: [{ t: 'Silikon LFGB – bezpieczny dla niemowląt' }, { t: 'Drewno bukowe – 100% naturalne' }, { t: 'Darmowa dostawa od 150 zł' }, { t: 'Ręcznie robione w Polsce' }], speed: 40, tone: 'taupe' }),
+      b('heroSingle', { layout: 'full', img: I('13-kat-dziecko', 'Zawieszka do smoczka i gryzak Oak&Oats na lnianym woreczku', [50, 45]),
+        eyebrow: 'Polskie rękodzieło dla maluszków', title: '*Oak & Oats*',
+        lead: 'Każdy gryzak i zawieszka powstaje ręcznie — z certyfikowanego silikonu LFGB i naturalnego drewna bukowego.',
+        cta: 'Odkryj kolekcję', href: CATS['37'][1], cta2: '', href2: '', align: 'center', shade: 55, h: 100, hm: 88 }),
+      b('usp', { tone: 'linen', items: [{ big: '500+', label: 'mam nam ufa' }, { big: '100%', label: 'handmade' }, { big: 'PL', label: 'ręcznie w Polsce' }, { big: '150 zł', label: 'darmowa dostawa od' }] }),
+      b('stories', { items: [
+        { img: I('03-hero-imienne', 'Brelok z imieniem ZOSIA'), label: 'Z imieniem', title: 'Imię, które *nie zgubi smoczka*', text: 'Litery układamy pod Twoje zamówienie.', cta: 'Personalizowane', href: CATS['40'][1] },
+        { img: I('13-kat-dziecko', 'Zestaw gryzak i zawieszka'), label: 'Zestawy', title: 'Gotowe *na prezent*', text: 'Gryzak i zawieszka w jednej palecie.', cta: 'Zestawy', href: CATS['36'][1] },
+        { img: I('11-kat-mama', 'Wristlet MAMA'), label: 'Dla mamy', title: 'Breloki *MAMA*', text: 'Klucze zawsze pod ręką.', cta: 'Breloki', href: CATS['41'][1] },
+        { img: I('34-galeria-kwiaty', 'Kwiatowe zawieszki do smoczka'), label: 'Zawieszki', title: 'Kwiaty *z silikonu*', text: '', cta: 'Zawieszki', href: CATS['32'][1] }] }),
+      b('cats', { eyebrow: 'Kategorie', title: 'Znajdź coś *wyjątkowego* dla swojego maluszka', sub: '', h: 72, mobile: 'grid', items: [
+        { img: P('174'), title: 'Gryzaki', sub: 'Grzechotki sensoryczne z bukowymi pierścieniami', more: 'Zobacz', href: CATS['30'][1] },
+        { img: P('168'), title: 'Zawieszki *do smoczka*', sub: 'Klips w drewnianej oprawie z grawerem', more: 'Zobacz', href: CATS['32'][1] },
+        { img: P('172'), title: 'Zestawy', sub: 'Gryzak i zawieszka w jednej palecie', more: 'Zobacz', href: CATS['36'][1] },
+        { img: P('175'), title: 'Personalizowane', sub: 'Imię dziecka z bukowych literek', more: 'Zobacz', href: CATS['40'][1] },
+        { img: P('181'), title: 'Breloki', sub: 'Dla mamy, do kluczy i torebki', more: 'Zobacz', href: CATS['41'][1] }] }),
+      b('products', { eyebrow: 'Polskie rękodzieło', title: 'Najchętniej kupowane *przez mamy*', sub: 'Każdy produkt ręcznie wykonany — z podwójnym zabezpieczeniem koralika.', linkText: 'Wszystkie produkty', linkHref: CATS['37'][1],
+        items: ['166', '172', '175', '174', '168', '181', '137', '131'].map(card) }),
+      b('giftFinder', { eyebrow: 'Doradca prezentowy', title: 'Nie wiesz, *co wybrać?*', sub: 'Dwa pytania i wiesz, który produkt pasuje.', hint: 'Zaznacz obie odpowiedzi, a pokażę pasujące produkty.',
+        q1: { label: 'Dla kogo szukasz?', opts: [{ v: 'nb', label: 'Dla noworodka' }, { v: 'zab', label: 'Na ząbkowanie' }, { v: 'shower', label: 'Na baby shower' }, { v: 'mama', label: 'Dla mamy' }] },
+        q2: { label: 'Z imieniem dziecka?', opts: [{ v: 'imie', label: 'Tak, z imieniem' }, { v: 'bez', label: 'Bez personalizacji' }] },
+        results: [
+          { w1: 'nb', w2: 'imie', title: 'Zawieszka *z imieniem*', text: 'Imię z bukowych literek — smoczek już się nie zgubi.', items: ['175', '177', '176'].map(gp) },
+          { w1: 'nb', w2: 'bez', title: 'Klasyczna *zawieszka*', text: 'Drewno bukowe i matowy silikon w spokojnych kolorach.', items: ['137', '158', '145'].map(gp) },
+          { w1: 'zab', w2: 'imie', title: 'Grzechotka *z imieniem*', text: 'Bukowe pierścienie z grawerem i silikonowe koraliki.', items: ['174', '173'].map(gp) },
+          { w1: 'zab', w2: 'bez', title: 'Gryzak *sensoryczny*', text: 'Miękkie koraliki i drewniane kółko do chwytania.', items: ['131', '127'].map(gp) },
+          { w1: 'shower', w2: 'imie', title: 'Zestaw *z imieniem*', text: 'Gryzak i zawieszka w jednej palecie, oba z imieniem.', items: ['172', '171', '170'].map(gp) },
+          { w1: 'shower', w2: 'bez', title: 'Zestaw *na prezent*', text: 'Gotowy komplet: gryzak i zawieszka.', items: ['166', '165'].map(gp) },
+          { w1: 'mama', w2: '*', title: 'Brelok *dla mamy*', text: 'Do kluczy i torebki — z literami MAMA.', items: ['181', '180', '178'].map(gp) }] }),
+      b('features', { eyebrow: 'Nasze wartości', title: 'Dlaczego mamy wybierają *Oak&Oats?*', sub: 'Bo każdy detal ma znaczenie — szczególnie gdy chodzi o Twoje dziecko.', items: [
+        { icon: 'leaf', title: 'Naturalne drewno bukowe', text: 'Drewno bukowe — piękne, trwałe, w 100% naturalne, bez użycia farby.' },
+        { icon: 'shield', title: 'Podwójne zabezpieczenie', text: 'Każdy koralik nawleczony na wytrzymały sznurek i zabezpieczony podwójnie.' },
+        { icon: 'gift', title: 'Gotowe na prezent', text: 'Piękne opakowanie — idealny prezent na baby shower i urodziny.' },
+        { icon: 'pin', title: 'Polska robota', text: 'Każdy produkt powstaje w Polsce, przy stole rzemieślniczym, nie w fabryce.' },
+        { icon: 'badge', title: 'Certyfikat LFGB', text: 'Silikon klasy spożywczej, bez BPA, ołowiu, ftalanów i kadmu.' }] }),
+      b('nameBeads', { eyebrow: 'Personalizacja', title: 'Zobacz *imię* na zawieszce', sub: 'Wpisz imię dziecka i wybierz kolory — tak ułożymy literki.', name: 'ZOSIA', max: 6, label: 'Imię dziecka',
+        note: 'Do 6 znaków. Długość zawieszki dopasowujemy do liczby liter.', cta: 'Zobacz personalizowane', href: CATS['40'][1],
+        pal: [{ name: 'Beż', a: '#e7dccd', b: '#c9b49a' }, { name: 'Róż', a: '#ead0cb', b: '#c99a92' }, { name: 'Błękit', a: '#cfdbe6', b: '#8fa9c2' }, { name: 'Szałwia', a: '#d6dccf', b: '#9aa68f' }] }),
+      b('promo', { img: I('13-kat-dziecko', 'Zestaw prezentowy Oak&Oats', [50, 50]), eyebrow: 'Prezent, który zachwyca', title: 'Szukasz prezentu *dla młodej mamy?*',
+        text: 'Nasze produkty przychodzą w pięknym pudełku i od razu robią wrażenie. Każdy komplet to upominek z duszą — ręcznie robiony w Polsce.', code: '', cta: 'Zobacz zestawy prezentowe', href: CATS['36'][1], align: 'left' }),
+      b('quotes', { eyebrow: 'Co mówią mamy', title: 'Opinie *naszych klientek*', items: [{ quote: 'Wklej tu prawdziwą opinię klientki (np. z Google lub Instagrama).', name: 'Imię', product: 'Produkt' }] }, true),
+      b('promo', { img: I('31-galeria-mama-dlon', 'Brelok MAMA w dłoni', [50, 50]), eyebrow: 'Dla nowych klientek', title: 'Prezent dla Ciebie, *mamo!*', text: 'Zapisz się do newslettera i odbierz kod rabatowy na pierwsze zamówienie.', code: '', cta: 'Zapisz się', href: '/', align: 'center' }, true),
+    ]
+  };
+}
+
+/* ---------- prototyp z poprzedniej wersji (kafle, kierunek „kobieta + lifestyle”) ---------- */
+function protoState() {
   const b = (type, data, hidden = false) => ({ id: uid(), type, hidden, data });
   return {
-    v: 2,
-    settings: {
-      prefix: '/userdata/public/assets/oo-hero/', offD: 150, offM: 110, seam: 6, mock: true,
-      fontD: 'Cormorant Garamond', fontB: 'Jost',
-      colors: { oat: '#efe8dd', linen: '#f8f4ee', ink: '#2e2924', muted: '#6c6258', taupe: '#9c8b78', clay: '#b4877b' }
-    },
+    v: 3, start: 'proto',
+    settings: { ...baseSettings('current'), template: '', fontD: 'Cormorant Garamond', fontB: 'Jost', headWeight: 500, seam: 6, overlay: .62,
+      colors: { oat: '#efe8dd', linen: '#f8f4ee', ink: '#2e2924', muted: '#6c6258', taupe: '#9c8b78', clay: '#b4877b' } },
     blocks: [
       b('heroTiles', {
         h: 100, hm: 86,
@@ -684,11 +1086,15 @@ function defaultState() {
    Generowanie kodu (wspólne dla podglądu i eksportu)
    ============================================================ */
 function baseCss(s) {
-  const C = s.colors;
+  const C = s.colors, th = { radius: 0, btnRadius: 0, btn: 'solid', cap: 'overlay', headUpper: false, headTrack: 0, headWeight: 500, space: 1, overlay: .62, ...s };
+  const btnR = th.btn === 'pill' ? 999 : th.btnRadius;
+  const outline = th.btn === 'outline';
   return `html,body{overflow-x:clip}
 .oo{--oo-oat:${C.oat};--oo-linen:${C.linen};--oo-ink:${C.ink};--oo-muted:${C.muted};--oo-taupe:${C.taupe};--oo-clay:${C.clay};
 --oo-serif:"${s.fontD}",Georgia,"Times New Roman",serif;--oo-sans:"${s.fontB}","Avenir Next",system-ui,sans-serif;
---oo-offset:${s.offD}px;--oo-seam:${s.seam}px;--oo-gutter:max(16px,4vw);
+--oo-offset:${s.offD}px;--oo-seam:${s.seam}px;--oo-gutter:max(16px,4vw);--oo-radius:${th.radius}px;--oo-btn-radius:${btnR}px;
+--oo-head-weight:${th.headWeight};--oo-head-transform:${th.headUpper ? 'uppercase' : 'none'};--oo-head-track:${th.headTrack}em;
+--oo-sec:calc(clamp(56px,7vw,104px) * ${th.space});--oo-shade:${th.overlay};
 position:relative;left:50%;width:100vw;margin-left:-50vw;background:var(--oo-oat);color:var(--oo-ink);font-family:var(--oo-sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
 .oo *,.oo *::before,.oo *::after{box-sizing:border-box}
 .oo img{display:block;max-width:100%}
@@ -696,27 +1102,38 @@ position:relative;left:50%;width:100vw;margin-left:-50vw;background:var(--oo-oat
 .oo h1,.oo h2,.oo h3,.oo p,.oo figure,.oo blockquote,.oo ul{margin:0}
 .oo>*+*{margin-top:var(--oo-seam)}
 .oo-eyebrow{display:block;font:500 .72rem/1.3 var(--oo-sans);letter-spacing:.24em;text-transform:uppercase}
-.oo-h2{font:500 clamp(2rem,3.4vw,3.2rem)/1.04 var(--oo-serif);text-wrap:balance}
+.oo-h2,.oo h1{font-weight:var(--oo-head-weight)!important;text-transform:var(--oo-head-transform);letter-spacing:var(--oo-head-track)!important}
+.oo-h2{font:var(--oo-head-weight) clamp(2rem,3.4vw,3.2rem)/1.06 var(--oo-serif);text-wrap:balance}
 .oo em{font-style:italic;font-weight:400}
 .oo-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px 40px;padding-inline:var(--oo-gutter);margin-bottom:clamp(24px,3vw,40px)}
 .oo-head .oo-eyebrow{color:var(--oo-clay);margin-bottom:12px}
+.oo-head__sub{margin-top:12px;color:var(--oo-muted);max-width:40em}
 .oo-link{font:500 .76rem/1 var(--oo-sans);letter-spacing:.2em;text-transform:uppercase;padding-bottom:6px;border-bottom:1px solid currentColor}
-.oo-tile{position:relative;overflow:hidden;display:block;background:var(--oo-taupe);isolation:isolate}
-.oo-tile::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(30,26,22,0) 45%,rgba(30,26,22,.62) 100%)}
+.oo-tile{position:relative;overflow:hidden;display:block;background:var(--oo-taupe);isolation:isolate;border-radius:var(--oo-radius)}
+.oo-tile::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(30,26,22,0) 45%,rgba(30,26,22,var(--oo-shade)) 100%)}
 .oo-fill{position:absolute;inset:0;width:100%!important;height:100%!important;object-fit:cover;transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
 .oo picture{display:contents}
 .oo-tile__text{position:absolute;z-index:2;left:0;right:0;bottom:0;padding:clamp(18px,2.6vw,40px) var(--oo-gutter) clamp(20px,2.8vw,44px);color:var(--oo-linen);display:grid;gap:10px}
-.oo-tile__title{font:500 clamp(1.6rem,2.2vw,2.4rem)/1.08 var(--oo-serif);text-wrap:balance}
+.oo-tile__title{font:var(--oo-head-weight) clamp(1.6rem,2.2vw,2.4rem)/1.08 var(--oo-serif);text-wrap:balance;text-transform:var(--oo-head-transform);letter-spacing:var(--oo-head-track)}
 .oo-tile__more{display:inline-flex;align-items:center;gap:.6em;font:500 .74rem/1 var(--oo-sans);letter-spacing:.2em;text-transform:uppercase}
 .oo-tile__more::after{content:"";width:28px;height:1px;background:currentColor;transition:width .4s ease}
 a.oo-tile:hover .oo-fill,a.oo-tile:focus-visible .oo-fill,.oo-card:hover .oo-fill{transform:scale(1.045)}
 a.oo-tile:hover .oo-tile__more::after{width:52px}
-.oo a:focus-visible,.oo summary:focus-visible{outline:2px solid var(--oo-clay);outline-offset:2px}
-.oo-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 26px;font:500 .76rem/1 var(--oo-sans);letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--oo-linen);transition:background .3s,color .3s}
-.oo-btn--solid{background:var(--oo-linen);color:var(--oo-ink)}
-a.oo-btn--solid:hover,a.oo-tile:hover .oo-btn--solid{background:transparent;color:var(--oo-linen)}
-.oo-btn--ghost{color:var(--oo-linen)}.oo-btn--ghost:hover{background:var(--oo-linen);color:var(--oo-ink)}
-.oo-btn--dark{background:var(--oo-ink);color:var(--oo-linen);border-color:var(--oo-ink)}.oo-btn--dark:hover{background:transparent;color:var(--oo-ink)}
+.oo a:focus-visible,.oo summary:focus-visible,.oo button:focus-visible,.oo input:focus-visible{outline:2px solid var(--oo-clay);outline-offset:2px}
+.oo-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 ${btnR > 100 ? 30 : 26}px;font:500 .76rem/1 var(--oo-sans);letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--oo-linen);border-radius:var(--oo-btn-radius);transition:background .3s,color .3s}
+.oo .oo-btn--solid{background:${outline ? 'transparent' : 'var(--oo-linen)'};color:${outline ? 'var(--oo-linen)' : 'var(--oo-ink)'}}
+.oo a.oo-btn--solid:hover,.oo a.oo-tile:hover .oo-btn--solid{background:${outline ? 'var(--oo-linen)' : 'transparent'};color:${outline ? 'var(--oo-ink)' : 'var(--oo-linen)'}}
+.oo .oo-btn--ghost{color:var(--oo-linen)}.oo .oo-btn--ghost:hover{background:var(--oo-linen);color:var(--oo-ink)}
+.oo .oo-btn--dark{background:${outline ? 'transparent' : 'var(--oo-ink)'};color:${outline ? 'var(--oo-ink)' : 'var(--oo-linen)'};border-color:var(--oo-ink)}.oo .oo-btn--dark:hover{background:${outline ? 'var(--oo-ink)' : 'transparent'};color:${outline ? 'var(--oo-linen)' : 'var(--oo-ink)'}}
+${th.cap === 'below' ? `.oo-cats__grid{height:auto!important;align-items:start;gap:max(var(--oo-seam),16px)!important;padding-inline:var(--oo-gutter)}
+.oo-cats__grid .oo-tile{background:transparent;overflow:visible;aspect-ratio:auto!important;border-radius:0}
+.oo-cats__grid .oo-tile::after{display:none}
+.oo-cats__grid .oo-fill{position:relative;inset:auto;aspect-ratio:4/5;height:auto!important;border-radius:var(--oo-radius);transform:none!important;transition:opacity .4s}
+.oo-cats__grid a.oo-tile:hover .oo-fill{opacity:.86}
+.oo-cats__grid .oo-tile__text{position:static;color:var(--oo-ink);padding:14px 2px 0;gap:6px}
+.oo-cats__grid .oo-tile__title{font-size:clamp(1.25rem,1.7vw,1.6rem)}
+.oo-cats__grid .oo-tile__sub{display:block!important;color:var(--oo-muted);font-size:.88rem}
+.oo-cats__headpad{padding-top:var(--oo-sec)}` : ''}
 @media (max-width:760px){.oo{--oo-seam:${Math.max(2, s.seam - 2)}px;--oo-offset:${s.offM}px}}
 @media (prefers-reduced-motion:reduce){.oo *{animation:none!important;transition:none!important}}`;
 }
@@ -726,10 +1143,11 @@ function makeCtx(mode, files) {
   const rules = [], rulesM = []; let n = 0;
   const src = (key, size) => {
     if (mode === 'preview') return imgUrl(key);
+    const r = IMGS.get(key)?.remote; if (r) return r;
     const f = files[key]; return f ? `${STATE.settings.prefix}${f.base}${size === 'm' ? '-m' : ''}.jpg` : '';
   };
   const srcset = key => {
-    if (mode === 'preview') return '';
+    if (mode === 'preview' || IMGS.get(key)?.remote) return '';
     const f = files[key]; if (!f) return '';
     return f.w > 800 ? ` srcset="${esc(src(key, 'm'))} 800w, ${esc(src(key))} ${Math.min(1600, f.w)}w"` : '';
   };
@@ -746,13 +1164,13 @@ function makeCtx(mode, files) {
         rules.push(`.${cls}{object-position:${im.p[0]}% ${im.p[1]}%}`);
         if (im.pm) rulesM.push(`.${cls}{object-position:${im.pm[0]}% ${im.pm[1]}%}`);
       }
-      const useSmall = variant === 'small' && mode === 'export';
+      const useSmall = (variant === 'small' || variant === 'plain') && mode === 'export' && !meta.remote;
       const main = useSmall ? src(im.key, files[im.key]?.w > 800 ? 'm' : '') : src(im.key);
-      const dims = useSmall && meta.w > 800 ? ` width="800" height="${Math.round(meta.h * 800 / meta.w)}"` : ` width="${meta.w}" height="${meta.h}"`;
+      const dims = !meta.w ? '' : useSmall && meta.w > 800 ? ` width="800" height="${Math.round(meta.h * 800 / meta.w)}"` : ` width="${meta.w}" height="${meta.h}"`;
       const tag = `<img class="${variant === 'plain' ? '' : 'oo-fill '}${cls}" src="${esc(main)}"${useSmall ? '' : srcset(im.key)}${useSmall ? '' : ` sizes="${sizes}"`}${dims} alt="${esc(im.alt)}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'}>`;
       if (im.km && IMGS.has(im.km)) {
-        const mm = files?.[im.km];
-        const ms = mode === 'preview' ? imgUrl(im.km) : (mm && mm.w > 800 ? `${src(im.km, 'm')} 800w, ${src(im.km)} ${Math.min(1600, mm.w)}w` : src(im.km));
+        const mm = IMGS.get(im.km).remote ? null : files?.[im.km];
+        const ms = mode === 'preview' ? imgUrl(im.km) : IMGS.get(im.km).remote ? IMGS.get(im.km).remote : (mm && mm.w > 800 ? `${src(im.km, 'm')} 800w, ${src(im.km)} ${Math.min(1600, mm.w)}w` : src(im.km));
         return `<picture><source media="(max-width:760px)" srcset="${esc(ms)}"${mode === 'export' && mm && mm.w > 800 ? ' sizes="100vw"' : ''}>${tag}</picture>`;
       }
       return tag;
@@ -761,8 +1179,9 @@ function makeCtx(mode, files) {
 }
 
 function fontsLink(s) {
-  const fam = f => f.replace(/ /g, '+');
-  return `https://fonts.googleapis.com/css2?family=${fam(s.fontD)}:ital,wght@0,500;0,600;1,400;1,500&family=${fam(s.fontB)}:wght@400;500&display=swap`;
+  const fam = f => f.replace(/ /g, '+') + (FONT_SPEC[f] ? ':' + FONT_SPEC[f] : '');
+  const list = [...new Set([s.fontD, s.fontB])].map(f => 'family=' + fam(f)).join('&');
+  return `https://fonts.googleapis.com/css2?${list}&display=swap`;
 }
 
 function renderSnippet(state, ctx) {
@@ -820,8 +1239,12 @@ const DB = {
   async get(k) { try { const d = await this.open(); return await new Promise(r => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => r(q.result); q.onerror = () => r(undefined); }); } catch { return undefined; } },
   async set(k, v) { try { const d = await this.open(); await new Promise(r => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = r; t.onerror = r; }); return true; } catch { return false; } },
 };
-async function saveState() { const ok = await DB.set('state', JSON.stringify(STATE)); $('#status').textContent = ok ? 'Zapisano w przeglądarce' : 'Bez zapisu w przeglądarce — użyj „Projekt → Zapisz plik”'; }
-async function saveUploads() { const o = {}; for (const [k, v] of IMGS) if (v.user) o[k] = v.blob; await DB.set('uploads', o); }
+async function saveState() { const ok = await DB.set('state3', JSON.stringify(STATE)); $('#status').textContent = ok ? 'Zapisano w przeglądarce' : 'Bez zapisu w przeglądarce — użyj „Projekt → Zapisz plik”'; }
+async function saveUploads() {
+  const o = {}, r = [];
+  for (const [k, v] of IMGS) { if (v.user && v.blob) o[k] = v.blob; else if (k[0] === 'r' && v.remote) r.push(v.remote); }
+  await DB.set('uploads', o); await DB.set('remotes', r);
+}
 
 /* ============================================================
    Podgląd
@@ -832,7 +1255,7 @@ function renderPreview() {
   const f = $('#frame');
   try { frameScroll = f.contentWindow?.scrollY || frameScroll; } catch {}
   const ctx = makeCtx('preview');
-  const html = `<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  const html = `<!doctype html><html lang="pl"><head><meta charset="utf-8"><base href="about:srcdoc"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>body{margin:0;background:#fff}[data-edit]{cursor:pointer}[data-edit]:hover{outline:2px dashed rgba(196,149,47,.95);outline-offset:-3px}.oo-sel{outline:3px solid #c4952f!important;outline-offset:-3px}</style></head>
 <body>${STATE.settings.mock ? MOCK : ''}${renderSnippet(STATE, ctx)}</body></html>`;
   f.srcdoc = html;
@@ -843,7 +1266,7 @@ function wireFrame() {
   if (!doc) return;
   try { f.contentWindow.scrollTo(0, frameScroll); } catch {}
   doc.addEventListener('click', e => {
-    const a = e.target.closest('a'); if (a) e.preventDefault();
+    const a = e.target.closest('a'); if (a && !(a.getAttribute('href') || '').startsWith('#')) e.preventDefault();
     const t = e.target.closest('[data-edit]'); if (!t) return;
     const [id, sub] = t.dataset.edit.split(':');
     select(id, sub, true);
@@ -908,7 +1331,13 @@ function settingsCard() {
       el('div', { class: 'f' }, el('span', { class: 'lbl' }, 'Kolory'),
         el('div', { class: 'row2' }, ...[['oat', 'Tło i fugi'], ['linen', 'Jasne panele'], ['ink', 'Tekst i przyciski'], ['muted', 'Tekst pomocniczy'], ['taupe', 'Taupe (menu)'], ['clay', 'Akcent']].map(([k, l]) => colorField(l, s.colors, k)))),
       selectField('Atrapa nagłówka sklepu w podglądzie', s, 'mock', [[true, 'Pokaż'], [false, 'Ukryj']]),
-      el('button', { class: 'btn btn--sm', onclick: () => { s.colors = defaultState().settings.colors; changed(true); } }, 'Przywróć kolory marki')
+      el('button', { class: 'btn btn--sm', onclick: () => { s.colors = baseSettings(s.template || 'current').colors; changed(true); } }, 'Przywróć kolory szablonu'),
+      el('div', { class: 'row2' },
+        selectField('Przyciski', s, 'btn', [['solid', 'Pełne'], ['outline', 'Z obrysem'], ['pill', 'Pastylki']]),
+        selectField('Podpisy kafli kategorii', s, 'cap', [['overlay', 'Na zdjęciu'], ['below', 'Pod zdjęciem']])),
+      el('div', { class: 'row2' }, rangeField('Zaokrąglenie', s, 'radius', 0, 28, 'px'), rangeField('Odstępy sekcji', s, 'space', .7, 1.6, '×')),
+      el('div', { class: 'row2' }, selectField('Nagłówki', s, 'headUpper', [[false, 'Zwykłe'], [true, 'Wersaliki']]), rangeField('Przyciemnienie kafli', s, 'overlay', 0, .9, '')),
+      aiSettings()
     );
     card.append(body);
   }
@@ -929,6 +1358,10 @@ function blockCard(b, i) {
     el('button', { class: 'ib', title: 'Usuń', 'aria-label': 'Usuń sekcję', onclick: stop(() => { if (card.dataset.confirm) { STATE.blocks.splice(i, 1); changed(true); toast('Usunięto sekcję. Cofnij: Ctrl+Z'); } else { card.dataset.confirm = 1; toast('Kliknij kosz jeszcze raz, żeby usunąć sekcję'); setTimeout(() => delete card.dataset.confirm, 2500); } }) }, '🗑')));
   if (open) {
     const body = el('div', { class: 'card__body' });
+    const secBox = el('div');
+    body.append(el('div', { class: 'secai' },
+      el('button', { class: 'ai', type: 'button', onclick: () => { secBox.firstChild ? secBox.replaceChildren() : secBox.append(sectionAiBox(b)); } }, '✨ Napisz teksty całej sekcji'),
+      b.type === 'quotes' ? el('span', { class: 'note note--warn' }, 'Wklejaj tylko prawdziwe opinie. Generator nie pisze opinii.') : null), secBox);
     buildFields(body, b.data, T.fields, b.id, '');
     card.append(body);
   }
@@ -940,31 +1373,41 @@ function move(arr, i, d, structural) {
   [arr[i], arr[j]] = [arr[j], arr[i]]; changed(structural);
 }
 
-function buildFields(container, obj, fields, bid, prefix) {
+function buildFields(container, obj, fields, bid, prefix, root) {
+  root = root || obj;
   for (const f of fields) {
     const path = prefix ? prefix + '.' + f.k : f.k;
     let node;
+    const ai = { bid, root, obj };
     switch (f.t) {
-      case 'text': node = textField(f.label, obj, f.k, f); break;
-      case 'area': node = textField(f.label, obj, f.k, { ...f, area: true }); break;
+      case 'text': node = textField(f.label, obj, f.k, { ...f, ai }); break;
+      case 'area': node = textField(f.label, obj, f.k, { ...f, area: true, ai }); break;
       case 'select': node = selectField(f.label, obj, f.k, f.opts); break;
+      case 'pick': node = selectField(f.label, obj, f.k, f.opts(root)); break;
+      case 'color': node = colorField(f.label, obj, f.k); break;
       case 'range': node = rangeField(f.label, obj, f.k, f.min, f.max, f.unit); break;
-      case 'row': node = el('div', { class: 'row2' }); buildFields(node, obj, f.fields, bid, prefix); break;
+      case 'row': node = el('div', { class: 'row2' }); buildFields(node, obj, f.fields, bid, prefix, root); break;
       case 'img': node = imgField(f, obj, f.k); break;
-      case 'group': node = el('div', { class: 'grpbox', 'data-path': path }, el('div', { class: 'gt' }, f.label)); buildFields(node, obj[f.k], f.fields, bid, path); break;
-      case 'list': node = listField(f, obj, bid, path); break;
-      case 'points': node = pointsField(f, obj, bid, path); break;
+      case 'catalog': node = catalogField(obj); break;
+      case 'group': node = el('div', { class: 'grpbox', 'data-path': path }, el('div', { class: 'gt' }, f.label)); buildFields(node, obj[f.k], f.fields, bid, path, root); break;
+      case 'list': node = listField(f, obj, bid, path, root); break;
+      case 'points': node = pointsField(f, obj, bid, path, root); break;
     }
     if (node) { if (!node.dataset.path && f.k) node.dataset.path = path; container.append(node); }
   }
 }
 
+const NO_AI = /href|link|adres|cena|kod|price|code/i;
 function textField(label, obj, k, o = {}) {
   const id = 'f' + uid();
   const inp = o.area ? el('textarea', { id, rows: 3 }) : el('input', { id, type: 'text' });
   inp.value = obj[k] ?? '';
   inp.addEventListener('input', () => { obj[k] = inp.value; changed(); });
-  return el('div', { class: 'f' }, el('label', { for: id }, label), inp, o.hint ? el('span', { class: 'hint' }, o.hint) : null);
+  const box = el('div');
+  const aiBtn = o.ai && !NO_AI.test(k + ' ' + label) ? el('button', { class: 'ai', type: 'button', title: 'Generator tekstów', onclick: () => {
+    box.firstChild ? box.replaceChildren() : box.append(aiBox({ label, obj, k, inp, ...o.ai }));
+  } }, '✨ Napisz') : null;
+  return el('div', { class: 'f' }, el('div', { class: 'lblrow' }, el('label', { for: id }, label), aiBtn), inp, o.hint ? el('span', { class: 'hint' }, o.hint) : null, box);
 }
 function numField(label, obj, k, min, max) {
   const id = 'f' + uid(); const inp = el('input', { id, type: 'number', min, max, value: obj[k] });
@@ -978,7 +1421,7 @@ function selectField(label, obj, k, opts) {
   return el('div', { class: 'f' }, el('label', { for: id }, label), s);
 }
 function rangeField(label, obj, k, min, max, unit = '') {
-  const id = 'f' + uid(); const r = el('input', { id, type: 'range', min, max, value: obj[k] });
+  const id = 'f' + uid(); const r = el('input', { id, type: 'range', min, max, step: (max - min) <= 2 ? .05 : 1, value: obj[k] });
   const out = el('output', { for: id }, obj[k] + unit);
   r.addEventListener('input', () => { obj[k] = +r.value; out.textContent = r.value + unit; changed(); });
   return el('div', { class: 'f' }, el('label', { for: id }, label), el('div', { class: 'rng' }, r, out));
@@ -1053,18 +1496,18 @@ function library(onPick) {
 }
 
 /* --- listy --- */
-function listField(f, obj, bid, path) {
+function listField(f, obj, bid, path, root) {
   const arr = obj[f.k];
   const wrap = el('div', { class: 'f' }, el('span', { class: 'lbl' }, `${f.label} (${arr.length})`));
   const list = el('div', { class: 'list' });
-  arr.forEach((it, i) => list.append(listItem(f, arr, it, i, bid, path)));
+  arr.forEach((it, i) => list.append(listItem(f, arr, it, i, bid, path, root)));
   wrap.append(list);
   if (!f.max || arr.length < f.max) wrap.append(el('button', { class: 'btn btn--sm', onclick: () => {
     const n = f.add ? f.add() : clone(arr[arr.length - 1]); arr.push(n); OPEN.add(`${bid}:${path}.${arr.length - 1}`); changed(true);
   } }, '+ Dodaj'));
   return wrap;
 }
-function listItem(f, arr, it, i, bid, path) {
+function listItem(f, arr, it, i, bid, path, root) {
   const key = `${bid}:${path}.${i}`; const open = OPEN.has(key);
   const li = el('div', { class: 'li' + (open ? ' is-open' : ''), 'data-path': `${path}.${i}` });
   const im = it.img?.key ? imgUrl(it.img.key) : '';
@@ -1077,13 +1520,13 @@ function listItem(f, arr, it, i, bid, path) {
     el('button', { class: 'ib', 'aria-label': 'W dół', disabled: i === arr.length - 1, onclick: stop(() => move(arr, i, 1, true)) }, '↓'),
     (!f.max || arr.length < f.max) ? el('button', { class: 'ib', 'aria-label': 'Duplikuj', title: 'Duplikuj', onclick: stop(() => { arr.splice(i + 1, 0, clone(it)); changed(true); }) }, '⧉') : null,
     canDel ? el('button', { class: 'ib', 'aria-label': 'Usuń', title: 'Usuń', onclick: stop(() => { arr.splice(i, 1); changed(true); }) }, '✕') : null));
-  if (open) { const body = el('div', { class: 'li__body' }); buildFields(body, it, f.item, bid, `${path}.${i}`); li.append(body); }
+  if (open) { const body = el('div', { class: 'li__body' }); buildFields(body, it, f.item, bid, `${path}.${i}`, root); li.append(body); }
   return li;
 }
 
 /* --- punkty na zdjęciu --- */
 const PT_SEL = {};
-function pointsField(f, obj, bid, path) {
+function pointsField(f, obj, bid, path, root) {
   const pts = obj[f.k], im = obj[f.imgK];
   const sel = Math.min(PT_SEL[bid] ?? 0, pts.length - 1);
   const wrap = el('div', { class: 'f' }, el('span', { class: 'lbl' }, 'Rozmieszczenie punktów'),
@@ -1103,8 +1546,294 @@ function pointsField(f, obj, bid, path) {
   const chooser = el('div', { class: 'img__btns' });
   pts.forEach((p, i) => chooser.append(el('button', { class: 'btn btn--sm' + (i === sel ? ' btn--acc' : ''), onclick: () => { PT_SEL[bid] = i; renderPanel(); } }, `${i + 1}. ${p.name}`)));
   wrap.append(chooser);
-  wrap.append(listField({ ...f, t: 'list', label: 'Karty produktów w punktach' }, obj, bid, path));
+  wrap.append(listField({ ...f, t: 'list', label: 'Karty produktów w punktach' }, obj, bid, path, root));
   return wrap;
+}
+
+/* ============================================================
+   Katalog produktów (wypełnia nazwę, cenę, link i zdjęcie)
+   ============================================================ */
+function catalogField(obj) {
+  const box = el('div');
+  const btn = el('button', { class: 'btn btn--sm', type: 'button', onclick: () => {
+    if (box.firstChild) return box.replaceChildren();
+    const grid = el('div', { class: 'cat' });
+    Object.entries(CATALOG).forEach(([id, p]) => grid.append(el('button', { type: 'button', title: p.desc, onclick: () => {
+      if ('img' in obj) obj.img = I('p' + id, p.name);
+      if ('name' in obj) obj.name = p.name;
+      if ('price' in obj) obj.price = prodPrice(id);
+      if ('desc' in obj) obj.desc = prodPrice(id);
+      if ('href' in obj) obj.href = prodHref(id);
+      changed(true); toast('Wstawiono: ' + p.name);
+    } }, el('img', { src: imgUrl('p' + id), alt: '' }), el('span', {}, p.name), el('span', { style: 'color:var(--mute)' }, prodPrice(id)))));
+    box.append(grid);
+  } }, '🛍 Wybierz produkt z katalogu');
+  return el('div', { class: 'f' }, btn, box, el('span', { class: 'hint' }, 'Ceny z kopii katalogu z 24.08.2026 — sprawdź aktualne w Sky-Shop.'));
+}
+
+/* ============================================================
+   Generator tekstów: w wersji online przez Claude (konto oglądającego),
+   lokalnie przez klucz API Anthropic wpisany w ustawieniach.
+   ============================================================ */
+const BRAND_BRIEF = `MARKA: Oak&Oats (oakandoats.pl) — polska manufaktura handmade. Produkty: gryzaki i grzechotki sensoryczne z drewna bukowego i silikonu,
+zawieszki do smoczka (także z imieniem dziecka z bukowych literek), zestawy prezentowe, breloki i wristlety dla mam (np. z napisem MAMA), naszyjniki.
+Twarzą marki i podpisem jest Wiktoria, która ręcznie wykonuje produkty.
+KIERUNEK (brief v2): kobieta + macierzyństwo + dziecko + lifestyle. Ton ciepły, bliski, naturalny, ale dojrzały, kobiecy, editorialowy, mniej infantylny.
+Unikaj: przesłodzonego języka „baby”, zdrobnień w nadmiarze, infantylnych sloganów, nachalnego marketingu, generycznego tekstu AI, nadużywania słowa „premium”.
+Premium ma być odczuwalne w konkretach (materiał, detal, ręczna robota), nie deklarowane.
+Biżuteria: najpierw biżuteria, sensoryczność jako wartość dodana. Breloki dla mam to dodatki dla dorosłej osoby, nie produkty dziecięce.
+ZASADY: pisz po polsku, poprawnie, bez emoji. Nie wymyślaj faktów, certyfikatów, liczb, terminów dostawy, cen ani opinii klientek, których nie ma w danych.
+Możesz używać faktów z katalogu i z obecnych tekstów strony. W tytułach możesz oznaczyć jedno słowo kursywą, otaczając je gwiazdkami: *słowo*.`;
+const catalogText = () => Object.values(CATALOG).filter(p => +p.price > 0).map(p => `- ${p.name} (${prodPrice(Object.keys(CATALOG).find(k => CATALOG[k] === p))}): ${p.desc}`).join('\n');
+let SAMPLE = null;
+const samplerP = (window.claude && typeof window.claude.use === 'function') ? Promise.resolve(window.claude.use('sample')).then(x => (SAMPLE = x)).catch(() => null) : Promise.resolve(null);
+const lsGet = k => { try { return localStorage.getItem(k) || ''; } catch { return ''; } };
+const lsSet = (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch {} };
+const aiAvailable = () => !!SAMPLE || !!lsGet('oo-ai-key');
+const SAMPLE_ERR = { not_granted: 'Generator wymaga zgody na użycie Claude — zezwól w oknie, które się pojawiło.', rate_limited: 'Za dużo zapytań naraz. Odczekaj chwilę.', cancelled: 'Przerwano.' };
+function parseJSON(t) {
+  const m = String(t).match(/\{[\s\S]*\}/); if (!m) throw new Error('Generator nie zwrócił poprawnej odpowiedzi. Spróbuj jeszcze raz.');
+  return JSON.parse(m[0]);
+}
+async function aiJSON(prompt) {
+  await Promise.race([samplerP, new Promise(r => setTimeout(r, 1200))]);
+  if (SAMPLE) {
+    try { return await SAMPLE.json(prompt, { modelTier: 'complex', cache: false }); }
+    catch (e) { if (e && e.code) throw new Error(SAMPLE_ERR[e.code] || 'Generator jest teraz niedostępny (' + e.code + ').'); throw e; }
+  }
+  const key = lsGet('oo-ai-key');
+  if (!key) throw new Error('Wpisz klucz API Anthropic w „Ustawienia strony → Generator tekstów”. W wersji online generator działa bez klucza.');
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true', 'anthropic-beta': 'server-side-fallback-2026-07-01' },
+    body: JSON.stringify({ model: 'claude-opus-5-5', max_tokens: 6000, output_config: { effort: 'medium' }, fallbacks: 'default',
+      messages: [{ role: 'user', content: prompt }] })
+  });
+  if (r.status === 401) throw new Error('Klucz API jest nieprawidłowy. Sprawdź go w ustawieniach.');
+  if (r.status === 429) throw new Error('Limit zapytań API — odczekaj chwilę.');
+  if (!r.ok) throw new Error('Błąd API (' + r.status + '). Spróbuj ponownie za chwilę.');
+  const j = await r.json();
+  if (j.stop_reason === 'refusal') throw new Error('Model odmówił napisania tego tekstu. Zmień polecenie.');
+  return parseJSON((j.content || []).filter(x => x.type === 'text').map(x => x.text).join(''));
+}
+function aiSettings() {
+  const wrap = el('div', { class: 'f' }, el('span', { class: 'lbl' }, 'Generator tekstów'));
+  if (SAMPLE) { wrap.append(el('span', { class: 'note' }, 'Działa w tej wersji przez Twoje konto Claude. Przy pierwszym użyciu zapyta o zgodę.')); return wrap; }
+  const id = 'f' + uid(); const inp = el('input', { id, type: 'password', placeholder: 'sk-ant-…', value: lsGet('oo-ai-key'), autocomplete: 'off' });
+  inp.addEventListener('change', () => { lsSet('oo-ai-key', inp.value.trim()); toast(inp.value.trim() ? 'Zapisano klucz w tej przeglądarce' : 'Usunięto klucz'); });
+  wrap.append(el('label', { for: id }, 'Klucz API Anthropic (tylko na tym komputerze)'), inp,
+    el('span', { class: 'hint' }, 'Klucz zostaje w tej przeglądarce i idzie tylko do api.anthropic.com. Model: Claude Opus 5.5. W wersji online klucz nie jest potrzebny.'));
+  return wrap;
+}
+function sectionContext(bid) {
+  const b = STATE.blocks.find(x => x.id === bid); if (!b) return '';
+  const strip = o => JSON.stringify(o, (k, v) => (k === 'img' || k === 'p' || k === 'pm' || k === 'key' || k === 'km') ? undefined : v);
+  const page = STATE.blocks.filter(x => !x.hidden).map(x => `${TYPES[x.type].label}: ${String(x.data.title || x.data.main?.title || '').replace(/\*/g, '')}`).join(' | ');
+  const tpl = TEMPLATES.find(t => t.id === STATE.settings.template);
+  return `SEKCJA: ${TYPES[b.type].label} — ${TYPES[b.type].desc}\nDANE SEKCJI (JSON): ${strip(b.data)}\nUKŁAD STRONY: ${page}\n${tpl ? `STYL SZABLONU: ${tpl.name} — ${tpl.desc}` : ''}`;
+}
+function aiBox({ label, obj, k, inp, bid }) {
+  const out = el('div', { class: 'aibox__out' }), st = el('div', { class: 'aibox__st' });
+  const cid = 'f' + uid(); const custom = el('input', { id: cid, type: 'text', placeholder: 'Własne polecenie, np. „dodaj, że to dobry prezent na Dzień Matki”' });
+  const run = async (mode) => {
+    out.replaceChildren(); st.textContent = 'Piszę…';
+    const cur = obj[k] || '';
+    const prompt = `${BRAND_BRIEF}\n\nKATALOG:\n${catalogText()}\n\n${sectionContext(bid)}\n\nZADANIE: napisz pole „${label}” tej sekcji strony głównej sklepu.\nOBECNY TEKST: "${cur}"\nPOLECENIE: ${mode}\n` +
+      `Długość podobna do obecnego tekstu (około ${Math.max(cur.length, 20)} znaków), chyba że polecenie mówi inaczej. Pole jednoliniowe = bez łamania wierszy.\n` +
+      `Zwróć wyłącznie JSON: {"warianty": ["...", "...", "..."]} — trzy wyraźnie różne propozycje.`;
+    try {
+      const j = await aiJSON(prompt); const vs = (j.warianty || j.variants || []).filter(Boolean).slice(0, 3);
+      if (!vs.length) throw new Error('Brak propozycji. Spróbuj jeszcze raz.');
+      st.textContent = 'Kliknij propozycję, żeby ją wstawić:';
+      vs.forEach(v => out.append(el('button', { class: 'aibox__opt', type: 'button', onclick: () => { obj[k] = v; inp.value = v; changed(); toast('Wstawiono tekst. Cofnij: Ctrl+Z'); } }, v)));
+    } catch (e) { st.textContent = e.message || 'Nie udało się wygenerować tekstu.'; }
+  };
+  return el('div', { class: 'aibox' },
+    el('div', { class: 'aibox__acts' },
+      el('button', { class: 'btn btn--sm btn--acc', type: 'button', onclick: () => run(obj[k] ? 'Napisz lepszą wersję tego tekstu.' : 'Napisz ten tekst od zera.') }, 'Napisz'),
+      el('button', { class: 'btn btn--sm', type: 'button', onclick: () => run('Skróć, zachowując sens.') }, 'Krócej'),
+      el('button', { class: 'btn btn--sm', type: 'button', onclick: () => run('Napisz bardziej elegancko i dojrzale, jak w editorialu modowym, bez słowa „premium”.') }, 'Bardziej elegancko'),
+      el('button', { class: 'btn btn--sm', type: 'button', onclick: () => run('Napisz cieplej i bliżej, jakby mówiła Wiktoria do klientki.') }, 'Cieplej'),
+      el('button', { class: 'btn btn--sm', type: 'button', onclick: () => run('Napisz tak, żeby lepiej sprzedawał: konkretna korzyść, naturalnie, bez krzykliwości.') }, 'Lepiej sprzedaje'),
+      el('button', { class: 'btn btn--sm', type: 'button', onclick: () => run('Uwzględnij naturalnie słowa kluczowe, które ktoś wpisze w Google, szukając takich produktów.') }, 'Pod Google')),
+    el('div', { class: 'row2', style: 'grid-template-columns:1fr auto;align-items:end' },
+      el('div', { class: 'f' }, el('label', { for: cid }, 'Własne polecenie'), custom),
+      el('button', { class: 'btn btn--sm', type: 'button', onclick: () => custom.value.trim() && run(custom.value.trim()) }, 'Wyślij')),
+    st, out);
+}
+function textPaths(fields, obj, prefix = '') {
+  const out = [];
+  for (const f of fields) {
+    if (f.t === 'row') { out.push(...textPaths(f.fields, obj, prefix)); continue; }
+    const path = prefix ? `${prefix}.${f.k}` : f.k;
+    if ((f.t === 'text' || f.t === 'area') && !NO_AI.test(f.k + ' ' + f.label)) out.push({ path, label: f.label, value: obj[f.k] ?? '' });
+    else if (f.t === 'group') out.push(...textPaths(f.fields, obj[f.k], path));
+    else if ((f.t === 'list' || f.t === 'points') && Array.isArray(obj[f.k])) obj[f.k].forEach((it, i) => out.push(...textPaths(f.item, it, `${path}.${i}`)));
+  }
+  return out;
+}
+function setPath(obj, path, v) { const ks = path.split('.'); const last = ks.pop(); const o = ks.reduce((a, k) => a?.[k], obj); if (o && last in o) o[last] = v; }
+function sectionAiBox(b) {
+  const st = el('div', { class: 'aibox__st' }, 'Generator przepisze wszystkie teksty tej sekcji naraz, spójnie z resztą strony. Linki, ceny i zdjęcia zostaną bez zmian.');
+  const cid = 'f' + uid(); const custom = el('input', { id: cid, type: 'text', placeholder: 'Kierunek, np. „bardziej dla mam niż dla dzieci” albo „jesienna kampania”' });
+  const go = el('button', { class: 'btn btn--sm btn--acc', type: 'button' }, 'Napisz teksty sekcji');
+  go.addEventListener('click', async () => {
+    if (b.type === 'quotes') { st.textContent = 'Opinie muszą być prawdziwe — generator ich nie pisze.'; return; }
+    const paths = textPaths(TYPES[b.type].fields, b.data);
+    if (!paths.length) { st.textContent = 'Ta sekcja nie ma pól tekstowych.'; return; }
+    go.disabled = true; st.textContent = 'Piszę… (zwykle 10–40 sekund)';
+    const prompt = `${BRAND_BRIEF}\n\nKATALOG:\n${catalogText()}\n\n${sectionContext(b.id)}\n\nZADANIE: przepisz wszystkie teksty tej sekcji, spójnie ze sobą i z resztą strony.${custom.value.trim() ? '\nKIERUNEK: ' + custom.value.trim() : ''}\n` +
+      `Zachowaj liczbę i rolę pól. Długości podobne do obecnych. Nazwy produktów z katalogu zostaw dokładnie tak, jak są.\nPOLA (ścieżka → etykieta → obecny tekst):\n` +
+      paths.map(p => `${p.path} → ${p.label} → "${p.value}"`).join('\n') + `\n\nZwróć wyłącznie JSON: obiekt, w którym klucz to ścieżka pola, a wartość to nowy tekst.`;
+    try {
+      const j = await aiJSON(prompt); let n = 0;
+      for (const p of paths) if (typeof j[p.path] === 'string' && j[p.path].trim()) { setPath(b.data, p.path, j[p.path].trim()); n++; }
+      changed(true); toast(`Napisano ${n} tekstów. Cofnij wszystko naraz: Ctrl+Z`);
+    } catch (e) { st.textContent = e.message || 'Nie udało się wygenerować tekstów.'; }
+    go.disabled = false;
+  });
+  return el('div', { class: 'aibox' }, st, el('div', { class: 'f' }, el('label', { for: cid }, 'Kierunek (opcja)'), custom), el('div', { class: 'aibox__acts' }, go));
+}
+
+/* ============================================================
+   Szablony
+   ============================================================ */
+function convertHero(b, to, align) {
+  const d = b.data;
+  if (to === 'tiles' && b.type === 'heroSingle') {
+    let side = d._side;
+    if (!side) {
+      const cats = STATE.blocks.find(x => x.type === 'cats' && !x.hidden);
+      side = (cats ? cats.data.items.slice(0, 2) : []).map(it => ({ img: clone(it.img), title: it.title, more: it.more || 'Zobacz', href: it.href }));
+      while (side.length < 2) side.push({ img: I([...IMGS.keys()][side.length], 'Oak&Oats'), title: 'Kolekcja', more: 'Zobacz', href: '/' });
+    }
+    b.type = 'heroTiles';
+    b.data = { h: 100, hm: 86, _single: { cta2: d.cta2, href2: d.href2, shade: d.shade, align: d.align },
+      main: { img: d.img, eyebrow: d.eyebrow, title: d.title, lead: d.lead, cta: d.cta, href: d.href }, side };
+  } else if (to !== 'tiles' && b.type === 'heroTiles') {
+    const m = d.main, x = d._single || {};
+    b.type = 'heroSingle';
+    b.data = { layout: to, img: m.img, eyebrow: m.eyebrow, title: m.title, lead: m.lead, cta: m.cta, href: m.href, cta2: x.cta2 || '', href2: x.href2 || '',
+      align: align || x.align || 'left', shade: x.shade ?? 55, h: 100, hm: 88, _side: d.side };
+  } else if (to !== 'tiles' && b.type === 'heroSingle') {
+    d.layout = to; if (align) d.align = align;
+  }
+}
+function applyTemplate(t) {
+  const s = STATE.settings;
+  THEME_KEYS.forEach(k => { s[k] = clone(t.s[k]); });
+  s.template = t.id;
+  const hero = STATE.blocks.find(x => x.type === 'heroTiles' || x.type === 'heroSingle');
+  if (hero && t.hero) convertHero(hero, t.hero, t.align);
+  STATE.blocks.filter(x => x.type === 'cats').forEach(x => { x.data.mobile = t.catsMobile || x.data.mobile; });
+  changed(true); renderTemplates(); toast(`Szablon „${t.name}”. Treść została, zmienił się wygląd. Cofnij: Ctrl+Z`);
+}
+function renderTemplates() {
+  const list = $('#tplList'); list.replaceChildren(el('p', { class: 'drawer__intro' }, 'Kliknij szablon, a strona od razu się przebuduje: kolory, fonty, przyciski, układ hero i kafli. Teksty, zdjęcia i linki zostają. Potem dopracuj wszystko po swojemu.'));
+  for (const t of TEMPLATES) {
+    const c = t.s.colors, br = t.s.btn === 'pill' ? '999px' : (t.s.btnRadius || 0) + 'px';
+    const style = `--b:${c.oat};--l:${c.linen};--i:${c.ink};--a:${c.clay};--t:${c.taupe};--r:${t.s.radius}px;--br:${br};--s:${Math.min(t.s.seam, 10)}px`;
+    const pv = el('div', { class: 'tpl__pv', style },
+      el('div', { class: 'tpl__hero' }, el('span', { class: 'tpl__eb' }, 'Polskie rękodzieło'),
+        el('span', { class: 'tpl__t', style: `font-family:'${t.s.fontD}',serif;font-weight:${t.s.headWeight};text-transform:${t.s.headUpper ? 'uppercase' : 'none'};letter-spacing:${t.s.headTrack}em;${t.s.headUpper ? 'font-size:17px' : ''}` }, 'Oak & ', el('em', {}, 'Oats')),
+        el('span', { class: 'tpl__btn' + (t.s.btn === 'outline' ? '' : ' is-solid') }, 'Odkryj kolekcję')),
+      el('div', { class: 'tpl__tiles' }, el('span'), el('span'), el('span'), el('span')));
+    list.append(el('button', { class: 'tpl' + (STATE.settings.template === t.id ? ' is-on' : ''), type: 'button', onclick: () => applyTemplate(t) }, pv,
+      el('div', { class: 'tpl__meta' }, el('b', {}, t.name), el('span', {}, t.desc),
+        el('div', { class: 'tpl__sw' }, ...['oat', 'linen', 'taupe', 'clay', 'ink'].map(k => el('i', { style: `background:${c[k]}` }))))));
+  }
+}
+function toggleDrawer(open) {
+  const d = $('#drawer'); open = open ?? !d.classList.contains('is-open');
+  d.classList.toggle('is-open', open); d.setAttribute('aria-hidden', !open); $('#tplBtn').setAttribute('aria-expanded', open);
+  if (open) { renderTemplates(); setTimeout(() => d.querySelector('.tpl')?.focus(), 50); }
+}
+
+/* ============================================================
+   Import obecnej strony z kodu źródłowego (Ctrl+U w przeglądarce)
+   ============================================================ */
+function importPage(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const abs = u => { try { return new URL(u, SHOP + '/').href; } catch { return ''; } };
+  doc.querySelectorAll('script,style,noscript,svg,iframe,header,footer,nav,form').forEach(n => n.remove());
+  const txt = n => (n?.textContent || '').replace(/\s+/g, ' ').trim();
+  const isJunk = u => !u || /logo|icon|sprite|payment|placeholder|no_image|loader|\.svg|\.gif|facebook|instagram|blank/i.test(u);
+  const used = new Set(); const blocks = [];
+  const mk = (type, data) => ({ id: uid(), type, hidden: false, data: { ...TYPES[type].make(), ...data } });
+  // produkty
+  const prods = new Map();
+  doc.querySelectorAll('a[href]').forEach(a => {
+    const href = a.getAttribute('href'); const m = href.match(/-p(\d+)(?:[/?#]|$)/); if (!m) return;
+    const box = a.closest('li,article,[class*="prod"],[class*="item"],div') || a;
+    const img = box.querySelector('img'); const price = (txt(box).match(/(\d+[.,]\d{2})\s*zł/) || [])[1];
+    const id = m[1]; if (prods.has(id)) return;
+    const name = (img?.getAttribute('alt') || a.getAttribute('title') || txt(a) || '').trim();
+    if (!name && !CATALOG[id]) return;
+    const src = img && (img.getAttribute('data-src') || img.getAttribute('src'));
+    let key = CATALOG[id] ? 'p' + id : (src && !isJunk(src) ? addRemote(abs(src)) : '');
+    if (src) used.add(abs(src));
+    prods.set(id, { img: key ? I(key, name || CATALOG[id]?.name) : I('', ''), name: CATALOG[id]?.name || name, price: price ? price.replace('.', ',') + ' zł' : (CATALOG[id] ? prodPrice(id) : ''), badge: '', href: new URL(abs(href)).pathname });
+  });
+  // kategorie
+  const cats = new Map();
+  doc.querySelectorAll('a[href]').forEach(a => {
+    const href = a.getAttribute('href'); const m = href.match(/-c(\d+)(?:[/?#]|$)/); if (!m || cats.has(m[1])) return;
+    const label = txt(a); if (!label || label.length > 40) return;
+    const img = a.querySelector('img'); const src = img && (img.getAttribute('data-src') || img.getAttribute('src'));
+    const firstProd = Object.entries(CATALOG).find(([, p]) => (p.cats || []).includes(m[1]) && +p.price > 0);
+    const key = src && !isJunk(src) ? addRemote(abs(src)) : firstProd ? 'p' + firstProd[0] : '';
+    cats.set(m[1], { img: key ? I(key, label) : I('', ''), title: label.charAt(0) + label.slice(1).toLowerCase(), sub: '', more: 'Zobacz', href: new URL(abs(href)).pathname });
+  });
+  // duże zdjęcia i tła (hero, banery)
+  const big = [];
+  doc.querySelectorAll('[style*="background"]').forEach(n => { const m = (n.getAttribute('style') || '').match(/url\(["']?([^"')]+)/); if (m && !isJunk(m[1])) big.push(abs(m[1])); });
+  doc.querySelectorAll('img').forEach(i => {
+    const src = i.getAttribute('data-src') || i.getAttribute('src'); const u = abs(src);
+    if (isJunk(src) || used.has(u) || i.closest('a[href*="-p"]')) return;
+    const w = +(i.getAttribute('width') || 0); if (w && w < 300) return;
+    big.push(u);
+  });
+  const uniqBig = [...new Set(big)];
+  // nagłówki z akapitami
+  const heads = [...doc.querySelectorAll('h1,h2,h3')].map(h => {
+    let p = h.nextElementSibling; while (p && !/^(P|DIV)$/.test(p.tagName)) p = p.nextElementSibling;
+    const btn = h.parentElement?.querySelector('a.btn,a[class*="button"],a[class*="btn"]');
+    return { t: txt(h), p: p ? txt(p).slice(0, 400) : '', btn: btn ? txt(btn) : '', href: btn ? new URL(abs(btn.getAttribute('href') || '/')).pathname : '' };
+  }).filter(h => h.t && h.t.length < 120 && !/koszyk|zaloguj|newsletter|cookies|szukaj/i.test(h.t));
+  const eyebrowCand = [...doc.querySelectorAll('p,span,div')].map(txt).find(t => t && t.length < 60 && t === t.toUpperCase() && /[A-ZĄĆĘŁŃÓŚŹŻ]{4}/.test(t));
+  // hero
+  const h0 = heads.shift();
+  if (uniqBig[0] || h0) blocks.push(mk('heroSingle', { layout: 'full', align: 'center', img: uniqBig[0] ? I(addRemote(uniqBig[0]), 'Zdjęcie z obecnej strony') : I('13-kat-dziecko', 'Oak&Oats'),
+    eyebrow: eyebrowCand || '', title: h0 ? h0.t : 'Oak & Oats', lead: h0?.p || '', cta: h0?.btn || 'Odkryj kolekcję', href: h0?.href || CATS['37'][1] }));
+  if (cats.size) blocks.push(mk('cats', { eyebrow: '', title: '', items: [...cats.values()].slice(0, 6), h: 72 }));
+  if (prods.size) blocks.push(mk('products', { eyebrow: '', title: 'Produkty', linkText: 'Wszystkie produkty', linkHref: CATS['37'][1], items: [...prods.values()].slice(0, 8) }));
+  heads.slice(0, 6).forEach(h => blocks.push(mk('text', { eyebrow: '', title: h.t, text: h.p, cta: h.btn, href: h.href, bg: 'linen' })));
+  if (uniqBig.length > 1) blocks.push(mk('gallery', { eyebrow: '', title: 'Z obecnej strony', linkText: '', items: uniqBig.slice(1, 13).map(u => ({ img: I(addRemote(u), 'Zdjęcie z obecnej strony'), caption: '', href: '/' })) }));
+  saveUploads();
+  return { blocks, stats: { prods: prods.size, cats: cats.size, imgs: uniqBig.length, texts: heads.length + (h0 ? 1 : 0) } };
+}
+function openImport() {
+  const ta = el('textarea', { 'aria-label': 'Kod źródłowy strony', placeholder: '<!doctype html> … wklej tutaj cały kod źródłowy strony oakandoats.pl …' });
+  const mode = el('select', { id: 'impMode' }, el('option', { value: 'replace' }, 'Zastąp obecne sekcje'), el('option', { value: 'append' }, 'Dodaj na koniec'));
+  const m = modal(el('h2', {}, 'Wczytaj obecną stronę'),
+    el('p', {}, 'Przeglądarka nie pozwala edytorowi samemu pobrać strony z innego adresu, więc zrób to w 10 sekund:'),
+    el('ol', { class: 'steps' }, el('li', {}, 'Otwórz oakandoats.pl w Chrome.'), el('li', {}, 'Naciśnij Ctrl+U (na Macu Cmd+Opcja+U) — otworzy się kod strony.'),
+      el('li', {}, 'Ctrl+A, Ctrl+C i wklej poniżej. Możesz też wkleić sam kod obszaru edytowalnego z panelu Sky-Shop.')),
+    ta, el('div', { class: 'f' }, el('label', { for: 'impMode' }, 'Co zrobić z obecnymi sekcjami'), mode),
+    el('p', { class: 'note' }, 'Zdjęcia z oakandoats.pl zostaną podlinkowane, a nie skopiowane, więc nie trzeba ich ponownie wgrywać. W wersji online podgląd może ich nie pokazać (zabezpieczenie przeglądarki). Lokalnie i w sklepie będą widoczne.'),
+    el('div', { class: 'dlg__foot' }, el('button', { class: 'btn', onclick: () => m.remove() }, 'Anuluj'),
+      el('button', { class: 'btn btn--acc', onclick: () => {
+        if (ta.value.trim().length < 50) { toast('Wklej kod strony'); return; }
+        try {
+          const { blocks, stats } = importPage(ta.value);
+          if (!blocks.length) { toast('Nie znalazłem sekcji w tym kodzie'); return; }
+          STATE.blocks = mode.value === 'replace' ? blocks : [...STATE.blocks, ...blocks];
+          m.remove(); changed(true);
+          toast(`Wczytano: ${stats.texts} tekstów, ${stats.prods} produktów, ${stats.cats} kategorii, ${stats.imgs} zdjęć.`);
+        } catch (e) { toast('Nie udało się odczytać kodu: ' + e.message); }
+      } }, 'Wczytaj')));
+  setTimeout(() => ta.focus(), 50);
 }
 
 /* ============================================================
@@ -1183,7 +1912,7 @@ async function hashBlob(blob) {
 async function fileMap() {
   const files = {};
   for (const [key, alt] of usedImages()) {
-    const m = IMGS.get(key); if (!m) continue;
+    const m = IMGS.get(key); if (!m || m.remote) continue;
     m.hash = m.hash || await hashBlob(m.blob);
     files[key] = { base: `oo-${slug(alt)}-${m.hash}`, w: m.w, h: m.h };
   }
@@ -1238,7 +1967,8 @@ async function openExport() {
       el('li', {}, 'Wgraj pliki z folderu „zdjecia” do menedżera plików Sky-Shop, do folderu o adresie ', el('code', {}, STATE.settings.prefix), '.'),
       el('li', {}, 'Otwórz plik „obszar-edytowalny.html”, skopiuj całość i wklej w Sky-Shop: Wygląd → Strona główna → Obszar edytowalny → tryb „Źródło”.'),
       el('li', {}, 'Zapisz bez przełączania edytora na tryb wizualny.')),
-    el('p', {}, `Zdjęć na stronie: ${names.length}, nowych od ostatniego eksportu: ${fresh.length}. Nazwy plików zmieniają się tylko wtedy, gdy zmieni się zdjęcie, więc stare pliki w Sky-Shop dalej działają.`),
+    el('p', {}, `Zdjęć do wgrania: ${names.length}, nowych od ostatniego eksportu: ${fresh.length}. Zdjęcia produktów i zdjęcia wczytane z oakandoats.pl są już w sklepie, więc kod wskazuje na nie bezpośrednio. Nazwy plików zmieniają się tylko wtedy, gdy zmieni się zdjęcie.`),
+    el('p', { class: 'note' }, 'Widget „Podgląd imienia na koralikach” zawiera mały skrypt. Jeśli Sky-Shop wytnie znacznik <script> z obszaru edytowalnego, podgląd pokaże imię startowe bez zmiany na żywo. Pozostałe widgety działają bez skryptów.'),
     list,
     el('label', { class: 'chk', for: onlyNewId }, onlyNew, 'W paczce tylko nowe zdjęcia'),
     el('div', { class: 'dlg__foot' },
@@ -1275,15 +2005,19 @@ function openProject() {
     el('p', {}, 'Projekt zapisuje się sam w tej przeglądarce. Plik projektu przenosi całą pracę razem z wgranymi zdjęciami na inny komputer albo do innej przeglądarki.'),
     el('div', { class: 'dlg__foot', style: 'justify-content:flex-start' },
       el('button', { class: 'btn btn--acc', onclick: async () => {
-        const uploads = {}; const used = JSON.stringify(STATE);
-        for (const [k, v] of IMGS) if (v.user && used.includes(`"${k}"`)) uploads[k] = await blobToData(v.blob);
-        await saveFile(`oakandoats-projekt-${new Date().toISOString().slice(0, 10)}.json`, new Blob([JSON.stringify({ app: 'oo-editor', state: STATE, uploads })], { type: 'application/json' }));
+        const uploads = {}, remotes = []; const used = JSON.stringify(STATE);
+        for (const [k, v] of IMGS) if (v.user && used.includes(`"${k}"`)) { if (v.blob) uploads[k] = await blobToData(v.blob); else if (v.remote) remotes.push(v.remote); }
+        await saveFile(`oakandoats-projekt-${new Date().toISOString().slice(0, 10)}.json`, new Blob([JSON.stringify({ app: 'oo-editor', state: STATE, uploads, remotes })], { type: 'application/json' }));
       } }, 'Zapisz plik projektu'),
       el('button', { class: 'btn', onclick: () => { m.remove(); $('#projIn').click(); } }, 'Wczytaj plik projektu'),
-      el('button', { class: 'btn btn--danger', onclick: e => {
-        if (!e.currentTarget.dataset.c) { e.currentTarget.dataset.c = 1; e.currentTarget.textContent = 'Na pewno? Kliknij ponownie'; return; }
-        STATE = defaultState(); m.remove(); afterLoad(); snapshot(); saveState(); toast('Przywrócono projekt startowy. Cofnij: Ctrl+Z');
-      } }, 'Zacznij od projektu startowego')),
+      el('button', { class: 'btn', onclick: () => { m.remove(); openImport(); } }, 'Wczytaj stronę z kodu źródłowego')),
+    el('p', {}, 'Zacznij od nowa (obecną pracę cofniesz przez Ctrl+Z):'),
+    el('div', { class: 'dlg__foot', style: 'justify-content:flex-start' },
+      ...[['current', 'Obecna strona oakandoats.pl', currentState], ['proto', 'Prototyp z kaflami (kierunek lifestyle)', protoState]].map(([k, label, fn]) =>
+        el('button', { class: 'btn btn--danger', onclick: e => {
+          if (!e.currentTarget.dataset.c) { e.currentTarget.dataset.c = 1; e.currentTarget.textContent = 'Na pewno? Kliknij ponownie'; return; }
+          STATE = fn(); m.remove(); afterLoad(); snapshot(); saveState(); toast('Gotowe. Cofnij: Ctrl+Z');
+        } }, label))),
     el('div', { class: 'dlg__foot' }, el('button', { class: 'btn', onclick: () => m.remove() }, 'Zamknij')));
 }
 $('#projIn').addEventListener('change', async e => {
@@ -1292,6 +2026,7 @@ $('#projIn').addEventListener('change', async e => {
     const j = JSON.parse(await f.text());
     if (j.app !== 'oo-editor' || !j.state?.blocks) throw new Error('To nie jest plik projektu z tego edytora.');
     for (const [k, d] of Object.entries(j.uploads || {})) await addImage(k, await dataToBlob(d));
+    (j.remotes || []).forEach(addRemote);
     await saveUploads();
     STATE = j.state; afterLoad(); snapshot(); saveState(); toast('Wczytano projekt');
   } catch (err) { toast(err.message || 'Nie udało się wczytać projektu'); }
@@ -1310,8 +2045,9 @@ async function boot() {
   for (const [k, d] of Object.entries(DEFAULT_IMAGES)) await addImage(k, await dataToBlob(d));
   const ups = await DB.get('uploads');
   if (ups) for (const [k, b] of Object.entries(ups)) if (b instanceof Blob) await addImage(k, b);
-  const saved = await DB.get('state');
-  try { STATE = saved ? JSON.parse(saved) : defaultState(); if (!STATE.blocks) throw 0; } catch { STATE = defaultState(); }
+  ((await DB.get('remotes')) || []).forEach(addRemote);
+  const saved = await DB.get('state3');
+  try { STATE = saved ? JSON.parse(saved) : currentState(); if (!STATE.blocks || STATE.v !== 3) throw 0; } catch { STATE = currentState(); }
   OPEN.add(STATE.blocks[0]?.id);
   lastSnap = JSON.stringify(STATE);
   afterLoad();
@@ -1323,6 +2059,10 @@ $('#redo').addEventListener('click', redo);
 $('#codeBtn').addEventListener('click', openCode);
 $('#zipBtn').addEventListener('click', openExport);
 $('#projBtn').addEventListener('click', openProject);
+$('#importBtn').addEventListener('click', openImport);
+$('#tplBtn').addEventListener('click', () => toggleDrawer());
+$('#tplClose').addEventListener('click', () => toggleDrawer(false));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#drawer').classList.contains('is-open')) toggleDrawer(false); });
 $('#paneEdit').addEventListener('click', () => setPane('edit'));
 $('#paneView').addEventListener('click', () => { setPane('view'); renderPreview(); });
 document.querySelectorAll('[data-dev]').forEach(b => b.addEventListener('click', () => {
