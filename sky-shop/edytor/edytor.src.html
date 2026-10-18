@@ -1235,7 +1235,19 @@ function changed(structural = false) {
 }
 
 const DB = {
-  open() { return new Promise((res, rej) => { const r = indexedDB.open('oo-editor', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
+  /* W niektórych ramkach (np. podgląd w claude.ai) IndexedDB nie odpowiada wcale — po 1,5 s pracujemy bez zapisu w przeglądarce. */
+  _db: null,
+  open() {
+    if (!this._db) this._db = new Promise((res, rej) => {
+      const t = setTimeout(() => rej(new Error('IndexedDB nie odpowiada')), 1500);
+      const r = indexedDB.open('oo-editor', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('kv');
+      r.onsuccess = () => { clearTimeout(t); res(r.result); };
+      r.onerror = r.onblocked = () => { clearTimeout(t); rej(r.error || new Error('IndexedDB zablokowane')); };
+    });
+    this._db.catch(() => {});
+    return this._db;
+  },
   async get(k) { try { const d = await this.open(); return await new Promise(r => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => r(q.result); q.onerror = () => r(undefined); }); } catch { return undefined; } },
   async set(k, v) { try { const d = await this.open(); await new Promise(r => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = r; t.onerror = r; }); return true; } catch { return false; } },
 };
