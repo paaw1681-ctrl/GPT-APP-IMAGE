@@ -106,6 +106,8 @@ Pełna lista z opisem w `.env.example`. Skrót:
 | `ALLOWED_USER_EMAILS` | Vercel + `.env.local` | Lista e-maili po przecinku |
 | `APP_BASE_URL` | Vercel + `.env.local` | Publiczny adres aplikacji |
 | `CRON_SECRET` | Vercel (opcjonalnie) | Ochrona endpointów cron |
+| `DORADCA_MODEL` | Vercel (opcjonalnie) | Model czatu doradcy w sklepie, domyślnie `gpt-5.4-mini` |
+| `DORADCA_ALLOWED_ORIGINS` | Vercel (opcjonalnie) | Domeny sklepu, z których widget może wołać `/api/doradca` (po przecinku) |
 
 ## Konfiguracja Supabase
 

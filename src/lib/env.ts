@@ -19,6 +19,9 @@ const serverSchema = z.object({
   ALLOWED_USER_EMAILS: z.string().min(1),
   APP_BASE_URL: z.string().url().optional(),
   CRON_SECRET: z.string().optional(),
+  /** Doradca zakupowy w sklepie: model czatu i domeny, z których widget może wołać API. */
+  DORADCA_MODEL: z.string().min(1).default("gpt-5.4-mini"),
+  DORADCA_ALLOWED_ORIGINS: z.string().default("https://oakandoats.pl,https://www.oakandoats.pl"),
 });
 
 export type ServerEnv = z.infer<typeof serverSchema>;

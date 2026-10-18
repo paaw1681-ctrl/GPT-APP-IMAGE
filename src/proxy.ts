@@ -11,6 +11,9 @@ const PUBLIC_PATHS = [
   "/sw.js",
   "/offline.html",
   "/apple-touch-icon.png",
+  // Doradca zakupowy osadzany w sklepie oakandoats.pl — publiczny z założenia.
+  "/api/doradca",
+  "/doradca.js",
 ];
 
 function isPublicPath(pathname: string): boolean {
