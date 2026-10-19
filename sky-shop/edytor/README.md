@@ -33,7 +33,9 @@ Projekt → „Prototyp z kaflami” wczytuje wcześniejszy projekt w kierunku l
 
 ## Szablony
 
-Przycisk **Szablony** otwiera wysuwany panel z 10 szablonami:
+Przycisk **Szablony** otwiera wysuwany panel z 24 szablonami w dwóch grupach.
+
+**Klasyczne (10):**
 - Oak&Oats — obecny,
 - Atelier Pastel,
 - Quiet Luxury,
@@ -45,7 +47,11 @@ Przycisk **Szablony** otwiera wysuwany panel z 10 szablonami:
 - Soft Boutique,
 - Heritage Paper.
 
+**Biżuteria i handmade (14):** Maison Ivoire, Champagne, Fine Line, Pearl, Nord Gold, Botanique, Clay Studio, Mauve, Goldsmith, Coastal, Terrazzo, Quartz, Gallery Noir, Kraft. Każdy ma własny zestaw fontów, palety, przycisków i układu hero, tak jak w sklepach z biżuterią i rękodziełem z wyższej półki.
+
 Kliknięcie przebudowuje stronę: kolory, fonty, przyciski, zaokrąglenia, podpisy kafli, rytm sekcji i układ hero (kafle, pełny ekran albo pół na pół). Teksty, zdjęcia i linki zostają. Każdy element dopracujesz potem ręcznie w „Ustawienia strony”. Cofnij: Ctrl+Z.
+
+**Edycja szablonu.** Przycisk **Edytuj** przy szablonie otwiera okno z fontami, sześcioma kolorami, przyciskami, zaokrągleniami, fugą, wagą i rozstrzeleniem nagłówków, odstępami, przyciemnieniem i układem hero, z podglądem na żywo. Zmienioną wersję zapisujesz jako nowy szablon w grupie **Moje szablony**. Przycisk **Zapisz obecny wygląd jako mój szablon** zapamiętuje to, co jest teraz na stronie.
 
 ## Widgety dla klientek
 
@@ -57,6 +63,16 @@ Kliknięcie przebudowuje stronę: kolory, fonty, przyciski, zaokrąglenia, podpi
 | Punkty na zdjęciu | Kliknięcie punktu otwiera kartę produktu | nie |
 | Zakładki, FAQ, pasek przewijany | Interaktywne panele | nie |
 | Karty produktów, liczby i atuty, dlaczego my, baner, tekst, galeria, opinie | Treść i sprzedaż | nie |
+| Belka z menu | Pasek ogłoszeń ze zmieniającymi się komunikatami, logo (napis albo obraz), menu z rozwijanymi podmenu, menu „hamburger” na telefonie, ikony szukaj/konto/koszyk. 3 układy, 5 teł, wersaliki, rozstrzelenie, przyklejanie przy przewijaniu, wersja przezroczysta na zdjęciu hero | nie |
+| Galeria z Instagrama | Siatka, mozaika albo pasek zdjęć i przycisk „Obserwuj @oakandoats”. Zdjęcia dodane ręcznie, automatyczny feed JSON (Behold.so) albo wklejony kod widgetu | tylko feed |
+| Hero z wideo | Pełnoekranowe wideo w pętli z nagłówkiem H1; zanim się wczyta, widać zdjęcie | nie |
+| Odliczanie | Licznik do premiery, końca promocji albo ostatniej wysyłki przed świętami; po czasie pokazuje inny tekst | tak, mały |
+| Porównanie produktów | Tabela 2–4 produktów z cechami, ceną, wyróżnieniem i przyciskami | nie |
+| Przyklejony pasek zakupu | Pasek na dole ekranu, wysuwa się po przewinięciu, można go zamknąć | nie |
+
+**Harmonogram sekcji.** Każda sekcja ma pole „Harmonogram”: pokaż od dnia / do dnia. Baner Black Week albo odliczanie do świąt zniknie samo po terminie. W „Ustawienia strony → Podgląd na dzień” sprawdzisz, jak strona będzie wyglądać danego dnia.
+
+**Kontrola.** Przycisk **✓ Kontrola** sprawdza stronę przed publikacją: linki prowadzące donikąd, zdjęcia bez opisu, produkty bez ceny, teksty przykładowe, liczbę nagłówków H1, kontrast kolorów i ton zgodny z briefem marki (np. nadużywane „premium”, wykrzykniki, zdrobnienia). Kliknięcie uwagi przenosi do sekcji. **✨ Opinia AI** ocenia teksty i kolejność sekcji i proponuje konkretne poprawki.
 
 Przy kartach produktów, punktach i doradcy jest przycisk **Wybierz produkt z katalogu**. Wypełnia on nazwę, cenę, link i zdjęcie. Ceny pochodzą z kopii katalogu z 24.08.2026, więc sprawdź aktualne w Sky-Shop.
 
@@ -74,13 +90,25 @@ Generator zna brief marki v2, katalog produktów i układ strony. Nie wymyśla c
 2. Wgraj pliki z folderu `zdjecia` do menedżera plików Sky-Shop. Zdjęcia produktów i zdjęcia z importu już są w sklepie, więc kod wskazuje na nie bezpośrednio.
 3. Wklej `obszar-edytowalny.html` w: Wygląd → Strona główna → Obszar edytowalny → tryb **Źródło**.
 
-Jeśli Sky-Shop wytnie `<script>`, podgląd imienia pokaże imię startowe bez zmiany na żywo. Pozostałe widgety działają na samym HTML i CSS.
+Jeśli na stronie jest **Belka z menu**, paczka zawiera też `belka-na-wszystkich-stronach.html`. Wklej go w Sky-Shop w pole na własny kod ładowany na każdej stronie, a belka pojawi się na wszystkich podstronach. Starą belkę motywu ukryjesz, wpisując jej selektor CSS w ustawieniach bloku. Sprawdź go w narzędziach przeglądarki.
+
+Okno eksportu podaje, które elementy strony mają mały skrypt. Jeśli Sky-Shop wytnie `<script>`:
+- podgląd imienia pokaże imię startowe,
+- odliczanie pokaże stan z chwili eksportu,
+- Instagram pokaże zdjęcia dodane ręcznie,
+- sekcje z harmonogramem będą widoczne cały czas.
+
+Reszta działa na samym HTML i CSS.
 
 ## Do sprawdzenia
 
 - **Adresy produktów** mają format Sky-Shop `/NAZWA-PRODUKTU-p{ID}`. Kopia katalogu nie zawierała linków, więc sprawdź jeden w sklepie.
 - **Zdjęcie hero** obecnej strony (mama z dzieckiem) nie było dostępne w plikach. Podmień je przyciskiem „Wgraj z dysku” albo wczytaj stronę przez import.
 - **Hasła z obecnej strony** (LFGB, „500+ mam nam ufa”) zostały przeniesione bez zmian. Brand OS oznacza je jako do potwierdzenia.
+
+- **Instagram automatycznie:** załóż darmowy feed w Behold.so (połączenie z kontem Instagram), wybierz format JSON i wklej adres. Bez tego dodaj zdjęcia ręcznie albo wklej kod widgetu z LightWidget, SnapWidget lub Elfsight.
+- **Wideo** musi być wgrane do menedżera plików Sky-Shop (MP4, krótkie, bez dźwięku). W polu wklej jego pełny adres.
+- **Linki w belce** (koszyk, konto, wyszukiwarka, kategorie) wpisz z oakandoats.pl. Domyślne „/” wskaże Kontrola.
 
 ## Dla programisty
 

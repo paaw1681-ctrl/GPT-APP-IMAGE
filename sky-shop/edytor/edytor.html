@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400&family=Jost:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,400&family=Bodoni+Moda:ital,wght@0,500;1,400&family=EB+Garamond:ital,wght@0,500;1,400&family=Lora:ital,wght@0,500;1,400&family=Fraunces:ital,wght@0,500;1,400&family=DM+Serif+Display:ital@0;1&family=Cinzel:wght@500&family=Italiana&family=Marcellus&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,400&family=Bodoni+Moda:ital,wght@0,500;1,400&family=EB+Garamond:ital,wght@0,500;1,400&family=Lora:ital,wght@0,500;1,400&family=Fraunces:ital,wght@0,500;1,400&family=DM+Serif+Display:ital@0;1&family=Cinzel:wght@500&family=Italiana&family=Marcellus&family=Libre+Caslon+Display&family=Gilda+Display&family=Bellefair&family=Prata&family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Spectral:ital,wght@0,400;1,400&family=Old+Standard+TT:ital,wght@0,400;1,400&family=Tenor+Sans&display=swap">
 <style>
 /* Układ: dwa panele — po lewej lista sekcji z polami, po prawej podgląd na żywo w ramce o szerokości urządzenia.
    Na telefonie przełącznik „Edycja / Podgląd”. */
@@ -160,6 +160,13 @@ button{cursor:pointer}
 .tpl__meta b{font:500 19px/1.1 var(--disp)}
 .tpl__meta span{font-size:12.5px;color:var(--mute)}
 .tpl__sw{display:flex;gap:4px;margin-top:4px}.tpl__sw i{width:16px;height:16px;border-radius:50%;border:1px solid rgba(0,0,0,.1)}
+.tpl__acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tpl__pvbtn{border:0;padding:0;background:none;display:block;width:100%;cursor:pointer}
+.drawer__sec{margin:10px 0 0;font:600 11px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.tpled{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
+.tpled__pv{position:sticky;top:0;display:grid;gap:8px}
+.tpled__f{display:grid;gap:12px}
+@media (max-width:760px){.tpled{grid-template-columns:minmax(0,1fr)}.tpled__pv{position:static}}
 
 /* generator tekstów */
 .lblrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -171,6 +178,9 @@ button{cursor:pointer}
 .aibox__opt{text-align:left;border:1px solid var(--line);background:var(--field);border-radius:7px;padding:8px 10px;font-size:13px;line-height:1.4;white-space:pre-wrap}
 .aibox__opt:hover{border-color:var(--sel)}
 .aibox__st{font-size:12px;color:var(--mute)}
+.fh{margin:14px 0 2px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.sched{border:1px dashed var(--line);border-radius:8px;padding:6px 10px;margin:8px 0}.sched summary{cursor:pointer;font-size:12px;color:var(--mute)}.sched[open] summary{margin-bottom:6px}
+.chk-l{display:grid;gap:6px;margin:10px 0;max-height:52vh;overflow:auto}.chk-i{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);font:inherit;font-size:13px;cursor:pointer}.chk-i:hover{border-color:var(--sel)}.chk-i b{flex:none;width:18px;text-align:center}.chk-score{display:flex;align-items:baseline;gap:10px;font-size:13px;color:var(--mute)}.chk-score b{font-size:34px;color:var(--fg)}
 .secai{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .cat{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:300px;overflow:auto;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
 .cat button{border:1px solid var(--line);background:var(--field);border-radius:7px;padding:4px;display:grid;gap:3px;text-align:left;font-size:10.5px;line-height:1.25}
@@ -208,6 +218,7 @@ button{cursor:pointer}
       <button class="btn" data-dev="phone" aria-pressed="false">Telefon</button>
     </div>
     <button class="btn btn--acc" id="tplBtn" aria-expanded="false" aria-controls="drawer">Szablony</button>
+    <button class="btn" id="checkBtn" title="Sprawdź stronę przed publikacją">✓ Kontrola</button>
     <span class="sp"></span>
     <span class="status" id="status">Zapisano w przeglądarce</span>
     <button class="btn" id="importBtn" title="Wczytaj obecną stronę z kodu źródłowego">Wczytaj stronę</button>
@@ -341,6 +352,10 @@ const ICONS = {
 const ICON_OPTS = [['leaf', 'Liść'], ['shield', 'Tarcza'], ['gift', 'Prezent'], ['pin', 'Polska / miejsce'], ['badge', 'Certyfikat'], ['heart', 'Serce'], ['hand', 'Ręczna robota'], ['truck', 'Dostawa'], ['spark', 'Błysk'], ['letters', 'Litery / imię']];
 const svgIcon = k => `<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k] || ICONS.leaf}</svg>`;
 const CATALOG_FIELD = { t: 'catalog', label: 'Wypełnij z katalogu Sky-Shop' };
+const IG_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/></svg>';
+const HD_ICONS = { search: '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>', account: '<circle cx="12" cy="8.5" r="4"/><path d="M4.5 20c1.3-3.8 4.2-5.5 7.5-5.5s6.2 1.7 7.5 5.5"/>', cart: '<path d="M5 8h14l-1.2 11.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>' };
+/* data i godzina za `days` dni, 20:00, w formacie pola datetime-local */
+const localDT = days => { const d = new Date(Date.now() + days * 864e5); const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T20:00`; };
 
 const TYPES = {
   heroTiles: {
@@ -909,6 +924,298 @@ r.querySelectorAll('.oo-nb__pal button').forEach(function(t){t.addEventListener(
 ${d.items.map((s, i) => `<div class="oo-st__v" id="${n}-${i}" role="dialog" aria-label="${c.e(s.label)}"><div class="oo-st__card">${c.img(s.img, '420px')}<div class="oo-st__bar"><i></i></div><a class="oo-st__x" href="#${n}" aria-label="Zamknij">×</a>${i > 0 ? `<a class="oo-st__nav oo-st__nav--p" href="#${n}-${i - 1}" aria-label="Poprzednia"></a>` : ''}${i < d.items.length - 1 ? `<a class="oo-st__nav oo-st__nav--n" href="#${n}-${i + 1}" aria-label="Następna"></a>` : ''}<div class="oo-st__txt">${s.title ? `<h3>${c.t(s.title)}</h3>` : ''}${s.text ? `<p>${c.t(s.text)}</p>` : ''}${s.cta ? `<a class="oo-btn oo-btn--solid" href="${c.href(s.href)}">${c.e(s.cta)}</a>` : ''}</div></div></div>`).join('')}</section>`;
     }
   },
+
+  header: {
+    label: 'Belka z menu', kind: 'Nawigacja', desc: 'Własna belka na górze strony: pasek ogłoszeń, logo, menu z rozwijanymi podmenu, ikony i menu na telefonie. Może być przyklejona albo przezroczysta na zdjęciu hero.',
+    make: () => ({ ann: true, annTone: 'ink', annItems: [{ text: 'Darmowa dostawa od 150 zł', href: '' }, { text: 'Każdy produkt robimy ręcznie w Polsce', href: '' }],
+      logoMode: 'text', logo: 'OAK&OATS', logoSub: 'HANDMADE', logoImg: I('', 'Oak&Oats'), logoH: 44,
+      links: [{ label: 'Nowości', href: '/', sub: [] }, { label: 'Produkty', href: '/', sub: [{ label: 'Zawieszki', href: '/' }, { label: 'Gryzaki', href: '/' }] }, { label: 'Kontakt', href: '/', sub: [] }],
+      layout: 'center', bg: 'linen', upper: true, track: 0.18, size: 12, border: true, sticky: true, over: false,
+      icons: false, search: '', account: '', cart: '', hide: '' }),
+    fields: [
+      { t: 'h', label: 'Pasek ogłoszeń' },
+      { t: 'row', fields: [{ t: 'select', k: 'ann', label: 'Pasek', opts: [[true, 'Pokaż'], [false, 'Ukryj']] },
+        { t: 'select', k: 'annTone', label: 'Kolor paska', opts: [['ink', 'Ciemny'], ['taupe', 'Taupe'], ['clay', 'Akcent'], ['linen', 'Jasny']] }] },
+      { t: 'list', k: 'annItems', label: 'Komunikaty (zmieniają się co 5 s)', min: 1, max: 5, title: it => it.text, add: () => ({ text: 'Nowy komunikat', href: '' }), item: [
+        { t: 'text', k: 'text', label: 'Tekst' }, { t: 'text', k: 'href', label: 'Link (opcja)' }] },
+      { t: 'h', label: 'Logo' },
+      { t: 'row', fields: [{ t: 'select', k: 'logoMode', label: 'Logo jako', opts: [['text', 'Napis'], ['img', 'Obraz (PNG/SVG)']] },
+        { t: 'range', k: 'logoH', label: 'Wysokość obrazu', min: 20, max: 100, unit: 'px' }] },
+      { t: 'row', fields: [{ t: 'text', k: 'logo', label: 'Napis' }, { t: 'text', k: 'logoSub', label: 'Podpis pod napisem' }] },
+      { t: 'img', k: 'logoImg', label: 'Obraz logo', crop: false },
+      { t: 'h', label: 'Menu' },
+      { t: 'list', k: 'links', label: 'Pozycje menu', min: 1, max: 9, title: it => it.label, add: () => ({ label: 'Nowa pozycja', href: '/', sub: [] }), item: [
+        { t: 'row', fields: [{ t: 'text', k: 'label', label: 'Nazwa' }, { t: 'text', k: 'href', label: 'Link', hint: LINK_HINT }] },
+        { t: 'list', k: 'sub', label: 'Podmenu (rozwija się po najechaniu)', min: 0, max: 12, title: it => it.label, add: () => ({ label: 'Podstrona', href: '/' }), item: [
+          { t: 'row', fields: [{ t: 'text', k: 'label', label: 'Nazwa' }, { t: 'text', k: 'href', label: 'Link' }] }] }] },
+      { t: 'h', label: 'Wygląd belki' },
+      { t: 'select', k: 'layout', label: 'Układ', opts: [['center', 'Logo na środku, menu pod spodem'], ['left', 'Logo po lewej, menu obok'], ['split', 'Menu po obu stronach logo']] },
+      { t: 'row', fields: [{ t: 'select', k: 'bg', label: 'Tło', opts: [['linen', 'Jasne'], ['oat', 'Jak strona'], ['white', 'Białe'], ['taupe', 'Taupe'], ['ink', 'Ciemne']] },
+        { t: 'select', k: 'upper', label: 'Menu', opts: [[true, 'Wersaliki'], [false, 'Zwykłe litery']] }] },
+      { t: 'row', fields: [{ t: 'range', k: 'size', label: 'Wielkość liter', min: 10, max: 17, unit: 'px' }, { t: 'range', k: 'track', label: 'Odstęp liter', min: 0, max: 0.4, unit: 'em' }] },
+      { t: 'row', fields: [{ t: 'select', k: 'sticky', label: 'Przy przewijaniu', opts: [[true, 'Zostaje na górze'], [false, 'Przewija się']] },
+        { t: 'select', k: 'border', label: 'Linia pod belką', opts: [[true, 'Tak'], [false, 'Nie']] }] },
+      { t: 'select', k: 'over', label: 'Położenie', opts: [[false, 'Nad treścią'], [true, 'Przezroczysta na zdjęciu hero']], hint: 'Przy belce przezroczystej ustaw „Nagłówek sklepu” w ustawieniach strony na 0 px.' },
+      { t: 'h', label: 'Ikony i nagłówek sklepu' },
+      { t: 'select', k: 'icons', label: 'Ikony po prawej', opts: [[false, 'Bez ikon'], [true, 'Szukaj, konto, koszyk']] },
+      { t: 'row', fields: [{ t: 'text', k: 'search', label: 'Link: wyszukiwarka' }, { t: 'text', k: 'account', label: 'Link: konto' }] },
+      { t: 'text', k: 'cart', label: 'Link: koszyk', hint: 'Skopiuj adresy z oakandoats.pl. Puste pole ukrywa ikonę.' },
+      { t: 'text', k: 'hide', label: 'Ukryj nagłówek motywu (selektor CSS, opcja)', hint: 'Np. #header. Zadziała dopiero w sklepie. Zostaw puste, jeśli nie wiesz — wtedy obie belki będą widoczne.' },
+    ],
+    css: `.oo-hd{position:relative;z-index:50;font:500 var(--hd-size,12px)/1 var(--oo-sans);--hd-fg:var(--oo-ink)}
+.oo-hd--sticky{position:sticky;top:0}
+.oo-hd--over{position:absolute;top:0;left:0;right:0;--hd-fg:var(--oo-linen)}
+.oo-hd--over .oo-hd__bar{background:transparent!important}
+.oo-hd--over+*{margin-top:0!important}
+.oo-hd ul{list-style:none;margin:0;padding:0}
+.oo-hd__ann{display:grid;place-items:center;text-align:center;min-height:36px;padding:9px var(--oo-gutter);font:500 .68rem/1.3 var(--oo-sans);letter-spacing:.16em;text-transform:uppercase;overflow:hidden}
+.oo-hd__ann>*{grid-area:1/1}
+.oo-hd__ann--ink{background:var(--oo-ink);color:var(--oo-linen)}.oo-hd__ann--taupe{background:var(--oo-taupe);color:#fff}.oo-hd__ann--clay{background:var(--oo-clay);color:#fff}.oo-hd__ann--linen{background:var(--oo-linen);color:var(--oo-ink)}
+.oo-hd__bar{display:grid;grid-template-columns:1fr auto 1fr;grid-template-areas:"l logo r" "nav nav nav";align-items:center;column-gap:28px;padding:20px var(--oo-gutter) 0;background:var(--hd-bg);color:var(--hd-fg)}
+.oo-hd--border .oo-hd__bar{border-bottom:1px solid color-mix(in srgb,var(--hd-fg) 14%,transparent)}
+.oo-hd__l{grid-area:l;display:flex;align-items:center;gap:28px;min-width:0}
+.oo-hd__r{grid-area:r;display:flex;align-items:center;justify-content:flex-end;gap:28px;min-width:0}
+.oo-hd__logo{grid-area:logo;display:grid;justify-items:center;text-align:center;font:var(--oo-head-weight) 1.75rem/1 var(--oo-serif);letter-spacing:.18em;white-space:nowrap}
+.oo-hd__logo small{margin-top:7px;font:500 .55rem/1 var(--oo-sans);letter-spacing:.5em}
+.oo-hd__logo img{width:auto;max-width:260px}
+.oo-hd__nav{grid-area:nav;display:flex;justify-content:center}
+.oo-hd__menu{display:flex;flex-wrap:wrap;gap:0 32px}
+.oo-hd__menu>li>a{display:block;padding:18px 0;text-transform:var(--hd-tt);letter-spacing:var(--hd-track);background:linear-gradient(currentColor,currentColor) 0 calc(100% - 12px)/0 1px no-repeat;transition:background-size .35s}
+.oo-hd__menu>li>a:hover,.oo-hd__menu>li:focus-within>a{background-size:100% 1px}
+.oo-hd .has-sub{position:relative}
+.oo-hd .has-sub>a::after{content:"";display:inline-block;width:5px;height:5px;margin:0 0 3px 8px;border:solid currentColor;border-width:0 1px 1px 0;transform:rotate(45deg)}
+.oo-hd__drop{position:absolute;top:100%;left:50%;min-width:210px;translate:-50% 8px;padding:10px 0;background:var(--oo-linen);color:var(--oo-ink);box-shadow:0 18px 40px rgba(30,26,22,.12);border-radius:var(--oo-radius);opacity:0;visibility:hidden;transition:opacity .25s,translate .25s,visibility .25s;text-align:left;z-index:5}
+.oo-hd .has-sub:hover>.oo-hd__drop,.oo-hd .has-sub:focus-within>.oo-hd__drop{opacity:1;visibility:visible;translate:-50% 0}
+.oo-hd__drop a{display:block;padding:10px 22px;font-size:.92rem;letter-spacing:.03em;white-space:nowrap}
+.oo-hd__drop a:hover{background:var(--oo-oat)}
+.oo-hd__icons{display:flex;gap:6px}
+.oo-hd__icons a{display:grid;place-items:center;width:36px;height:36px}
+.oo-hd__mob{display:none}
+.oo-hd--left .oo-hd__bar{grid-template-columns:auto 1fr auto;grid-template-areas:"logo nav r";padding-block:6px}
+.oo-hd--left .oo-hd__l{display:none}
+.oo-hd--left .oo-hd__logo{justify-items:start}
+.oo-hd--split .oo-hd__bar{grid-template-areas:"l logo r";padding-block:6px}
+.oo-hd--split .oo-hd__l{justify-content:flex-end}
+.oo-hd--split .oo-hd__icons{margin-left:auto}
+@supports (animation-timeline:scroll()){.oo-hd--sticky .oo-hd__bar{animation:oo-hd-stuck linear both;animation-timeline:scroll(root);animation-range:0 140px}}
+@keyframes oo-hd-stuck{to{box-shadow:0 10px 30px rgba(30,26,22,.08)}}
+@media (prefers-reduced-motion:reduce){.oo-hd__ann>:not(:first-child){display:none}}
+@media (max-width:860px){
+.oo-hd .oo-hd__nav,.oo-hd__l>.oo-hd__menu,.oo-hd__r>.oo-hd__menu{display:none}
+.oo-hd .oo-hd__bar{grid-template-columns:1fr auto 1fr;grid-template-areas:"l logo r";padding-block:12px}
+.oo-hd .oo-hd__l{display:flex}
+.oo-hd .oo-hd__logo{justify-items:center;font-size:1.35rem}
+.oo-hd__mob{display:block}
+.oo-hd__mob>summary{list-style:none;cursor:pointer;width:36px;height:36px;display:grid;align-content:center;gap:5px}
+.oo-hd__mob>summary::-webkit-details-marker{display:none}
+.oo-hd__mob>summary i{display:block;height:1.5px;width:22px;background:currentColor;transition:transform .3s,opacity .3s}
+.oo-hd__mob[open]>summary i:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.oo-hd__mob[open]>summary i:nth-child(2){opacity:0}
+.oo-hd__mob[open]>summary i:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.oo-hd__panel{position:absolute;left:0;right:0;top:100%;display:grid;max-height:calc(100svh - 120px);overflow:auto;padding:6px var(--oo-gutter) 26px;background:var(--oo-linen);color:var(--oo-ink);box-shadow:0 24px 40px rgba(30,26,22,.14);animation:oo-fade .3s ease}
+.oo-hd__panel>a,.oo-hd__panel summary{display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid color-mix(in srgb,var(--oo-ink) 12%,transparent);text-transform:var(--hd-tt);letter-spacing:var(--hd-track);cursor:pointer;list-style:none}
+.oo-hd__panel summary::-webkit-details-marker{display:none}
+.oo-hd__panel summary::after{content:"+"}.oo-hd__panel [open]>summary::after{content:"–"}
+.oo-hd__panel details a{display:block;padding:12px 0 12px 14px;font-size:.95rem;color:var(--oo-muted)}
+.oo-hd__icons a:not(:last-child){display:none}}
+@keyframes oo-fade{from{opacity:.25}to{opacity:1}}`,
+    render: (d, c, id) => {
+      const BG = { linen: 'var(--oo-linen)', oat: 'var(--oo-oat)', white: '#fff', taupe: 'var(--oo-taupe)', ink: 'var(--oo-ink)' };
+      c.rule(`.oo-b${id}{--hd-bg:${BG[d.bg] || BG.linen};--hd-size:${d.size}px;--hd-tt:${d.upper ? 'uppercase' : 'none'};--hd-track:${d.track}em${d.bg === 'ink' ? ';--hd-fg:var(--oo-linen)' : d.bg === 'taupe' ? ';--hd-fg:#fff' : ''}}`);
+      const msgs = d.annItems.filter(a => a.text);
+      const n = msgs.length, dur = 5;
+      if (n > 1) {
+        const p = 100 / n;
+        c.rule(`.oo-b${id} .oo-hd__msg{animation:oo-ann${id} ${n * dur}s infinite both;animation-delay:calc(var(--i) * ${dur}s)}
+@keyframes oo-ann${id}{0%{opacity:0;transform:translateY(6px)}${(p * .08).toFixed(2)}%,${(p * .92).toFixed(2)}%{opacity:1;transform:none}${p.toFixed(2)}%,100%{opacity:0;transform:translateY(-6px)}}`);
+      }
+      if (c.mode === 'export' && d.hide && /^[\w\s#.\-\[\]=>:,"'()*]+$/.test(d.hide)) c.rule(`${d.hide}{display:none!important}`);
+      const ann = d.ann && n ? `<div class="oo-hd__ann oo-hd__ann--${d.annTone}">${msgs.map((a, i) => `<span class="oo-hd__msg" style="--i:${i}">${a.href ? `<a href="${c.href(a.href)}">${c.e(a.text)}</a>` : c.e(a.text)}</span>`).join('')}</div>` : '';
+      if (d.logoMode === 'img') c.rule(`.oo-b${id} .oo-hd__logo img{height:${d.logoH}px}`);
+      const logoImg = d.logoMode === 'img' ? c.img(d.logoImg, '260px', true, 'plain') : '';
+      const logo = `<a class="oo-hd__logo" href="/">${logoImg || `${c.e(d.logo)}${d.logoSub ? `<small>${c.e(d.logoSub)}</small>` : ''}`}</a>`;
+      const li = l => `<li${l.sub?.length ? ' class="has-sub"' : ''}><a href="${c.href(l.href)}">${c.e(l.label)}</a>${l.sub?.length ? `<ul class="oo-hd__drop">${l.sub.map(s => `<li><a href="${c.href(s.href)}">${c.e(s.label)}</a></li>`).join('')}</ul>` : ''}</li>`;
+      const ul = arr => arr.length ? `<ul class="oo-hd__menu">${arr.map(li).join('')}</ul>` : '';
+      const split = d.layout === 'split', half = Math.ceil(d.links.length / 2);
+      const mob = `<details class="oo-hd__mob"><summary aria-label="Menu"><i></i><i></i><i></i></summary><nav class="oo-hd__panel" aria-label="Menu">${d.links.map(l => l.sub?.length
+        ? `<details><summary>${c.e(l.label)}</summary><a href="${c.href(l.href)}">Wszystko</a>${l.sub.map(s => `<a href="${c.href(s.href)}">${c.e(s.label)}</a>`).join('')}</details>`
+        : `<a href="${c.href(l.href)}">${c.e(l.label)}</a>`).join('')}</nav></details>`;
+      const ic = d.icons ? [['search', 'Szukaj'], ['account', 'Konto'], ['cart', 'Koszyk']].filter(([k]) => d[k]).map(([k, l]) => `<a href="${c.href(d[k])}" aria-label="${l}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${HD_ICONS[k]}</svg></a>`).join('') : '';
+      const icons = ic ? `<div class="oo-hd__icons">${ic}</div>` : '';
+      return `<header class="oo-hd oo-hd--${d.layout}${d.border ? ' oo-hd--border' : ''}${d.over ? ' oo-hd--over' : d.sticky ? ' oo-hd--sticky' : ''} oo-b${id}"${c.edit(id)}>${ann}<div class="oo-hd__bar">
+<div class="oo-hd__l">${mob}${split ? ul(d.links.slice(0, half)) : ''}</div>${logo}<div class="oo-hd__r">${split ? ul(d.links.slice(half)) : ''}${icons}</div>${split ? '' : `<nav class="oo-hd__nav" aria-label="Menu główne">${ul(d.links)}</nav>`}
+</div></header>`;
+    }
+  },
+
+  instagram: {
+    label: 'Galeria z Instagrama', kind: 'Social', desc: 'Siatka, mozaika albo pasek zdjęć z Instagrama i przycisk do profilu. Zdjęcia dodajesz ręcznie, podpinasz automatyczny feed (np. Behold) albo wklejasz kod gotowego widgetu.',
+    make: () => ({ eyebrow: 'Instagram', title: 'Zajrzyj do *pracowni*', sub: '', handle: 'oakandoats', cta: 'Obserwuj', mode: 'manual', feed: '', embed: '',
+      layout: 'grid', count: 6, gap: 4, items: Array.from({ length: 6 }, () => ({ img: I('', ''), href: '' })) }),
+    fields: [...HEAD_FIELDS,
+      { t: 'row', fields: [{ t: 'text', k: 'handle', label: 'Nazwa profilu (bez @)' }, { t: 'text', k: 'cta', label: 'Tekst przycisku' }] },
+      { t: 'select', k: 'mode', label: 'Skąd zdjęcia', opts: [['manual', 'Dodane ręcznie (zawsze działa)'], ['feed', 'Automatyczny feed JSON (np. Behold.so)'], ['embed', 'Kod widgetu (LightWidget, SnapWidget, Elfsight…)']] },
+      { t: 'text', k: 'feed', label: 'Adres feedu JSON', hint: 'Behold.so: połącz konto Instagram, utwórz feed typu JSON i wklej adres https://feeds.behold.so/… Do czasu wczytania (i gdy feed nie odpowie) widać zdjęcia dodane niżej.' },
+      { t: 'area', k: 'embed', label: 'Kod widgetu', hint: 'Wklej kod z serwisu z widgetem Instagrama. Działa tylko w trybie „Kod widgetu”.' },
+      { t: 'row', fields: [{ t: 'select', k: 'layout', label: 'Układ', opts: [['grid', 'Siatka'], ['mosaic', 'Mozaika'], ['strip', 'Pasek przewijany']] },
+        { t: 'range', k: 'count', label: 'Ile zdjęć', min: 3, max: 12, unit: '' }] },
+      { t: 'range', k: 'gap', label: 'Odstęp między zdjęciami', min: 0, max: 20, unit: 'px' },
+      { t: 'list', k: 'items', label: 'Zdjęcia (także zapas dla feedu)', min: 1, max: 12, title: (it, i) => 'Zdjęcie', add: () => ({ img: I('', ''), href: '' }), item: [
+        { t: 'img', k: 'img', label: 'Zdjęcie (kwadrat)', mobile: false }, { t: 'text', k: 'href', label: 'Link do posta (opcja)', hint: 'Puste pole prowadzi do profilu.' }] }],
+    css: `.oo-ig{padding-block:var(--oo-sec)}
+.oo-ig .oo-head{justify-content:center;text-align:center}
+.oo-ig__grid{display:grid;grid-template-columns:repeat(var(--ig-n),1fr);gap:var(--ig-gap)}
+.oo-ig__i{position:relative;display:block;aspect-ratio:1;overflow:hidden;background:var(--oo-taupe);border-radius:calc(var(--oo-radius) / 2)}
+.oo-ig__ov{position:absolute;inset:0;z-index:1;display:grid;place-items:center;color:#fff;background:rgba(30,26,22,.32);opacity:0;transition:opacity .3s}
+.oo-ig__i:hover .oo-ig__ov,.oo-ig__i:focus-visible .oo-ig__ov{opacity:1}
+.oo-ig__i:hover .oo-fill{transform:scale(1.05)}
+.oo-ig__grid--mosaic{grid-template-columns:repeat(4,1fr)}
+.oo-ig__grid--mosaic .oo-ig__i:first-child{grid-column:span 2;grid-row:span 2}
+.oo-ig__grid--strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-inline:var(--oo-gutter)}
+.oo-ig__grid--strip .oo-ig__i{flex:0 0 clamp(170px,22vw,300px);scroll-snap-align:start}
+.oo-ig__foot{display:flex;justify-content:center;margin-top:clamp(24px,3vw,40px)}
+.oo-ig__foot .oo-btn{gap:10px}
+.oo-ig__embed{padding-inline:var(--oo-gutter)}
+.oo-ig__ph{text-align:center;color:var(--oo-muted);padding:48px 16px;border:1px dashed currentColor}
+@media (max-width:760px){.oo-ig__grid:not(.oo-ig__grid--strip){grid-template-columns:repeat(3,1fr)}.oo-ig__grid--mosaic .oo-ig__i:first-child{grid-column:span 2;grid-row:span 2}}`,
+    render: (d, c, id) => {
+      const h = String(d.handle || '').replace(/^@/, '').trim();
+      const prof = h ? `https://www.instagram.com/${encodeURIComponent(h)}/` : '';
+      c.rule(`.oo-b${id}{--ig-n:${Math.min(6, d.count)};--ig-gap:${d.gap}px}`);
+      const tile = (it, i) => `<a class="oo-ig__i" href="${c.href(it.href || prof)}" target="_blank" rel="noopener"${c.edit(id, 'items.' + i)}>${c.img(it.img, '(max-width:760px) 33vw, 17vw', false, 'small')}<span class="oo-ig__ov">${IG_SVG}</span></a>`;
+      const feed = d.mode === 'feed' && /^https:\/\//.test(d.feed || '');
+      const body = d.mode === 'embed'
+        ? `<div class="oo-ig__embed">${d.embed || (c.mode === 'preview' ? '<p class="oo-ig__ph">Wklej kod widgetu w panelu po lewej.</p>' : '')}</div>`
+        : `<div class="oo-ig__grid oo-ig__grid--${d.layout}"${feed ? ` data-feed="${c.e(d.feed)}" data-n="${d.count}"` : ''}>${d.items.slice(0, d.count).map(tile).join('')}</div>`;
+      const script = feed ? `<script>(function(){var g=document.querySelector(${JSON.stringify(`#oo-ig${id} [data-feed]`)});if(!g||!window.fetch)return;var ic=${JSON.stringify(IG_SVG)};
+fetch(g.getAttribute('data-feed')).then(function(r){return r.json()}).then(function(j){var p=Array.isArray(j)?j:(j.posts||j.data||[]),h='',n=0;
+p.forEach(function(x){if(n>=+g.getAttribute('data-n'))return;var s=(x.sizes&&x.sizes.medium&&x.sizes.medium.mediaUrl)||x.thumbnailUrl||(x.mediaType!=='VIDEO'&&x.mediaUrl)||x.media_url||'';if(!/^https:\\/\\//.test(s))return;
+var l=/^https:\\/\\//.test(x.permalink||'')?x.permalink:${JSON.stringify(prof || '#')},a=String(x.prunedCaption||x.caption||'Post na Instagramie').replace(/[<>"&]/g,'').slice(0,110);n++;
+h+='<a class="oo-ig__i" href="'+l+'" target="_blank" rel="noopener"><img class="oo-fill" src="'+s+'" alt="'+a+'" loading="lazy"><span class="oo-ig__ov">'+ic+'</span></a>'});if(h)g.innerHTML=h}).catch(function(){})})();<\/script>` : '';
+      return `<section class="oo-ig oo-b${id}" id="oo-ig${id}"${c.edit(id)}>${head(c, d)}${body}${prof && d.cta ? `<div class="oo-ig__foot"><a class="oo-btn oo-btn--dark" href="${prof}" target="_blank" rel="noopener">${IG_SVG}<span>${c.e(d.cta)} @${c.e(h)}</span></a></div>` : ''}${script}</section>`;
+    }
+  },
+
+  video: {
+    label: 'Hero z wideo', kind: 'Pełny ekran', desc: 'Pełnoekranowe wideo w tle (bez dźwięku, w pętli) z nagłówkiem i przyciskiem. Zanim wideo się wczyta — i gdy ktoś wyłączył animacje — widać zdjęcie.',
+    make: () => ({ src: '', poster: I('', ''), eyebrow: 'Pracownia', title: 'Zrobione *ręcznie*, z myślą o Tobie', lead: '', cta: 'Zobacz kolekcję', href: '/', h: 86, hm: 76, align: 'left' }),
+    fields: [
+      { t: 'text', k: 'src', label: 'Adres pliku wideo (MP4)', hint: 'Wgraj krótkie wideo MP4 (5–15 s, najlepiej do 6 MB, bez dźwięku) do menedżera plików Sky-Shop i wklej tu jego pełny adres.' },
+      { t: 'img', k: 'poster', label: 'Zdjęcie zastępcze', mobile: true },
+      { t: 'text', k: 'eyebrow', label: 'Nadtytuł' }, { t: 'text', k: 'title', label: 'Nagłówek H1', hint: TITLE_HINT }, { t: 'area', k: 'lead', label: 'Opis' },
+      { t: 'row', fields: [{ t: 'text', k: 'cta', label: 'Przycisk' }, { t: 'text', k: 'href', label: 'Link' }] },
+      { t: 'select', k: 'align', label: 'Tekst', opts: [['left', 'Na dole po lewej'], ['center', 'Na środku']] },
+      { t: 'row', fields: [{ t: 'range', k: 'h', label: 'Wysokość — komputer', min: 50, max: 100, unit: '%' }, { t: 'range', k: 'hm', label: 'Wysokość — telefon', min: 50, max: 100, unit: '%' }] }],
+    css: `.oo-vid{position:relative;overflow:hidden;display:grid;align-items:end;min-height:420px;color:var(--oo-linen);background:var(--oo-taupe)}
+.oo-vid__v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.oo-vid::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(30,26,22,.08) 30%,rgba(30,26,22,var(--oo-shade)))}
+.oo-vid__in{position:relative;z-index:2;display:grid;gap:16px;max-width:46rem;padding:clamp(32px,5vw,84px) var(--oo-gutter)}
+.oo-vid__in h1{font:var(--oo-head-weight) clamp(2.4rem,5vw,4.6rem)/1.02 var(--oo-serif);text-wrap:balance}
+.oo-vid__in p{max-width:34em;opacity:.9}
+.oo-vid__in .oo-btn{justify-self:start}
+.oo-vid--center{align-items:center;text-align:center}.oo-vid--center::after{background:rgba(30,26,22,calc(var(--oo-shade) * .6))}
+.oo-vid--center .oo-vid__in{margin-inline:auto;justify-items:center}.oo-vid--center .oo-vid__in .oo-btn{justify-self:center}
+@media (prefers-reduced-motion:reduce){.oo-vid__v{display:none}}`,
+    render: (d, c, id) => {
+      c.rule(`.oo-b${id}{height:calc(${d.h}svh - var(--oo-offset))}`);
+      c.ruleM(`.oo-b${id}{height:calc(${d.hm}svh - var(--oo-offset))}`);
+      const ok = /^(https?:)?\/\//.test(d.src || '') || /^\//.test(d.src || '');
+      return `<section class="oo-vid oo-vid--${d.align} oo-b${id}"${c.edit(id)}>${c.img(d.poster, '100vw', true)}${ok ? `<video class="oo-vid__v" autoplay muted loop playsinline preload="metadata" aria-hidden="true"><source src="${c.e(d.src)}" type="video/${/\.webm(\?|$)/i.test(d.src) ? 'webm' : 'mp4'}"></video>` : ''}<div class="oo-vid__in">${d.eyebrow ? `<span class="oo-eyebrow">${c.e(d.eyebrow)}</span>` : ''}${d.title ? `<h1>${c.t(d.title)}</h1>` : ''}${d.lead ? `<p>${c.t(d.lead)}</p>` : ''}${d.cta ? `<a class="oo-btn oo-btn--solid" href="${c.href(d.href)}">${c.e(d.cta)}</a>` : ''}</div></section>`;
+    }
+  },
+
+  countdown: {
+    label: 'Odliczanie', kind: 'Sprzedaż', desc: 'Licznik do premiery kolekcji, końca promocji albo ostatniego dnia wysyłki przed świętami. Po czasie sam pokazuje inny tekst. Zawiera mały skrypt.',
+    make: () => ({ eyebrow: 'Premiera', title: 'Nowa kolekcja *już wkrótce*', sub: '', date: localDT(14), after: 'Kolekcja jest już dostępna.', cta: 'Zobacz', href: '/', tone: 'ink' }),
+    fields: [{ t: 'text', k: 'eyebrow', label: 'Nadtytuł' }, { t: 'text', k: 'title', label: 'Tytuł', hint: TITLE_HINT }, { t: 'area', k: 'sub', label: 'Opis (opcja)' },
+      { t: 'dt', k: 'date', label: 'Odliczaj do' },
+      { t: 'text', k: 'after', label: 'Tekst po czasie' },
+      { t: 'row', fields: [{ t: 'text', k: 'cta', label: 'Przycisk (opcja)' }, { t: 'text', k: 'href', label: 'Link' }] },
+      { t: 'select', k: 'tone', label: 'Tło', opts: [['ink', 'Ciemne'], ['linen', 'Jasne'], ['taupe', 'Taupe'], ['clay', 'Akcent']] }],
+    css: `.oo-cd{padding:calc(var(--oo-sec) * .8) var(--oo-gutter);text-align:center}
+.oo-cd--ink{background:var(--oo-ink);color:var(--oo-linen)}.oo-cd--linen{background:var(--oo-linen)}.oo-cd--taupe{background:var(--oo-taupe);color:#fff}.oo-cd--clay{background:var(--oo-clay);color:#fff}
+.oo-cd__in{display:grid;justify-items:center;gap:18px;max-width:880px;margin-inline:auto}
+.oo-cd .oo-eyebrow{opacity:.75}
+.oo-cd__in>p{max-width:38em;opacity:.8}
+.oo-cd__clock{display:grid;grid-template-columns:repeat(4,minmax(64px,1fr));gap:clamp(8px,1.6vw,20px);margin-block:6px}
+.oo-cd__clock div{display:grid;gap:8px;padding:clamp(14px,2vw,24px) 6px;border:1px solid color-mix(in srgb,currentColor 22%,transparent);border-radius:var(--oo-radius)}
+.oo-cd__clock b{font:var(--oo-head-weight) clamp(2rem,5vw,3.6rem)/1 var(--oo-serif);font-variant-numeric:tabular-nums}
+.oo-cd__clock span{font:500 .66rem/1 var(--oo-sans);letter-spacing:.22em;text-transform:uppercase;opacity:.7}
+.oo-cd [hidden]{display:none!important}
+.oo-cd__after{font:var(--oo-head-weight) clamp(1.3rem,2.2vw,1.8rem)/1.2 var(--oo-serif)}`,
+    render: (d, c, id) => {
+      const end = new Date(d.date).getTime(), left = Math.max(0, (end || 0) - Date.now());
+      const parts = [[Math.floor(left / 864e5), 'dni'], [Math.floor(left / 36e5) % 24, 'godz.'], [Math.floor(left / 6e4) % 60, 'min'], [Math.floor(left / 1e3) % 60, 'sek']];
+      const sid = `oo-cd${id}`;
+      return `<section class="oo-cd oo-cd--${d.tone} oo-b${id}" id="${sid}" data-end="${c.e(d.date)}"${c.edit(id)}><div class="oo-cd__in">${d.eyebrow ? `<span class="oo-eyebrow">${c.e(d.eyebrow)}</span>` : ''}${d.title ? `<h2 class="oo-h2">${c.t(d.title)}</h2>` : ''}${d.sub ? `<p>${c.t(d.sub)}</p>` : ''}
+<div class="oo-cd__clock" role="timer"${left ? '' : ' hidden'}>${parts.map(([v, l]) => `<div><b>${String(v).padStart(2, '0')}</b><span>${l}</span></div>`).join('')}</div>
+<p class="oo-cd__after"${left ? ' hidden' : ''}>${c.t(d.after)}</p>${d.cta ? `<a class="oo-btn ${d.tone === 'linen' ? 'oo-btn--dark' : 'oo-btn--solid'}" href="${c.href(d.href)}">${c.e(d.cta)}</a>` : ''}</div>
+<script>(function(){var r=document.getElementById(${JSON.stringify(sid)});if(!r)return;var e=new Date(r.getAttribute('data-end')).getTime(),b=r.querySelectorAll('.oo-cd__clock b'),k=r.querySelector('.oo-cd__clock'),a=r.querySelector('.oo-cd__after');
+function p(n){return n<10?'0'+n:''+n}function t(){var l=e-Date.now();if(!(l>0)){k.hidden=true;a.hidden=false;return}k.hidden=false;a.hidden=true;b[0].textContent=p(Math.floor(l/864e5));b[1].textContent=p(Math.floor(l/36e5)%24);b[2].textContent=p(Math.floor(l/6e4)%60);b[3].textContent=p(Math.floor(l/1e3)%60);setTimeout(t,1000-Date.now()%1000)}t()})();<\/script></section>`;
+    }
+  },
+
+  compare: {
+    label: 'Porównanie produktów', kind: 'Pomaga kupić', desc: 'Tabela 2–4 produktów obok siebie: co zawiera, czym się różni, cena i przycisk. Ułatwia wybór między podobnymi produktami.',
+    make: () => ({ eyebrow: 'Porównaj', title: 'Który *wybrać*?', sub: '',
+      cols: [{ img: I('', ''), name: 'Produkt 1', price: '', href: '/', badge: '', cta: 'Wybieram' }, { img: I('', ''), name: 'Produkt 2', price: '', href: '/', badge: 'Najczęściej wybierany', cta: 'Wybieram' }, { img: I('', ''), name: 'Produkt 3', price: '', href: '/', badge: '', cta: 'Wybieram' }],
+      rows: [{ label: 'Cecha 1', a: '✓', b: '✓', c: '✓', d: '' }, { label: 'Cecha 2', a: '—', b: '✓', c: '✓', d: '' }] }),
+    fields: [...HEAD_FIELDS,
+      { t: 'list', k: 'cols', label: 'Produkty (kolumny)', min: 2, max: 4, title: it => it.name, add: () => ({ img: I('', ''), name: 'Produkt', price: '', href: '/', badge: '', cta: 'Wybieram' }), item: [
+        CATALOG_FIELD, { t: 'img', k: 'img', label: 'Zdjęcie', crop: false }, { t: 'text', k: 'name', label: 'Nazwa' },
+        { t: 'row', fields: [{ t: 'text', k: 'price', label: 'Cena' }, { t: 'text', k: 'href', label: 'Link' }] },
+        { t: 'row', fields: [{ t: 'text', k: 'badge', label: 'Wyróżnienie (opcja)' }, { t: 'text', k: 'cta', label: 'Przycisk' }] }] },
+      { t: 'list', k: 'rows', label: 'Cechy (wiersze)', min: 1, max: 12, title: it => it.label, add: () => ({ label: 'Cecha', a: '✓', b: '✓', c: '', d: '' }), item: [
+        { t: 'text', k: 'label', label: 'Cecha', hint: 'W komórkach wpisz ✓, — albo krótki tekst.' },
+        { t: 'row', fields: [{ t: 'text', k: 'a', label: 'Produkt 1' }, { t: 'text', k: 'b', label: 'Produkt 2' }] },
+        { t: 'row', fields: [{ t: 'text', k: 'c', label: 'Produkt 3' }, { t: 'text', k: 'd', label: 'Produkt 4' }] }] }],
+    css: `.oo-cmp{padding-block:var(--oo-sec)}
+.oo-cmp .oo-head{justify-content:center;text-align:center}
+.oo-cmp__wrap{overflow-x:auto;padding-inline:var(--oo-gutter);scrollbar-width:thin}
+.oo-cmp table{width:100%;max-width:1100px;margin-inline:auto;border-collapse:collapse;min-width:560px;font-size:.95rem}
+.oo-cmp th,.oo-cmp td{padding:14px 12px;text-align:center;border-bottom:1px solid color-mix(in srgb,var(--oo-ink) 12%,transparent);vertical-align:middle}
+.oo-cmp tbody th{min-width:130px;text-align:left;font-weight:500;color:var(--oo-muted);position:sticky;left:0;background:var(--oo-oat);z-index:1}
+.oo-cmp thead th{vertical-align:bottom;font-weight:400}
+.oo-cmp__p{display:grid;justify-items:center;gap:8px}
+.oo-cmp__p img{width:min(160px,100%);aspect-ratio:1;object-fit:cover;border-radius:var(--oo-radius);background:var(--oo-linen)}
+.oo-cmp__p b{font:500 1.08rem/1.2 var(--oo-serif)}
+.oo-cmp__p span{color:var(--oo-muted);font-variant-numeric:tabular-nums}
+.oo-cmp .is-best{background:var(--oo-linen)}
+.oo-cmp__badge{display:inline-block;margin-bottom:4px;padding:5px 10px;background:var(--oo-ink);color:var(--oo-linen);font:500 .62rem/1 var(--oo-sans);letter-spacing:.16em;text-transform:uppercase;border-radius:var(--oo-btn-radius)}
+.oo-cmp__y{color:var(--oo-clay);font-size:1.15rem}.oo-cmp__n{opacity:.35}
+.oo-cmp tfoot td{border:0;padding-top:20px}
+.oo-cmp tfoot .oo-btn{min-height:42px;padding:0 18px}`,
+    render: (d, c, id) => {
+      const cell = v => { const s = String(v ?? '').trim(); return /^(✓|✔|tak|v)$/i.test(s) ? '<span class="oo-cmp__y" aria-label="tak">✓</span>' : /^(—|-|–|nie|x|)$/i.test(s) ? '<span class="oo-cmp__n" aria-label="nie">—</span>' : c.e(s); };
+      const best = col => col.badge ? ' class="is-best"' : '';
+      return `<section class="oo-cmp oo-b${id}"${c.edit(id)}>${head(c, d)}<div class="oo-cmp__wrap"><table><thead><tr><td></td>${d.cols.map((col, i) => `<th scope="col"${best(col)}${c.edit(id, 'cols.' + i)}>${col.badge ? `<span class="oo-cmp__badge">${c.e(col.badge)}</span>` : ''}<a class="oo-cmp__p" href="${c.href(col.href)}">${c.img(col.img, '160px', false, 'plain')}<b>${c.e(col.name)}</b>${col.price ? `<span>${c.e(col.price)}</span>` : ''}</a></th>`).join('')}</tr></thead>
+<tbody>${d.rows.map((r, ri) => `<tr${c.edit(id, 'rows.' + ri)}><th scope="row">${c.e(r.label)}</th>${d.cols.map((col, i) => `<td${best(col)}>${cell(r['abcd'[i]])}</td>`).join('')}</tr>`).join('')}</tbody>
+<tfoot><tr><td></td>${d.cols.map(col => `<td${best(col)}>${col.cta ? `<a class="oo-btn oo-btn--dark" href="${c.href(col.href)}">${c.e(col.cta)}</a>` : ''}</td>`).join('')}</tr></tfoot></table></div></section>`;
+    }
+  },
+
+  stickyCta: {
+    label: 'Przyklejony pasek zakupu', kind: 'Pomaga kupić', desc: 'Pasek przy dolnej krawędzi ekranu z krótką informacją i przyciskiem. Wysuwa się po przewinięciu strony, klientka może go zamknąć. Działa bez skryptów.',
+    make: () => ({ text: 'Darmowa dostawa od 150 zł', sub: 'Każdy produkt robimy ręcznie', cta: 'Wybierz prezent', href: '/', show: 'mobile', tone: 'ink' }),
+    fields: [{ t: 'text', k: 'text', label: 'Tekst' }, { t: 'text', k: 'sub', label: 'Drugi wiersz (opcja)' },
+      { t: 'row', fields: [{ t: 'text', k: 'cta', label: 'Przycisk' }, { t: 'text', k: 'href', label: 'Link' }] },
+      { t: 'row', fields: [{ t: 'select', k: 'show', label: 'Gdzie', opts: [['mobile', 'Tylko telefon'], ['all', 'Telefon i komputer']] },
+        { t: 'select', k: 'tone', label: 'Kolor', opts: [['ink', 'Ciemny'], ['linen', 'Jasny'], ['clay', 'Akcent']] }] }],
+    css: `.oo .oo-sc{position:fixed;left:0;right:0;bottom:0;z-index:2147482000;margin:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));pointer-events:none;animation:oo-sc-in .5s .8s both}
+@supports (animation-timeline:scroll()){.oo .oo-sc{animation:oo-sc-in linear both;animation-timeline:scroll(root);animation-range:180px 300px}}
+.oo .oo-sc--pv{animation:none}
+@keyframes oo-sc-in{from{transform:translateY(120%);opacity:0}to{transform:none;opacity:1}}
+.oo-sc:has(.oo-sc__x:checked){display:none}
+.oo-sc__x{position:absolute;opacity:0;pointer-events:none}
+.oo-sc__in{pointer-events:auto;max-width:880px;margin-inline:auto;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 18px;border-radius:calc(var(--oo-radius) + 8px);box-shadow:0 14px 40px rgba(30,26,22,.22)}
+.oo-sc--ink .oo-sc__in{background:var(--oo-ink);color:var(--oo-linen)}.oo-sc--linen .oo-sc__in{background:var(--oo-linen);color:var(--oo-ink)}.oo-sc--clay .oo-sc__in{background:var(--oo-clay);color:#fff}
+.oo-sc p{flex:1;display:grid;line-height:1.3;font-size:.9rem;min-width:0}.oo-sc p span{opacity:.75;font-size:.8rem}
+.oo-sc .oo-btn{min-height:42px;padding:0 18px;white-space:nowrap}
+.oo-sc label{cursor:pointer;flex:none;width:30px;height:30px;display:grid;place-items:center;font-size:22px;line-height:1;opacity:.7}
+@media (min-width:761px){.oo-sc--mobile{display:none}}
+@media (max-width:760px){.oo-sc p span{display:none}.oo-sc .oo-btn{padding:0 14px;letter-spacing:.12em}}`,
+    render: (d, c, id) => `<div class="oo-sc oo-sc--${d.tone} oo-sc--${d.show}${c.mode === 'preview' ? ' oo-sc--pv' : ''} oo-b${id}"${c.edit(id)}><input type="checkbox" id="oo-sc${id}" class="oo-sc__x"><div class="oo-sc__in"><p><b>${c.t(d.text)}</b>${d.sub ? `<span>${c.e(d.sub)}</span>` : ''}</p>${d.cta ? `<a class="oo-btn ${d.tone === 'linen' ? 'oo-btn--dark' : 'oo-btn--solid'}" href="${c.href(d.href)}">${c.e(d.cta)}</a>` : ''}<label for="oo-sc${id}" aria-label="Zamknij pasek">×</label></div></div>`
+  },
 };
 /* dodaj do kart produktów i punktów wybór z katalogu */
 TYPES.products.fields.find(f => f.k === 'items').item.unshift(CATALOG_FIELD);
@@ -917,12 +1224,15 @@ TYPES.hotspots.fields.find(f => f.k === 'points').item.unshift(CATALOG_FIELD);
 /* ============================================================
    Strona startowa: obecny projekt Oak&Oats
    ============================================================ */
-const FONTS_D = ['Cormorant Garamond', 'Playfair Display', 'Bodoni Moda', 'EB Garamond', 'Lora', 'Fraunces', 'DM Serif Display', 'Cinzel', 'Italiana', 'Marcellus'];
-const FONTS_B = ['Jost', 'Montserrat', 'Lato', 'Karla', 'Nunito Sans', 'Work Sans', 'DM Sans', 'Manrope', 'Raleway', 'EB Garamond'];
+const FONTS_D = ['Cormorant Garamond', 'Playfair Display', 'Bodoni Moda', 'EB Garamond', 'Lora', 'Fraunces', 'DM Serif Display', 'Cinzel', 'Italiana', 'Marcellus', 'Libre Caslon Display', 'Gilda Display', 'Bellefair', 'Prata', 'Instrument Serif', 'Newsreader', 'Spectral', 'Old Standard TT', 'Tenor Sans', 'Jost'];
+const FONTS_B = ['Jost', 'Montserrat', 'Lato', 'Karla', 'Nunito Sans', 'Work Sans', 'DM Sans', 'Manrope', 'Raleway', 'EB Garamond', 'Josefin Sans', 'Questrial', 'Tenor Sans', 'Spectral'];
 const FONT_SPEC = { 'Cormorant Garamond': 'ital,wght@0,500;0,600;1,400;1,500', 'Playfair Display': 'ital,wght@0,400;0,500;1,400;1,500', 'Bodoni Moda': 'ital,wght@0,400;0,500;1,400;1,500',
   'EB Garamond': 'ital,wght@0,400;0,500;1,400;1,500', 'Lora': 'ital,wght@0,400;0,500;1,400;1,500', 'Fraunces': 'ital,wght@0,400;0,500;1,400;1,500', 'DM Serif Display': 'ital@0;1',
   'Cinzel': 'wght@400;500;600', 'Italiana': '', 'Marcellus': '', 'Jost': 'wght@400;500', 'Montserrat': 'wght@400;500', 'Lato': 'wght@400;700', 'Karla': 'wght@400;500',
-  'Nunito Sans': 'wght@400;600', 'Work Sans': 'wght@400;500', 'DM Sans': 'wght@400;500', 'Manrope': 'wght@400;500', 'Raleway': 'wght@400;500' };
+  'Nunito Sans': 'wght@400;600', 'Work Sans': 'wght@400;500', 'DM Sans': 'wght@400;500', 'Manrope': 'wght@400;500', 'Raleway': 'wght@400;500',
+  'Libre Caslon Display': '', 'Gilda Display': '', 'Bellefair': '', 'Prata': '', 'Tenor Sans': '', 'Questrial': '', 'Instrument Serif': 'ital@0;1',
+  'Newsreader': 'ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400', 'Spectral': 'ital,wght@0,300;0,400;0,500;1,300;1,400',
+  'Old Standard TT': 'ital,wght@0,400;0,700;1,400', 'Josefin Sans': 'wght@300;400;500' };
 const THEME_KEYS = ['fontD', 'fontB', 'colors', 'radius', 'btnRadius', 'btn', 'cap', 'headUpper', 'headTrack', 'headWeight', 'seam', 'space', 'overlay'];
 
 /* 10 szablonów. Każdy zmienia wygląd (kolory, fonty, przyciski, zaokrąglenia, podpisy kafli, rytm) i układ hero.
@@ -968,6 +1278,62 @@ const TEMPLATES = [
     hero: 'tiles', catsMobile: 'grid',
     s: { fontD: 'Cinzel', fontB: 'EB Garamond', radius: 0, btnRadius: 0, btn: 'outline', cap: 'overlay', headUpper: true, headTrack: .06, headWeight: 400, seam: 12, space: 1.15, overlay: .6,
       colors: { oat: '#efe7da', linen: '#e6dbc9', ink: '#3a3128', muted: '#75685a', taupe: '#b29f86', clay: '#8a6d4b' } } },
+  { id: 'maison', name: 'Maison Ivoire', group: 'Biżuteria i handmade', desc: 'Wysoka biżuteria: kość słoniowa, głęboka czerń liter i szampańskie złoto. Dużo ciszy, kontrastowa Caslon, obrysowe przyciski.',
+    hero: 'full', align: 'left', catsMobile: 'swipe',
+    s: { fontD: 'Libre Caslon Display', fontB: 'Tenor Sans', radius: 0, btnRadius: 0, btn: 'outline', cap: 'below', headUpper: false, headTrack: -0.01, headWeight: 400, seam: 0, space: 1.45, overlay: 0.5,
+      colors: { oat: '#f8f5f0', linen: '#efe9e0', ink: '#161412', muted: '#6e665c', taupe: '#cdbfa8', clay: '#b39b6b' } } },
+  { id: 'champagne', name: 'Champagne', group: 'Biżuteria i handmade', desc: 'Ciepły krem i miękkie złoto, jak pudełko na pierścionek. Gilda Display, hero pół na pół, delikatne zaokrąglenia.',
+    hero: 'split', catsMobile: 'swipe',
+    s: { fontD: 'Gilda Display', fontB: 'Josefin Sans', radius: 4, btnRadius: 0, btn: 'outline', cap: 'below', headUpper: false, headTrack: 0.01, headWeight: 400, seam: 10, space: 1.25, overlay: 0.5,
+      colors: { oat: '#f7f1e6', linen: '#efe4d2', ink: '#2a241c', muted: '#7a6c5a', taupe: '#d9c5a3', clay: '#b8935a' } } },
+  { id: 'fineline', name: 'Fine Line', group: 'Biżuteria i handmade', desc: 'Nowoczesna biżuteria na co dzień: złamana biel, Instrument Serif i pastylkowe przyciski. Zdjęcia grają pierwsze skrzypce.',
+    hero: 'full', align: 'left', catsMobile: 'swipe',
+    s: { fontD: 'Instrument Serif', fontB: 'DM Sans', radius: 6, btnRadius: 999, btn: 'pill', cap: 'below', headUpper: false, headTrack: -0.02, headWeight: 400, seam: 8, space: 1.2, overlay: 0.45,
+      colors: { oat: '#f4f2ee', linen: '#eae6df', ink: '#1e1e1e', muted: '#6b6762', taupe: '#c9bfb1', clay: '#a8876a' } } },
+  { id: 'pearl', name: 'Pearl & Silk', group: 'Biżuteria i handmade', desc: 'Perłowa biel i pudrowy róż. Bellefair, cienkie linie, kobieco i spokojnie, idealne do naszyjników.',
+    hero: 'split', catsMobile: 'grid',
+    s: { fontD: 'Bellefair', fontB: 'Questrial', radius: 4, btnRadius: 0, btn: 'outline', cap: 'below', headUpper: false, headTrack: 0.02, headWeight: 400, seam: 12, space: 1.3, overlay: 0.45,
+      colors: { oat: '#f7f4f2', linen: '#efe2dd', ink: '#3b3332', muted: '#7f716e', taupe: '#dccbc6', clay: '#b08f8a' } } },
+  { id: 'nordgold', name: 'Nordic Gold', group: 'Biżuteria i handmade', desc: 'Czysta skandynawska biel z ciepłym złotem. Prata z wyraźnym szeryfem, siatka kafli i proste przyciski.',
+    hero: 'tiles', catsMobile: 'grid',
+    s: { fontD: 'Prata', fontB: 'Manrope', radius: 2, btnRadius: 2, btn: 'solid', cap: 'overlay', headUpper: false, headTrack: 0, headWeight: 400, seam: 6, space: 1.05, overlay: 0.5,
+      colors: { oat: '#ffffff', linen: '#f4f1ec', ink: '#222222', muted: '#6c6c6c', taupe: '#d6ccbc', clay: '#c9a96e' } } },
+  { id: 'botanique', name: 'Atelier Botanique', group: 'Biżuteria i handmade', desc: 'Pracownia ceramiki i ziół: oliwka, len i Newsreader. Spokojnie, rzemieślniczo, z miękkimi zaokrągleniami.',
+    hero: 'tiles', catsMobile: 'grid',
+    s: { fontD: 'Newsreader', fontB: 'Karla', radius: 8, btnRadius: 8, btn: 'solid', cap: 'overlay', headUpper: false, headTrack: -0.01, headWeight: 400, seam: 10, space: 1.1, overlay: 0.55,
+      colors: { oat: '#f1ece3', linen: '#e7dfd1', ink: '#2f2b23', muted: '#6f6a5d', taupe: '#b9b394', clay: '#6b6a45' } } },
+  { id: 'clay', name: 'Linen & Clay', group: 'Biżuteria i handmade', desc: 'Len, glina i Spectral. Hero pół na pół, pastylkowe przyciski, ciepło jak w pracowni handmade.',
+    hero: 'split', catsMobile: 'swipe',
+    s: { fontD: 'Spectral', fontB: 'Josefin Sans', radius: 10, btnRadius: 999, btn: 'pill', cap: 'below', headUpper: false, headTrack: 0, headWeight: 400, seam: 12, space: 1.15, overlay: 0.5,
+      colors: { oat: '#efe6dc', linen: '#e6d8c8', ink: '#3a2c24', muted: '#7b685b', taupe: '#c9a58c', clay: '#a5674a' } } },
+  { id: 'mauve', name: 'Velvet Mauve', group: 'Biżuteria i handmade', desc: 'Aksamitny fiolet z różem. Playfair na środku zdjęcia, elegancko jak w butiku z biżuterią wieczorową.',
+    hero: 'full', align: 'center', catsMobile: 'swipe',
+    s: { fontD: 'Playfair Display', fontB: 'Raleway', radius: 0, btnRadius: 0, btn: 'solid', cap: 'overlay', headUpper: false, headTrack: 0, headWeight: 400, seam: 6, space: 1.15, overlay: 0.55,
+      colors: { oat: '#f5eff0', linen: '#ece0e3', ink: '#3a2b31', muted: '#7a6870', taupe: '#cdb3bc', clay: '#8c6070' } } },
+  { id: 'goldsmith', name: 'Goldsmith', group: 'Biżuteria i handmade', desc: 'Warsztat złotnika: papier, burgund i Old Standard w wersalikach. Klasyka z charakterem, ramki i obrysy.',
+    hero: 'tiles', catsMobile: 'grid',
+    s: { fontD: 'Old Standard TT', fontB: 'EB Garamond', radius: 0, btnRadius: 0, btn: 'outline', cap: 'overlay', headUpper: true, headTrack: 0.08, headWeight: 400, seam: 10, space: 1.15, overlay: 0.6,
+      colors: { oat: '#f3ede2', linen: '#e9e0d0', ink: '#2b2320', muted: '#6f6257', taupe: '#bfa98a', clay: '#6e2f2f' } } },
+  { id: 'coastal', name: 'Coastal Pearl', group: 'Biżuteria i handmade', desc: 'Morska mgła i perła. Chłodna szałwia z błękitem, Cormorant i dużo powietrza.',
+    hero: 'full', align: 'center', catsMobile: 'swipe',
+    s: { fontD: 'Cormorant Garamond', fontB: 'Questrial', radius: 0, btnRadius: 0, btn: 'outline', cap: 'below', headUpper: false, headTrack: 0, headWeight: 500, seam: 4, space: 1.3, overlay: 0.45,
+      colors: { oat: '#f3f5f4', linen: '#e6ecea', ink: '#2c3436', muted: '#66716f', taupe: '#b7c4c1', clay: '#7d9a9b' } } },
+  { id: 'terrazzo', name: 'Sunlit Terrazzo', group: 'Biżuteria i handmade', desc: 'Słoneczna koralowa ceramika. Fraunces, duże zaokrąglenia i radosne pastylki, ale bez krzykliwości.',
+    hero: 'split', catsMobile: 'swipe',
+    s: { fontD: 'Fraunces', fontB: 'DM Sans', radius: 18, btnRadius: 999, btn: 'pill', cap: 'below', headUpper: false, headTrack: -0.01, headWeight: 400, seam: 14, space: 1.1, overlay: 0.5,
+      colors: { oat: '#f6efe6', linen: '#efe1d2', ink: '#3d2c27', muted: '#80685f', taupe: '#e0bba6', clay: '#d0866b' } } },
+  { id: 'quartz', name: 'Rose Quartz', group: 'Biżuteria i handmade', desc: 'Różowy kwarc: pudrowe tła, DM Serif i miękkie, duże zaokrąglenia. Romantycznie i dojrzale.',
+    hero: 'split', catsMobile: 'grid',
+    s: { fontD: 'DM Serif Display', fontB: 'Nunito Sans', radius: 24, btnRadius: 999, btn: 'pill', cap: 'below', headUpper: false, headTrack: -0.01, headWeight: 400, seam: 14, space: 1.1, overlay: 0.5,
+      colors: { oat: '#fbf3f2', linen: '#f2e1de', ink: '#4a3434', muted: '#86706f', taupe: '#e8c9c6', clay: '#c27f7a' } } },
+  { id: 'gallerynoir', name: 'Galerie', group: 'Biżuteria i handmade', desc: 'Biała galeria i Instrument Serif w dużym rozmiarze. Zero fug, podpisy pod zdjęciami, jak katalog wystawy.',
+    hero: 'full', align: 'left', catsMobile: 'stack',
+    s: { fontD: 'Instrument Serif', fontB: 'Work Sans', radius: 0, btnRadius: 0, btn: 'solid', cap: 'below', headUpper: false, headTrack: -0.02, headWeight: 400, seam: 0, space: 1.35, overlay: 0.45,
+      colors: { oat: '#ffffff', linen: '#f3f2f0', ink: '#111111', muted: '#686868', taupe: '#c8c2b8', clay: '#8a7a68' } } },
+  { id: 'kraft', name: 'Artisan Kraft', group: 'Biżuteria i handmade', desc: 'Papier pakowy, sznurek i Marcellus. Najbardziej „ręcznie robiony” szablon: ciepłe brązy i proste kafle.',
+    hero: 'tiles', catsMobile: 'grid',
+    s: { fontD: 'Marcellus', fontB: 'Lato', radius: 2, btnRadius: 2, btn: 'solid', cap: 'overlay', headUpper: true, headTrack: 0.05, headWeight: 400, seam: 8, space: 1.05, overlay: 0.55,
+      colors: { oat: '#e9dfcf', linen: '#e1d4bf', ink: '#3a3026', muted: '#6f6252', taupe: '#bba584', clay: '#8b5e3c' } } },
 ];
 
 function baseSettings(t = 'current') {
@@ -1191,9 +1557,17 @@ function fontsLink(s) {
   return `https://fonts.googleapis.com/css2?${list}&display=swap`;
 }
 
+const fmtD = d => d ? d.split('-').reverse().join('.') : '';
+const schedLabel = b => b.from && b.to ? `Widoczna ${fmtD(b.from)}–${fmtD(b.to)}` : b.from ? `Widoczna od ${fmtD(b.from)}` : `Widoczna do ${fmtD(b.to)}`;
+const inSched = (b, day) => !(b.from && day < b.from) && !(b.to && day > b.to);
+const SCHED_JS = `<script>(function(){var d=new Date(),p=function(n){return n<10?'0'+n:''+n},t=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());document.querySelectorAll('.oo-sch').forEach(function(e){var f=e.getAttribute('data-from'),u=e.getAttribute('data-to');if((f&&t<f)||(u&&t>u))e.parentNode.removeChild(e)})})();<\/script>`;
 function renderSnippet(state, ctx) {
-  const vis = state.blocks.filter(b => !b.hidden && TYPES[b.type]);
-  const body = vis.map(b => `<!-- ${TYPES[b.type].label} -->\n` + TYPES[b.type].render(b.data, ctx, b.id)).join('\n\n');
+  const pv = ctx.mode === 'preview' && state.settings.pvDate;
+  const vis = state.blocks.filter(b => !b.hidden && TYPES[b.type] && (!pv || inSched(b, pv)));
+  const body = vis.map(b => {
+    const h = `<!-- ${TYPES[b.type].label} -->\n` + TYPES[b.type].render(b.data, ctx, b.id);
+    return b.from || b.to ? `<div class="oo-sch" data-from="${esc(b.from || '')}" data-to="${esc(b.to || '')}"${ctx.mode === 'preview' ? ` data-pv="${esc(schedLabel(b))}"` : ''}>${h}</div>` : h;
+  }).join('\n\n') + (ctx.mode === 'export' && vis.some(b => b.from || b.to) ? '\n' + SCHED_JS : '');
   const types = [...new Set(vis.map(b => b.type))];
   const css = [baseCss(state.settings), ...types.map(t => TYPES[t].css), ctx.rules.join('\n'),
     ctx.rulesM.length ? `@media (max-width:760px){${ctx.rulesM.join('\n')}}` : ''].join('\n');
@@ -1275,8 +1649,8 @@ function renderPreview() {
   try { frameScroll = f.contentWindow?.scrollY || frameScroll; } catch {}
   const ctx = makeCtx('preview');
   const html = `<!doctype html><html lang="pl"><head><meta charset="utf-8"><base href="about:srcdoc"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body{margin:0;background:#fff}[data-edit]{cursor:pointer}[data-edit]:hover{outline:2px dashed rgba(196,149,47,.95);outline-offset:-3px}.oo-sel{outline:3px solid #c4952f!important;outline-offset:-3px}</style></head>
-<body>${STATE.settings.mock ? MOCK : ''}${renderSnippet(STATE, ctx)}</body></html>`;
+<style>body{margin:0;background:#fff}.oo-sch[data-pv]{position:relative}.oo-sch[data-pv]::before{content:"🗓 " attr(data-pv);position:absolute;z-index:70;top:10px;right:10px;background:#c4952f;color:#fff;font:600 11px/1 system-ui,sans-serif;padding:6px 9px;border-radius:6px;pointer-events:none}[data-edit]{cursor:pointer}[data-edit]:hover{outline:2px dashed rgba(196,149,47,.95);outline-offset:-3px}.oo-sel{outline:3px solid #c4952f!important;outline-offset:-3px}</style></head>
+<body>${STATE.settings.mock && !STATE.blocks.some(b => b.type === 'header' && !b.hidden) ? MOCK : ''}${renderSnippet(STATE, ctx)}</body></html>`;
   f.srcdoc = html;
 }
 function wireFrame() {
@@ -1350,6 +1724,8 @@ function settingsCard() {
       el('div', { class: 'f' }, el('span', { class: 'lbl' }, 'Kolory'),
         el('div', { class: 'row2' }, ...[['oat', 'Tło i fugi'], ['linen', 'Jasne panele'], ['ink', 'Tekst i przyciski'], ['muted', 'Tekst pomocniczy'], ['taupe', 'Taupe (menu)'], ['clay', 'Akcent']].map(([k, l]) => colorField(l, s.colors, k)))),
       selectField('Atrapa nagłówka sklepu w podglądzie', s, 'mock', [[true, 'Pokaż'], [false, 'Ukryj']]),
+      el('span', { class: 'hint' }, 'Atrapa znika sama, gdy na stronie jest blok „Belka z menu”.'),
+      dateField('Podgląd na dzień (harmonogram sekcji)', s, 'pvDate'),
       el('button', { class: 'btn btn--sm', onclick: () => { s.colors = baseSettings(s.template || 'current').colors; changed(true); } }, 'Przywróć kolory szablonu'),
       el('div', { class: 'row2' },
         selectField('Przyciski', s, 'btn', [['solid', 'Pełne'], ['outline', 'Z obrysem'], ['pill', 'Pastylki']]),
@@ -1363,13 +1739,18 @@ function settingsCard() {
   return card;
 }
 
+function blockName(b) {
+  const d = b.data, T = TYPES[b.type];
+  const t = d.title || d.main?.title || d.text || (b.type === 'header' ? d.logo : '');
+  return t ? String(t).replace(/\*/g, '').slice(0, 60) : T.label;
+}
 function blockCard(b, i) {
   const T = TYPES[b.type]; const open = OPEN.has(b.id);
   const card = el('div', { class: 'card' + (open ? ' is-open' : '') + (SEL?.id === b.id ? ' is-sel' : '') + (b.hidden ? ' is-hidden' : ''), 'data-id': b.id });
-  const name = b.data.title ? String(b.data.title).replace(/\*/g, '') : b.data.main?.title ? String(b.data.main.title).replace(/\*/g, '') : T.label;
+  const name = blockName(b);
   const stop = fn => e => { e.stopPropagation(); fn(); };
   card.append(el('div', { class: 'card__head', onclick: () => { if (open) { OPEN.delete(b.id); renderPanel(); } else select(b.id); } },
-    el('span', { class: 'card__name' }, name, el('span', { class: 'card__type' }, `${T.label} · ${T.kind}`)),
+    el('span', { class: 'card__name' }, name, el('span', { class: 'card__type' }, `${T.label} · ${T.kind}${b.from || b.to ? ' · 🗓 ' + schedLabel(b).toLowerCase() : ''}`)),
     el('button', { class: 'ib', title: 'W górę', 'aria-label': 'Przesuń w górę', disabled: i === 0, onclick: stop(() => move(STATE.blocks, i, -1, true)) }, '↑'),
     el('button', { class: 'ib', title: 'W dół', 'aria-label': 'Przesuń w dół', disabled: i === STATE.blocks.length - 1, onclick: stop(() => move(STATE.blocks, i, 1, true)) }, '↓'),
     el('button', { class: 'ib', title: b.hidden ? 'Pokaż na stronie' : 'Ukryj na stronie', 'aria-label': b.hidden ? 'Pokaż' : 'Ukryj', onclick: stop(() => { b.hidden = !b.hidden; changed(true); }) }, b.hidden ? '◌' : '◉'),
@@ -1382,6 +1763,10 @@ function blockCard(b, i) {
       el('button', { class: 'ai', type: 'button', onclick: () => { secBox.firstChild ? secBox.replaceChildren() : secBox.append(sectionAiBox(b)); } }, '✨ Napisz teksty całej sekcji'),
       b.type === 'quotes' ? el('span', { class: 'note note--warn' }, 'Wklejaj tylko prawdziwe opinie. Generator nie pisze opinii.') : null), secBox);
     buildFields(body, b.data, T.fields, b.id, '');
+    body.append(el('details', { class: 'sched', open: !!(b.from || b.to) },
+      el('summary', {}, '🗓 Harmonogram — pokaż sekcję tylko w wybrane dni'),
+      el('div', { class: 'row2' }, dateField('Od dnia (opcja)', b, 'from'), dateField('Do dnia (opcja)', b, 'to')),
+      el('span', { class: 'hint' }, 'Np. baner Black Week albo odliczanie do świąt. Sekcja sama zniknie po terminie (mały skrypt). Datę możesz sprawdzić w „Ustawienia strony → Podgląd na dzień”.')));
     card.append(body);
   }
   return card;
@@ -1401,7 +1786,7 @@ function buildFields(container, obj, fields, bid, prefix, root) {
     switch (f.t) {
       case 'text': node = textField(f.label, obj, f.k, { ...f, ai }); break;
       case 'area': node = textField(f.label, obj, f.k, { ...f, area: true, ai }); break;
-      case 'select': node = selectField(f.label, obj, f.k, f.opts); break;
+      case 'select': node = selectField(f.label, obj, f.k, f.opts); if (f.hint) node.append(el('span', { class: 'hint' }, f.hint)); break;
       case 'pick': node = selectField(f.label, obj, f.k, f.opts(root)); break;
       case 'color': node = colorField(f.label, obj, f.k); break;
       case 'range': node = rangeField(f.label, obj, f.k, f.min, f.max, f.unit); break;
@@ -1411,12 +1796,14 @@ function buildFields(container, obj, fields, bid, prefix, root) {
       case 'group': node = el('div', { class: 'grpbox', 'data-path': path }, el('div', { class: 'gt' }, f.label)); buildFields(node, obj[f.k], f.fields, bid, path, root); break;
       case 'list': node = listField(f, obj, bid, path, root); break;
       case 'points': node = pointsField(f, obj, bid, path, root); break;
+      case 'h': node = el('div', { class: 'fh' }, f.label); break;
+      case 'dt': node = dateField(f.label, obj, f.k, 'datetime-local'); break;
     }
     if (node) { if (!node.dataset.path && f.k) node.dataset.path = path; container.append(node); }
   }
 }
 
-const NO_AI = /href|link|adres|cena|kod|price|code/i;
+const NO_AI = /href|link|adres|cena|kod|price|code|selektor|feed|handle|profilu/i;
 function textField(label, obj, k, o = {}) {
   const id = 'f' + uid();
   const inp = o.area ? el('textarea', { id, rows: 3 }) : el('input', { id, type: 'text' });
@@ -1444,6 +1831,11 @@ function rangeField(label, obj, k, min, max, unit = '') {
   const out = el('output', { for: id }, obj[k] + unit);
   r.addEventListener('input', () => { obj[k] = +r.value; out.textContent = r.value + unit; changed(); });
   return el('div', { class: 'f' }, el('label', { for: id }, label), el('div', { class: 'rng' }, r, out));
+}
+function dateField(label, obj, k, type = 'date') {
+  const id = 'f' + uid(); const inp = el('input', { id, type, value: obj[k] || '' });
+  inp.addEventListener('change', () => { obj[k] = inp.value; changed(); });
+  return el('div', { class: 'f' }, el('label', { for: id }, label), inp);
 }
 function colorField(label, obj, k) {
   const id = 'f' + uid(); const c = el('input', { id, type: 'color', value: obj[k], style: 'width:100%;height:34px;border:1px solid var(--line);border-radius:7px;background:var(--panel);padding:2px' });
@@ -1741,27 +2133,82 @@ function convertHero(b, to, align) {
 }
 function applyTemplate(t) {
   const s = STATE.settings;
-  THEME_KEYS.forEach(k => { s[k] = clone(t.s[k]); });
+  THEME_KEYS.forEach(k => { if (t.s[k] !== undefined) s[k] = clone(t.s[k]); });
   s.template = t.id;
   const hero = STATE.blocks.find(x => x.type === 'heroTiles' || x.type === 'heroSingle');
   if (hero && t.hero) convertHero(hero, t.hero, t.align);
   STATE.blocks.filter(x => x.type === 'cats').forEach(x => { x.data.mobile = t.catsMobile || x.data.mobile; });
   changed(true); renderTemplates(); toast(`Szablon „${t.name}”. Treść została, zmienił się wygląd. Cofnij: Ctrl+Z`);
 }
+const allTemplates = () => [...(STATE.myTemplates || []), ...TEMPLATES];
+function tplPreview(t) {
+  const c = t.s.colors, br = t.s.btn === 'pill' ? '999px' : (t.s.btnRadius || 0) + 'px';
+  const style = `--b:${c.oat};--l:${c.linen};--i:${c.ink};--a:${c.clay};--t:${c.taupe};--r:${t.s.radius}px;--br:${br};--s:${Math.min(t.s.seam, 10)}px`;
+  return el('div', { class: 'tpl__pv', style },
+    el('div', { class: 'tpl__hero' }, el('span', { class: 'tpl__eb' }, 'Polskie rękodzieło'),
+      el('span', { class: 'tpl__t', style: `font-family:'${t.s.fontD}',serif;font-weight:${t.s.headWeight};text-transform:${t.s.headUpper ? 'uppercase' : 'none'};letter-spacing:${t.s.headTrack}em;${t.s.headUpper ? 'font-size:17px' : ''}` }, 'Oak & ', el('em', {}, 'Oats')),
+      el('span', { class: 'tpl__btn' + (t.s.btn === 'outline' ? '' : ' is-solid'), style: `font-family:'${t.s.fontB}',sans-serif` }, 'Odkryj kolekcję')),
+    el('div', { class: 'tpl__tiles' }, el('span'), el('span'), el('span'), el('span')));
+}
+function themeFromState() {
+  const s = STATE.settings, hero = STATE.blocks.find(x => x.type === 'heroTiles' || x.type === 'heroSingle');
+  return { hero: hero ? (hero.type === 'heroTiles' ? 'tiles' : hero.data.layout || 'full') : 'full', align: hero?.data.align,
+    catsMobile: STATE.blocks.find(x => x.type === 'cats')?.data.mobile || 'grid',
+    s: Object.fromEntries(THEME_KEYS.map(k => [k, clone(s[k])])) };
+}
 function renderTemplates() {
-  const list = $('#tplList'); list.replaceChildren(el('p', { class: 'drawer__intro' }, 'Kliknij szablon, a strona od razu się przebuduje: kolory, fonty, przyciski, układ hero i kafli. Teksty, zdjęcia i linki zostają. Potem dopracuj wszystko po swojemu.'));
-  for (const t of TEMPLATES) {
-    const c = t.s.colors, br = t.s.btn === 'pill' ? '999px' : (t.s.btnRadius || 0) + 'px';
-    const style = `--b:${c.oat};--l:${c.linen};--i:${c.ink};--a:${c.clay};--t:${c.taupe};--r:${t.s.radius}px;--br:${br};--s:${Math.min(t.s.seam, 10)}px`;
-    const pv = el('div', { class: 'tpl__pv', style },
-      el('div', { class: 'tpl__hero' }, el('span', { class: 'tpl__eb' }, 'Polskie rękodzieło'),
-        el('span', { class: 'tpl__t', style: `font-family:'${t.s.fontD}',serif;font-weight:${t.s.headWeight};text-transform:${t.s.headUpper ? 'uppercase' : 'none'};letter-spacing:${t.s.headTrack}em;${t.s.headUpper ? 'font-size:17px' : ''}` }, 'Oak & ', el('em', {}, 'Oats')),
-        el('span', { class: 'tpl__btn' + (t.s.btn === 'outline' ? '' : ' is-solid') }, 'Odkryj kolekcję')),
-      el('div', { class: 'tpl__tiles' }, el('span'), el('span'), el('span'), el('span')));
-    list.append(el('button', { class: 'tpl' + (STATE.settings.template === t.id ? ' is-on' : ''), type: 'button', onclick: () => applyTemplate(t) }, pv,
-      el('div', { class: 'tpl__meta' }, el('b', {}, t.name), el('span', {}, t.desc),
-        el('div', { class: 'tpl__sw' }, ...['oat', 'linen', 'taupe', 'clay', 'ink'].map(k => el('i', { style: `background:${c[k]}` }))))));
-  }
+  const list = $('#tplList');
+  const mine = STATE.myTemplates || [];
+  list.replaceChildren(
+    el('p', { class: 'drawer__intro' }, 'Kliknij podgląd, a strona od razu się przebuduje: kolory, fonty, przyciski, układ hero i kafli. Teksty, zdjęcia i linki zostają. „Edytuj” otwiera ustawienia szablonu — zmień je i zapisz jako swój.'),
+    el('button', { class: 'btn btn--acc', type: 'button', onclick: () => editTemplate({ id: '', name: 'Mój szablon', desc: 'Zapisany z obecnego wyglądu strony.', ...themeFromState() }, true) }, '+ Zapisz obecny wygląd jako mój szablon'));
+  const card = (t, isMine) => el('div', { class: 'tpl' + (STATE.settings.template === t.id ? ' is-on' : '') },
+    el('button', { class: 'tpl__pvbtn', type: 'button', title: 'Zastosuj szablon', 'aria-label': `Zastosuj szablon ${t.name}`, onclick: () => applyTemplate(t) }, tplPreview(t)),
+    el('div', { class: 'tpl__meta' }, el('b', {}, t.name), el('span', {}, t.desc),
+      el('div', { class: 'tpl__sw' }, ...['oat', 'linen', 'taupe', 'clay', 'ink'].map(k => el('i', { style: `background:${t.s.colors[k]}` }))),
+      el('div', { class: 'tpl__acts' },
+        el('button', { class: 'btn btn--sm btn--acc', type: 'button', onclick: () => applyTemplate(t) }, 'Zastosuj'),
+        el('button', { class: 'btn btn--sm', type: 'button', onclick: () => editTemplate(clone(t), isMine) }, 'Edytuj'),
+        isMine ? el('button', { class: 'btn btn--sm btn--danger', type: 'button', onclick: e => {
+          if (!e.currentTarget.dataset.c) { e.currentTarget.dataset.c = 1; e.currentTarget.textContent = 'Na pewno?'; return; }
+          STATE.myTemplates = mine.filter(x => x.id !== t.id); changed(); renderTemplates(); toast('Usunięto szablon. Cofnij: Ctrl+Z');
+        } }, 'Usuń') : null)));
+  if (mine.length) { list.append(el('p', { class: 'drawer__sec' }, 'Moje szablony')); mine.forEach(t => list.append(card(t, true))); }
+  const groups = [['Klasyczne', TEMPLATES.filter(t => !t.group)], ['Biżuteria i handmade', TEMPLATES.filter(t => t.group)]];
+  for (const [g, ts] of groups) { list.append(el('p', { class: 'drawer__sec' }, `${g} (${ts.length})`)); ts.forEach(t => list.append(card(t, false))); }
+}
+/* Edytor szablonu: wszystkie ustawienia wyglądu na kopii roboczej, z podglądem karty. */
+function editTemplate(t, isMine) {
+  const d = clone(t); d.s = { ...baseSettings('current'), ...d.s }; d.s.colors = { ...d.s.colors };
+  const pvBox = el('div', { class: 'tpled__pv' });
+  const upd = () => pvBox.replaceChildren(el('b', { style: 'font:500 18px/1.1 var(--disp)' }, d.name || 'Szablon'), tplPreview(d),
+    el('span', { class: 'hint' }, 'Podgląd karty. „Zastosuj do strony” pokaże całość w podglądzie strony — możesz to cofnąć.'));
+  const f = el('div', { class: 'tpled__f' },
+    el('div', { class: 'row2' }, textField('Nazwa', d, 'name'), textField('Opis', d, 'desc')),
+    el('div', { class: 'row2' }, selectField('Font nagłówków', d.s, 'fontD', FONTS_D.map(x => [x, x])), selectField('Font tekstu', d.s, 'fontB', FONTS_B.map(x => [x, x]))),
+    el('div', { class: 'f' }, el('span', { class: 'lbl' }, 'Kolory'),
+      el('div', { class: 'row2' }, ...[['oat', 'Tło strony'], ['linen', 'Jasne panele'], ['ink', 'Tekst i przyciski'], ['muted', 'Tekst pomocniczy'], ['taupe', 'Kafle i menu'], ['clay', 'Akcent']].map(([k, l]) => colorField(l, d.s.colors, k)))),
+    el('div', { class: 'row2' }, selectField('Przyciski', d.s, 'btn', [['solid', 'Pełne'], ['outline', 'Z obrysem'], ['pill', 'Pastylki']]), rangeField('Zaokrąglenie przycisków', d.s, 'btnRadius', 0, 30, 'px')),
+    el('div', { class: 'row2' }, rangeField('Zaokrąglenie kafli', d.s, 'radius', 0, 28, 'px'), rangeField('Fuga między kaflami', d.s, 'seam', 0, 24, 'px')),
+    el('div', { class: 'row2' }, selectField('Nagłówki', d.s, 'headUpper', [[false, 'Zwykłe'], [true, 'Wersaliki']]), selectField('Grubość nagłówków', d.s, 'headWeight', [[400, 'Lekka'], [500, 'Średnia'], [600, 'Mocna']])),
+    el('div', { class: 'row2' }, rangeField('Rozstrzelenie nagłówków', d.s, 'headTrack', -.03, .12, 'em'), rangeField('Odstępy sekcji', d.s, 'space', .7, 1.6, '×')),
+    el('div', { class: 'row2' }, selectField('Podpisy kafli', d.s, 'cap', [['overlay', 'Na zdjęciu'], ['below', 'Pod zdjęciem']]), rangeField('Przyciemnienie kafli', d.s, 'overlay', 0, .9, '')),
+    el('div', { class: 'row2' }, selectField('Układ hero', d, 'hero', [['full', 'Zdjęcie na cały ekran'], ['split', 'Pół na pół'], ['tiles', 'Kafle']]), selectField('Tekst w hero', d, 'align', [['left', 'Lewo'], ['center', 'Środek'], ['right', 'Prawo']])),
+    selectField('Kategorie na telefonie', d, 'catsMobile', [['grid', 'Siatka'], ['swipe', 'Przewijanie'], ['stack', 'Lista']]));
+  const m = modal(el('h2', {}, isMine && d.id ? 'Edytuj mój szablon' : 'Edytuj szablon'),
+    el('p', {}, isMine && d.id ? 'Zmiany zapiszesz w tym szablonie.' : 'Wbudowany szablon zostaje bez zmian — zapisz swoją wersję jako nowy szablon.'),
+    el('div', { class: 'tpled' }, f, pvBox),
+    el('div', { class: 'dlg__foot' },
+      el('button', { class: 'btn', type: 'button', onclick: () => m.remove() }, 'Zamknij'),
+      el('button', { class: 'btn', type: 'button', onclick: () => applyTemplate({ ...clone(d), id: d.id || 'draft' }) }, 'Zastosuj do strony'),
+      isMine && d.id ? el('button', { class: 'btn btn--acc', type: 'button', onclick: () => {
+        STATE.myTemplates = (STATE.myTemplates || []).map(x => x.id === d.id ? clone(d) : x); changed(); renderTemplates(); m.remove(); toast('Zapisano szablon');
+      } }, 'Zapisz zmiany') : null,
+      el('button', { class: isMine && d.id ? 'btn' : 'btn btn--acc', type: 'button', onclick: () => {
+        const n = { ...clone(d), id: 'my-' + uid(), group: undefined, name: d.name && !TEMPLATES.some(x => x.name === d.name) ? d.name : `${d.name || 'Szablon'} — moja wersja` };
+        STATE.myTemplates = [n, ...(STATE.myTemplates || [])]; changed(); renderTemplates(); m.remove(); toast(`Zapisano „${n.name}” w Moich szablonach`);
+      } }, 'Zapisz jako nowy szablon')));
+  m.addEventListener('input', upd); m.addEventListener('change', upd); upd();
 }
 function toggleDrawer(open) {
   const d = $('#drawer'); open = open ?? !d.classList.contains('is-open');
@@ -1866,7 +2313,7 @@ function modal(...kids) {
 }
 function openLibrary() {
   const m = modal(el('h2', {}, 'Dodaj sekcję'),
-    el('p', {}, 'Każdy widget działa w Sky-Shop bez skryptów. Nowa sekcja trafi pod zaznaczoną albo na koniec strony.'),
+    el('p', {}, 'Nowa sekcja trafi pod zaznaczoną albo na koniec strony. Prawie wszystkie widgety działają bez skryptów — wyjątki mają to w opisie.'),
     el('div', { class: 'types' }, ...Object.entries(TYPES).map(([k, T]) => el('button', { class: 'type', onclick: () => {
       const data = T.make();
       // podstaw pierwsze zdjęcia z biblioteki, żeby sekcja od razu dobrze wyglądała
@@ -1971,6 +2418,28 @@ async function openCode() {
       el('button', { class: 'btn btn--acc', onclick: () => copyText(code, ta) }, 'Kopiuj kod')));
 }
 
+function scriptNote() {
+  const vis = STATE.blocks.filter(b => !b.hidden);
+  const js = [...new Set(vis.filter(b => b.type === 'nameBeads' || b.type === 'countdown' || (b.type === 'instagram' && b.data.mode !== 'manual')).map(b => TYPES[b.type].label))];
+  if (vis.some(b => b.from || b.to)) js.push('harmonogram sekcji');
+  if (!js.length) return el('p', { class: 'note' }, 'Ta strona działa w całości bez skryptów.');
+  return el('p', { class: 'note' }, `Mały skrypt zawierają: ${js.join(', ')}. Jeśli Sky-Shop wytnie znacznik <script> z obszaru edytowalnego, te elementy pokażą wersję startową (np. imię startowe, licznik z chwili eksportu, zdjęcia dodane ręcznie, sekcje bez harmonogramu). Reszta strony działa bez skryptów.`);
+}
+/* Belka z menu na każdej podstronie: wstawiana na początek <body> przez pole „własny kod” w Sky-Shop. */
+function siteHeaderCode(files) {
+  const hb = STATE.blocks.find(b => b.type === 'header' && !b.hidden);
+  if (!hb) return '';
+  const snippet = renderSnippet({ ...STATE, blocks: [{ ...hb, from: '', to: '' }] }, makeCtx('export', files)).replace(/^<!--[\s\S]*?-->\n/, '');
+  return `<!-- OAK&OATS — belka z menu na wszystkich stronach. Wklej w Sky-Shop w pole na własny kod HTML/JS ładowany na każdej stronie (np. w stopce). Na stronie głównej z obszarem edytowalnym belka nie powieli się. -->
+<template id="oo-hd-tpl">
+${snippet}
+</template>
+<script>(function(){function go(){if(document.querySelector('.oo-hd'))return;var t=document.getElementById('oo-hd-tpl');if(!t||!t.content)return;document.body.insertBefore(t.content.cloneNode(true),document.body.firstChild)}document.readyState==='loading'?document.addEventListener('DOMContentLoaded',go):go()})();<\/script>`;
+}
+function siteHeaderBox() {
+  if (!STATE.blocks.some(b => b.type === 'header' && !b.hidden)) return null;
+  return el('p', { class: 'note' }, 'Belka z menu jest w obszarze edytowalnym, więc pokaże się na stronie głównej. Paczka zawiera też plik „belka-na-wszystkich-stronach.html” — wklej go w Sky-Shop w pole na własny kod ładowany na każdej stronie, a belka pojawi się na wszystkich podstronach. Aby ukryć starą belkę motywu, wpisz jej selektor w ustawieniach bloku.');
+}
 async function openExport() {
   const { code, files } = await exportCode();
   const prev = new Set(STATE.exported || []);
@@ -1987,8 +2456,9 @@ async function openExport() {
       el('li', {}, 'Otwórz plik „obszar-edytowalny.html”, skopiuj całość i wklej w Sky-Shop: Wygląd → Strona główna → Obszar edytowalny → tryb „Źródło”.'),
       el('li', {}, 'Zapisz bez przełączania edytora na tryb wizualny.')),
     el('p', {}, `Zdjęć do wgrania: ${names.length}, nowych od ostatniego eksportu: ${fresh.length}. Zdjęcia produktów i zdjęcia wczytane z oakandoats.pl są już w sklepie, więc kod wskazuje na nie bezpośrednio. Nazwy plików zmieniają się tylko wtedy, gdy zmieni się zdjęcie.`),
-    el('p', { class: 'note' }, 'Widget „Podgląd imienia na koralikach” zawiera mały skrypt. Jeśli Sky-Shop wytnie znacznik <script> z obszaru edytowalnego, podgląd pokaże imię startowe bez zmiany na żywo. Pozostałe widgety działają bez skryptów.'),
+    scriptNote(),
     list,
+    siteHeaderBox(),
     el('label', { class: 'chk', for: onlyNewId }, onlyNew, 'W paczce tylko nowe zdjęcia'),
     el('div', { class: 'dlg__foot' },
       el('button', { class: 'btn', onclick: () => m.remove() }, 'Zamknij'),
@@ -1999,6 +2469,7 @@ async function openExport() {
     try {
       const entries = [
         { name: 'obszar-edytowalny.html', data: code },
+        ...(siteHeaderCode(files) ? [{ name: 'belka-na-wszystkich-stronach.html', data: siteHeaderCode(files) }] : []),
         { name: 'INSTRUKCJA.txt', data: `1. Wgraj pliki z folderu "zdjecia" do menedżera plików Sky-Shop (adres folderu: ${STATE.settings.prefix}).\r\n2. Skopiuj cały plik obszar-edytowalny.html i wklej w Sky-Shop: Wygląd > Strona główna > Obszar edytowalny > tryb Źródło.\r\n3. Zapisz bez przełączania na tryb wizualny.\r\n` }];
       let i = 0;
       for (const [key, f] of Object.entries(files)) {
@@ -2015,6 +2486,108 @@ async function openExport() {
     } catch (e) { toast('Nie udało się przygotować paczki: ' + (e.message || e)); }
     go.disabled = false; go.textContent = 'Pobierz paczkę ZIP';
   });
+}
+
+/* ============================================================
+   Kontrola strony przed publikacją: dostępność, linki, ceny, SEO, ton marki + opinia AI
+   ============================================================ */
+function contrast(a, b) {
+  const L = h => { const n = parseInt(String(h).slice(1, 7), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255].map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }).reduce((s, v, i) => s + v * [.2126, .7152, .0722][i], 0); };
+  const x = L(a), y = L(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05);
+}
+const PLACEHOLDERS = ['Nagłówek *strony*', 'Krótki opis.', 'Tytuł *sekcji*', 'Treść.', 'Opcja A', 'Opcja X', 'Kafel *pierwszy*', 'Wartość', 'Opis.', 'Cecha 1', 'Produkt 1', 'Nowy komunikat', 'Nadtytuł'];
+const SKIP_TXT = new Set(['href', 'key', 'km', 'src', 'feed', 'embed', 'date', 'v', 'w1', 'w2', 'tone', 'bg', 'layout', 'align', 'mode', 'logoMode', 'annTone', 'show', 'hide', 'search', 'account', 'cart', 'handle', 'icon', 'a', 'b']);
+function blockTexts(o, out = []) {
+  if (!o || typeof o !== 'object') return out;
+  if ('key' in o && Array.isArray(o.p)) return out;
+  for (const [k, v] of Object.entries(o)) {
+    if (typeof v === 'string') { if (!SKIP_TXT.has(k) && v.trim() && !/^#[0-9a-f]{3,8}$/i.test(v)) out.push(v.trim()); }
+    else blockTexts(v, out);
+  }
+  return out;
+}
+/* odmiana: 1 przycisk, 2 przyciski, 5 przycisków */
+const plN = (n, one, few, many) => `${n} ${n === 1 ? one : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? few : many}`;
+function runChecks() {
+  const R = [], add = (lvl, msg, id) => R.push({ lvl, msg, id });
+  const vis = STATE.blocks.filter(b => !b.hidden && TYPES[b.type]);
+  const now = new Date(), p2 = n => String(n).padStart(2, '0'), today = `${now.getFullYear()}-${p2(now.getMonth() + 1)}-${p2(now.getDate())}`;
+  vis.forEach(b => {
+    const nm = `„${blockName(b)}”`;
+    let noAlt = 0, noImg = 0, badLink = 0, noPrice = 0;
+    (function walk(o) {
+      if (!o || typeof o !== 'object') return;
+      if ('key' in o && Array.isArray(o.p)) { if (o.key && !String(o.alt || '').trim()) noAlt++; return; }
+      if ('href' in o && typeof o.href === 'string') { const h = o.href.trim(), label = o.cta || o.more || o.name || o.label || o.title || o.text; if (label && (h === '/' || h === '#' || (!h && (o.cta || o.more)))) badLink++; }
+      if ('price' in o && 'name' in o && o.name && !String(o.price || '').trim()) noPrice++;
+      if ('img' in o && o.img && 'key' in o.img && !o.img.key && b.type !== 'header') noImg++;
+      Object.values(o).forEach(walk);
+    })(b.data);
+    if (noAlt) add('warn', `${nm}: ${plN(noAlt, 'zdjęcie', 'zdjęcia', 'zdjęć')} bez opisu (alt). Opis pomaga w Google i osobom niewidomym.`, b.id);
+    if (noImg) add('warn', `${nm}: ${plN(noImg, 'puste miejsce', 'puste miejsca', 'pustych miejsc')} na zdjęcie.`, b.id);
+    if (badLink) add('err', `${nm}: ${plN(badLink, 'link prowadzi', 'linki prowadzą', 'linków prowadzi')} donikąd („/” albo pusty).`, b.id);
+    if (noPrice) add('warn', `${nm}: ${plN(noPrice, 'produkt', 'produkty', 'produktów')} bez ceny.`, b.id);
+    const txt = blockTexts(b.data);
+    const ph = txt.filter(t => PLACEHOLDERS.includes(t));
+    if (ph.length) add('warn', `${nm}: został tekst przykładowy („${ph[0].replace(/\*/g, '')}”).`, b.id);
+    if (b.type === 'quotes') add('info', `${nm}: upewnij się, że opinie są prawdziwe i pochodzą od klientek.`, b.id);
+    if (b.type === 'instagram') {
+      if (b.data.mode === 'feed' && !/^https:\/\//.test(b.data.feed || '')) add('err', `${nm}: wybrany automatyczny feed, ale brak adresu feedu.`, b.id);
+      if (b.data.mode === 'embed' && !String(b.data.embed || '').trim()) add('err', `${nm}: wybrany kod widgetu, ale pole kodu jest puste.`, b.id);
+    }
+    if (b.type === 'video' && !b.data.src) add('info', `${nm}: brak adresu wideo — pokazuje się samo zdjęcie.`, b.id);
+    if (b.type === 'countdown' && new Date(b.data.date).getTime() < Date.now()) add('warn', `${nm}: termin odliczania już minął.`, b.id);
+    if (b.type === 'header' && b.data.icons && !b.data.cart) add('warn', `${nm}: włączone ikony, ale bez linku do koszyka.`, b.id);
+    if (b.to && b.to < today) add('warn', `${nm}: harmonogram minął ${fmtD(b.to)} — sekcja już się nie wyświetla.`, b.id);
+  });
+  const html = renderSnippet(STATE, makeCtx('preview'));
+  const h1 = (html.match(/<h1[\s>]/g) || []).length;
+  if (!h1) add('err', 'Na stronie nie ma nagłówka H1. Google traktuje go jako główny temat strony — dodaj hero z nagłówkiem.');
+  else if (h1 > 1) add('warn', `Na stronie są ${h1} nagłówki H1. Najlepiej zostawić jeden (w pierwszym hero).`);
+  const hd = vis.filter(b => b.type === 'header');
+  if (hd.length > 1) add('warn', 'Na stronie są dwie belki z menu. Zostaw jedną.', hd[1].id);
+  if (hd.length && STATE.blocks.find(b => !b.hidden) !== hd[0]) add('warn', 'Belka z menu nie jest pierwszą sekcją strony.', hd[0].id);
+  const C = STATE.settings.colors;
+  [[C.ink, C.oat, 'Tekst na tle strony', 4.5], [C.ink, C.linen, 'Tekst na jasnych panelach', 4.5], [C.muted, C.linen, 'Tekst pomocniczy', 4.5], [C.linen, C.ink, 'Jasny tekst na ciemnym tle', 4.5], ['#ffffff', C.taupe, 'Biały tekst na taupe', 3]].forEach(([a, b2, l, min]) => {
+    const r = contrast(a, b2);
+    if (r < min) add(r < min * .7 ? 'err' : 'warn', `${l}: kontrast ${r.toFixed(1)}:1 (zalecane co najmniej ${min}:1). Może być nieczytelny na telefonie w słońcu.`, '__settings');
+  });
+  const all = vis.flatMap(b => blockTexts(b.data)).join(' \n');
+  const prem = (all.match(/premium/gi) || []).length;
+  if (prem > 1) add('warn', `Słowo „premium” pojawia się ${plN(prem, 'raz', 'razy', 'razy')}. Według briefu marki jakość ma być widoczna w zdjęciach i detalach, nie w deklaracjach.`);
+  const exc = (all.match(/!/g) || []).length;
+  if (exc > 3) add('warn', `${plN(exc, 'wykrzyknik', 'wykrzykniki', 'wykrzykników')} na stronie. Spokojniejszy ton lepiej pasuje do marki.`);
+  if (/maluszk|bobas|słodziak|cudeńk/i.test(all)) add('warn', 'W tekstach są zdrobnienia w stylu „maluszek”, „słodziak”. Brief marki prosi o dojrzalszy, mniej infantylny język.');
+  const hidden = STATE.blocks.filter(b => b.hidden).length;
+  if (hidden) add('info', `${plN(hidden, 'sekcja jest ukryta', 'sekcje są ukryte', 'sekcji jest ukrytych')} i nie ${hidden === 1 ? 'trafi' : 'trafią'} do kodu.`);
+  return R;
+}
+function openCheck() {
+  const R = runChecks(), order = { err: 0, warn: 1, info: 2 };
+  R.sort((a, b) => order[a.lvl] - order[b.lvl]);
+  const errs = R.filter(r => r.lvl === 'err').length, warns = R.filter(r => r.lvl === 'warn').length;
+  const score = Math.max(0, 100 - errs * 12 - warns * 4);
+  const ICON = { err: '⛔', warn: '⚠️', info: 'ℹ️' };
+  const go = id => { m.remove(); if (id === '__settings') { OPEN.add(id); renderPanel(); $('#side').scrollTop = 0; } else if (id) select(id); };
+  const aiOut = el('div');
+  const aiBtn = el('button', { class: 'btn' }, '✨ Opinia AI o tekstach i układzie');
+  aiBtn.addEventListener('click', async () => {
+    aiBtn.disabled = true; aiBtn.textContent = 'Czytam stronę…';
+    try {
+      const page = STATE.blocks.filter(b => !b.hidden && TYPES[b.type]).map((b, i) => `${i + 1}. [${TYPES[b.type].label}] ${blockTexts(b.data).join(' | ')}`).join('\n').slice(0, 9000);
+      const j = await aiJSON(`${BRAND_BRIEF}\n\nPoniżej sekcje strony głównej sklepu w kolejności (typ sekcji i jej teksty):\n${page}\n\nOceń tę stronę główną jak doświadczona projektantka e-commerce i copywriterka marek lifestyle. Patrz na: czy w pierwszych sekundach wiadomo, co sprzedajemy i dla kogo; kolejność sekcji; ton zgodny z briefem; wezwania do działania; to, co pomaga kupić. Nie wymyślaj opinii, liczb ani faktów o firmie.\nZwróć wyłącznie JSON: {"score": liczba 0-100, "summary": "1-2 zdania", "good": ["do 3 mocnych stron"], "improve": [{"section": numer sekcji lub 0 dla całej strony, "tip": "konkretna zmiana, najlepiej z gotowym tekstem"}]} — maksymalnie 6 pozycji w improve. Pisz po polsku.`);
+      const vb = STATE.blocks.filter(b => !b.hidden && TYPES[b.type]);
+      aiOut.replaceChildren(el('div', { class: 'chk-score' }, el('b', {}, String(j.score ?? '–')), 'ocena AI'), el('p', {}, j.summary || ''),
+        ...(j.good || []).map(g => el('div', { class: 'chk-i', style: 'cursor:default' }, el('b', {}, '✓'), el('span', {}, g))),
+        ...(j.improve || []).map(t => { const b = vb[(+t.section || 0) - 1]; return el('button', { class: 'chk-i', onclick: () => go(b?.id) }, el('b', {}, '→'), el('span', {}, (b ? `„${blockName(b)}”: ` : '') + t.tip)); }));
+    } catch (e) { aiOut.replaceChildren(el('p', { class: 'note note--warn' }, e.message || String(e))); }
+    aiBtn.disabled = false; aiBtn.textContent = '✨ Opinia AI o tekstach i układzie';
+  });
+  const m = modal(el('h2', {}, 'Kontrola strony'),
+    el('div', { class: 'chk-score' }, el('b', {}, String(score)), errs ? `${errs} do poprawy, ${warns} uwag` : warns ? `${warns} uwag — można publikować` : 'Wszystko gotowe do publikacji'),
+    el('div', { class: 'chk-l' }, ...(R.length ? R.map(r => el('button', { class: 'chk-i', onclick: () => go(r.id) }, el('b', {}, ICON[r.lvl]), el('span', {}, r.msg))) : [el('p', {}, 'Nie znalazłem problemów: linki, zdjęcia, ceny, nagłówek H1, kontrast i ton są w porządku.')])),
+    aiOut,
+    el('div', { class: 'dlg__foot' }, aiBtn, el('button', { class: 'btn', onclick: () => m.remove() }, 'Zamknij')));
 }
 
 /* --- projekt --- */
@@ -2079,6 +2652,7 @@ $('#codeBtn').addEventListener('click', openCode);
 $('#zipBtn').addEventListener('click', openExport);
 $('#projBtn').addEventListener('click', openProject);
 $('#importBtn').addEventListener('click', openImport);
+$('#checkBtn').addEventListener('click', openCheck);
 $('#tplBtn').addEventListener('click', () => toggleDrawer());
 $('#tplClose').addEventListener('click', () => toggleDrawer(false));
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#drawer').classList.contains('is-open')) toggleDrawer(false); });
