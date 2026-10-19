@@ -152,6 +152,7 @@ button{cursor:pointer}
 .tpl__meta{padding:12px 14px;display:grid;gap:4px}
 .tpl__meta b{font:500 19px/1.1 var(--disp)}
 .tpl__meta span{font-size:12.5px;color:var(--mute)}
+.tpl__meta em{font-style:normal;font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
 .tpl__sw{display:flex;gap:4px;margin-top:4px}.tpl__sw i{width:16px;height:16px;border-radius:50%;border:1px solid rgba(0,0,0,.1)}
 .tpl__acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .tpl__pvbtn{border:0;padding:0;background:none;display:block;width:100%;cursor:pointer}
@@ -287,7 +288,7 @@ async function addImage(key, blob) {
   const url = URL.createObjectURL(blob);
   let w = 0, h = 0;
   try { const b = await createImageBitmap(blob); w = b.width; h = b.height; b.close(); }
-  catch { await new Promise(r => { const i = new Image(); i.onload = () => { w = i.naturalWidth; h = i.naturalHeight; r(); }; i.onerror = r; i.src = url; }); }
+  catch { await new Promise(r => { const i = new Image(); const t = setTimeout(r, 1500); i.onload = () => { w = i.naturalWidth; h = i.naturalHeight; clearTimeout(t); r(); }; i.onerror = () => { clearTimeout(t); r(); }; i.src = url; }); }
   IMGS.set(key, { blob, url, w, h, user: !(key in DEFAULT_IMAGES), remote: CATALOG[key.slice(1)] && key[0] === 'p' ? CATALOG[key.slice(1)].remote : '' });
   return key;
 }
@@ -302,7 +303,15 @@ function addRemote(url) {
   }
   return key;
 }
-const dataToBlob = async d => (await fetch(d)).blob();
+/* bez fetch(): w ramce claude.ai adresy data: bywają zablokowane */
+const dataToBlob = async d => {
+  const [head, body = ''] = String(d).split(',', 2);
+  const type = (head.match(/^data:([^;,]+)/) || [])[1] || 'application/octet-stream';
+  if (!/;base64/.test(head)) return new Blob([decodeURIComponent(body)], { type });
+  const bin = atob(body), u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  return new Blob([u8], { type });
+};
 async function fileToImage(file) {
   if (!/^image\/(jpeg|png|webp|avif)$/.test(file.type)) throw new Error('Obsługiwane formaty: JPG, PNG, WEBP. Zdjęcia HEIC z iPhone\'a najpierw zapisz jako JPG.');
   const bmp = await createImageBitmap(file);
@@ -1228,13 +1237,33 @@ const FONT_SPEC = { 'Cormorant Garamond': 'ital,wght@0,500;0,600;1,400;1,500', '
   'Old Standard TT': 'ital,wght@0,400;0,700;1,400', 'Josefin Sans': 'wght@300;400;500' };
 const THEME_KEYS = ['fontD', 'fontB', 'colors', 'radius', 'btnRadius', 'btn', 'cap', 'headUpper', 'headTrack', 'headWeight', 'seam', 'space', 'overlay'];
 
-/* 10 szablonów. Każdy zmienia wygląd (kolory, fonty, przyciski, zaokrąglenia, podpisy kafli, rytm) i układ hero.
+/* Szablony: 5 z „najwyższej półki” (top: true), 14 biżuteryjnych i handmade (group), 10 klasycznych. Każdy zmienia wygląd (kolory, fonty, przyciski, zaokrąglenia, podpisy kafli, rytm) i układ hero.
    Treść, zdjęcia i linki zostają. */
 const TEMPLATES = [
   { id: 'current', name: 'Oak&Oats — obecny', desc: 'Wygląd obecnej strony: zdjęcie na cały ekran, kursywa Playfair, białe przyciski, taupe z menu.',
     hero: 'full', align: 'center', catsMobile: 'grid',
     s: { fontD: 'Playfair Display', fontB: 'Montserrat', radius: 0, btnRadius: 0, btn: 'solid', cap: 'overlay', headUpper: false, headTrack: 0, headWeight: 400, seam: 6, space: 1, overlay: .6,
       colors: { oat: '#faf8f5', linen: '#f3eee8', ink: '#2b2622', muted: '#6f655c', taupe: '#a8998a', clay: '#a08d7c' } } },
+  { id: 'maison', top: true, name: 'Maison', desc: 'Jak butik jubilerski: Italiana w szerokich wersalikach, kość słoniowa i greige, zdjęcie na cały ekran, dużo ciszy. Biżuteria czyta się tu jak biżuteria.',
+    hero: 'full', align: 'left', catsMobile: 'swipe',
+    s: { fontD: 'Italiana', fontB: 'Manrope', radius: 0, btnRadius: 0, btn: 'outline', cap: 'below', headUpper: true, headTrack: .08, headWeight: 400, seam: 0, space: 1.45, overlay: .5,
+      colors: { oat: '#f8f5f0', linen: '#eee8df', ink: '#2e2924', muted: '#7a7067', taupe: '#c2b5a5', clay: '#9b8670' } } },
+  { id: 'mocha', top: true, name: 'Mocha Mousse', desc: 'Głęboka mokka i mleczna pianka, kolor sezonu. Cormorant z kursywą, hero pół na pół, pełne przyciski w kolorze espresso.',
+    hero: 'split', catsMobile: 'swipe',
+    s: { fontD: 'Cormorant Garamond', fontB: 'Jost', radius: 0, btnRadius: 0, btn: 'solid', cap: 'below', headUpper: false, headTrack: -.01, headWeight: 500, seam: 10, space: 1.25, overlay: .55,
+      colors: { oat: '#f5efe8', linen: '#e9ddd1', ink: '#3b2b23', muted: '#7c675a', taupe: '#bfa48f', clay: '#8a6450' } } },
+  { id: 'pearl', top: true, name: 'Stone & Pearl', desc: 'Chłodniejszy kamień i perła. Marcellus w wersalikach, cienkie fugi między kaflami, spokój galerii z naturalnym światłem.',
+    hero: 'tiles', catsMobile: 'grid',
+    s: { fontD: 'Marcellus', fontB: 'Lato', radius: 0, btnRadius: 0, btn: 'outline', cap: 'overlay', headUpper: true, headTrack: .1, headWeight: 400, seam: 3, space: 1.3, overlay: .5,
+      colors: { oat: '#f6f5f2', linen: '#ebe9e4', ink: '#2f2d2a', muted: '#76726b', taupe: '#b8b2a7', clay: '#8f877a' } } },
+  { id: 'cashmere', top: true, name: 'Cashmere', desc: 'Miękki wielbłądzi kaszmir i krem. EB Garamond z kursywą, subtelnie zaokrąglone zdjęcia, wąskie przyciski. Ciepło bez słodyczy.',
+    hero: 'split', catsMobile: 'swipe',
+    s: { fontD: 'EB Garamond', fontB: 'DM Sans', radius: 4, btnRadius: 2, btn: 'solid', cap: 'below', headUpper: false, headTrack: -.01, headWeight: 400, seam: 12, space: 1.3, overlay: .5,
+      colors: { oat: '#f7f2eb', linen: '#efe4d6', ink: '#3a2f27', muted: '#7d6d60', taupe: '#cdb59a', clay: '#a5815f' } } },
+  { id: 'nude', top: true, name: 'Nude Clay', desc: 'Nude, róż gliny i len, jak dobra pielęgnacja. Lora, zaokrąglone kafle, przyciski-pastylki. Kobieco, ale bez infantylności.',
+    hero: 'full', align: 'center', catsMobile: 'swipe',
+    s: { fontD: 'Lora', fontB: 'Manrope', radius: 12, btnRadius: 999, btn: 'pill', cap: 'below', headUpper: false, headTrack: -.01, headWeight: 400, seam: 12, space: 1.2, overlay: .5,
+      colors: { oat: '#f8f2ee', linen: '#f0e3dc', ink: '#43332e', muted: '#83706a', taupe: '#d6b9ac', clay: '#b07d6c' } } },
   { id: 'atelier', name: 'Atelier Pastel', desc: 'Pudrowy róż i dużo powietrza, jak butik z biżuterią. Hero pół na pół, podpisy pod zdjęciami, przyciski z obrysem.',
     hero: 'split', catsMobile: 'swipe',
     s: { fontD: 'Cormorant Garamond', fontB: 'Montserrat', radius: 0, btnRadius: 0, btn: 'outline', cap: 'below', headUpper: false, headTrack: 0, headWeight: 500, seam: 14, space: 1.2, overlay: .5,
@@ -1271,7 +1300,7 @@ const TEMPLATES = [
     hero: 'tiles', catsMobile: 'grid',
     s: { fontD: 'Cinzel', fontB: 'EB Garamond', radius: 0, btnRadius: 0, btn: 'outline', cap: 'overlay', headUpper: true, headTrack: .06, headWeight: 400, seam: 12, space: 1.15, overlay: .6,
       colors: { oat: '#efe7da', linen: '#e6dbc9', ink: '#3a3128', muted: '#75685a', taupe: '#b29f86', clay: '#8a6d4b' } } },
-  { id: 'maison', name: 'Maison Ivoire', group: 'Biżuteria i handmade', desc: 'Wysoka biżuteria: kość słoniowa, głęboka czerń liter i szampańskie złoto. Dużo ciszy, kontrastowa Caslon, obrysowe przyciski.',
+  { id: 'ivoire', name: 'Maison Ivoire', group: 'Biżuteria i handmade', desc: 'Wysoka biżuteria: kość słoniowa, głęboka czerń liter i szampańskie złoto. Dużo ciszy, kontrastowa Caslon, obrysowe przyciski.',
     hero: 'full', align: 'left', catsMobile: 'swipe',
     s: { fontD: 'Libre Caslon Display', fontB: 'Tenor Sans', radius: 0, btnRadius: 0, btn: 'outline', cap: 'below', headUpper: false, headTrack: -0.01, headWeight: 400, seam: 0, space: 1.45, overlay: 0.5,
       colors: { oat: '#f8f5f0', linen: '#efe9e0', ink: '#161412', muted: '#6e665c', taupe: '#cdbfa8', clay: '#b39b6b' } } },
@@ -1283,7 +1312,7 @@ const TEMPLATES = [
     hero: 'full', align: 'left', catsMobile: 'swipe',
     s: { fontD: 'Instrument Serif', fontB: 'DM Sans', radius: 6, btnRadius: 999, btn: 'pill', cap: 'below', headUpper: false, headTrack: -0.02, headWeight: 400, seam: 8, space: 1.2, overlay: 0.45,
       colors: { oat: '#f4f2ee', linen: '#eae6df', ink: '#1e1e1e', muted: '#6b6762', taupe: '#c9bfb1', clay: '#a8876a' } } },
-  { id: 'pearl', name: 'Pearl & Silk', group: 'Biżuteria i handmade', desc: 'Perłowa biel i pudrowy róż. Bellefair, cienkie linie, kobieco i spokojnie, idealne do naszyjników.',
+  { id: 'pearlsilk', name: 'Pearl & Silk', group: 'Biżuteria i handmade', desc: 'Perłowa biel i pudrowy róż. Bellefair, cienkie linie, kobieco i spokojnie, idealne do naszyjników.',
     hero: 'split', catsMobile: 'grid',
     s: { fontD: 'Bellefair', fontB: 'Questrial', radius: 4, btnRadius: 0, btn: 'outline', cap: 'below', headUpper: false, headTrack: 0.02, headWeight: 400, seam: 12, space: 1.3, overlay: 0.45,
       colors: { oat: '#f7f4f2', linen: '#efe2dd', ink: '#3b3332', muted: '#7f716e', taupe: '#dccbc6', clay: '#b08f8a' } } },
@@ -1622,8 +1651,10 @@ const DB = {
     this._db.catch(() => {});
     return this._db;
   },
-  async get(k) { try { const d = await this.open(); return await new Promise(r => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => r(q.result); q.onerror = () => r(undefined); }); } catch { return undefined; } },
-  async set(k, v) { try { const d = await this.open(); await new Promise(r => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = r; t.onerror = r; }); return true; } catch { return false; } },
+  /* każde pojedyncze zapytanie też ma limit czasu — baza potrafi się otworzyć, a potem nie odpowiadać */
+  _wait(fn, fallback) { return new Promise(r => { const t = setTimeout(() => r(fallback), 1500); try { fn(v => { clearTimeout(t); r(v); }); } catch { clearTimeout(t); r(fallback); } }); },
+  async get(k) { try { const d = await this.open(); return await this._wait(r => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => r(q.result); q.onerror = () => r(undefined); }, undefined); } catch { return undefined; } },
+  async set(k, v) { try { const d = await this.open(); return await this._wait(r => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = () => r(true); t.onerror = t.onabort = () => r(false); }, false); } catch { return false; } },
 };
 async function saveState() { const ok = await DB.set('state3', JSON.stringify(STATE)); $('#status').textContent = ok ? 'Zapisano w przeglądarce' : 'Bez zapisu w przeglądarce — użyj „Projekt → Zapisz plik”'; }
 async function saveUploads() {
@@ -2157,7 +2188,7 @@ function renderTemplates() {
     el('button', { class: 'btn btn--acc', type: 'button', onclick: () => editTemplate({ id: '', name: 'Mój szablon', desc: 'Zapisany z obecnego wyglądu strony.', ...themeFromState() }, true) }, '+ Zapisz obecny wygląd jako mój szablon'));
   const card = (t, isMine) => el('div', { class: 'tpl' + (STATE.settings.template === t.id ? ' is-on' : '') },
     el('button', { class: 'tpl__pvbtn', type: 'button', title: 'Zastosuj szablon', 'aria-label': `Zastosuj szablon ${t.name}`, onclick: () => applyTemplate(t) }, tplPreview(t)),
-    el('div', { class: 'tpl__meta' }, el('b', {}, t.name), el('span', {}, t.desc),
+    el('div', { class: 'tpl__meta' }, t.top ? el('em', {}, 'Najwyższa półka') : null, el('b', {}, t.name), el('span', {}, t.desc),
       el('div', { class: 'tpl__sw' }, ...['oat', 'linen', 'taupe', 'clay', 'ink'].map(k => el('i', { style: `background:${t.s.colors[k]}` }))),
       el('div', { class: 'tpl__acts' },
         el('button', { class: 'btn btn--sm btn--acc', type: 'button', onclick: () => applyTemplate(t) }, 'Zastosuj'),
@@ -2167,7 +2198,7 @@ function renderTemplates() {
           STATE.myTemplates = mine.filter(x => x.id !== t.id); changed(); renderTemplates(); toast('Usunięto szablon. Cofnij: Ctrl+Z');
         } }, 'Usuń') : null)));
   if (mine.length) { list.append(el('p', { class: 'drawer__sec' }, 'Moje szablony')); mine.forEach(t => list.append(card(t, true))); }
-  const groups = [['Klasyczne', TEMPLATES.filter(t => !t.group)], ['Biżuteria i handmade', TEMPLATES.filter(t => t.group)]];
+  const groups = [['Najwyższa półka', TEMPLATES.filter(t => t.top)], ['Biżuteria i handmade', TEMPLATES.filter(t => t.group)], ['Klasyczne', TEMPLATES.filter(t => !t.group && !t.top)]];
   for (const [g, ts] of groups) { list.append(el('p', { class: 'drawer__sec' }, `${g} (${ts.length})`)); ts.forEach(t => list.append(card(t, false))); }
 }
 /* Edytor szablonu: wszystkie ustawienia wyglądu na kopii roboczej, z podglądem karty. */
@@ -2198,7 +2229,7 @@ function editTemplate(t, isMine) {
         STATE.myTemplates = (STATE.myTemplates || []).map(x => x.id === d.id ? clone(d) : x); changed(); renderTemplates(); m.remove(); toast('Zapisano szablon');
       } }, 'Zapisz zmiany') : null,
       el('button', { class: isMine && d.id ? 'btn' : 'btn btn--acc', type: 'button', onclick: () => {
-        const n = { ...clone(d), id: 'my-' + uid(), group: undefined, name: d.name && !TEMPLATES.some(x => x.name === d.name) ? d.name : `${d.name || 'Szablon'} — moja wersja` };
+        const n = { ...clone(d), id: 'my-' + uid(), group: undefined, top: undefined, name: d.name && !TEMPLATES.some(x => x.name === d.name) ? d.name : `${d.name || 'Szablon'} — moja wersja` };
         STATE.myTemplates = [n, ...(STATE.myTemplates || [])]; changed(); renderTemplates(); m.remove(); toast(`Zapisano „${n.name}” w Moich szablonach`);
       } }, 'Zapisz jako nowy szablon')));
   m.addEventListener('input', upd); m.addEventListener('change', upd); upd();
@@ -2269,7 +2300,7 @@ function importPage(html) {
   if (prods.size) blocks.push(mk('products', { eyebrow: '', title: 'Produkty', linkText: 'Wszystkie produkty', linkHref: CATS['37'][1], items: [...prods.values()].slice(0, 8) }));
   heads.slice(0, 6).forEach(h => blocks.push(mk('text', { eyebrow: '', title: h.t, text: h.p, cta: h.btn, href: h.href, bg: 'linen' })));
   if (uniqBig.length > 1) blocks.push(mk('gallery', { eyebrow: '', title: 'Z obecnej strony', linkText: '', items: uniqBig.slice(1, 13).map(u => ({ img: I(addRemote(u), 'Zdjęcie z obecnej strony'), caption: '', href: '/' })) }));
-  saveUploads();
+  saveUploads().catch(() => {});
   return { blocks, stats: { prods: prods.size, cats: cats.size, imgs: uniqBig.length, texts: heads.length + (h0 ? 1 : 0) } };
 }
 function openImport() {
@@ -2287,6 +2318,7 @@ function openImport() {
         try {
           const { blocks, stats } = importPage(ta.value);
           if (!blocks.length) { toast('Nie znalazłem sekcji w tym kodzie'); return; }
+          if (!STATE?.blocks) STATE = currentState();
           STATE.blocks = mode.value === 'replace' ? blocks : [...STATE.blocks, ...blocks];
           m.remove(); changed(true);
           toast(`Wczytano: ${stats.texts} tekstów, ${stats.prods} produktów, ${stats.cats} kategorii, ${stats.imgs} zdjęć.`);
@@ -2627,11 +2659,14 @@ function afterLoad() {
   renderPanel(); renderPreview(); updUndo();
 }
 async function boot() {
-  for (const [k, d] of Object.entries(DEFAULT_IMAGES)) await addImage(k, await dataToBlob(d));
-  const ups = await DB.get('uploads');
-  if (ups) for (const [k, b] of Object.entries(ups)) if (b instanceof Blob) await addImage(k, b);
-  ((await DB.get('remotes')) || []).forEach(addRemote);
-  const saved = await DB.get('state3');
+  /* każdy krok osobno: błąd jednego zdjęcia albo pamięci przeglądarki nie może zatrzymać startu edytora */
+  const [, ups, remotes, saved] = await Promise.all([
+    Promise.all(Object.entries(DEFAULT_IMAGES).map(async ([k, d]) => { try { await addImage(k, await dataToBlob(d)); } catch (e) { console.warn('Zdjęcie', k, e); } })),
+    DB.get('uploads'), DB.get('remotes'), DB.get('state3')]);
+  if (ups && typeof ups === 'object') await Promise.all(Object.entries(ups).map(async ([k, b]) => { if (b instanceof Blob) try { await addImage(k, b); } catch {} }));
+  (Array.isArray(remotes) ? remotes : []).forEach(u => { try { addRemote(u); } catch {} });
+  /* stronę albo projekt wczytano, zanim start się skończył — nie nadpisujemy tej pracy */
+  if (STATE?.blocks) { lastSnap = JSON.stringify(STATE); afterLoad(); return; }
   try { STATE = saved ? JSON.parse(saved) : currentState(); if (!STATE.blocks || STATE.v !== 3) throw 0; } catch { STATE = currentState(); }
   OPEN.add(STATE.blocks[0]?.id);
   lastSnap = JSON.stringify(STATE);
@@ -2661,5 +2696,9 @@ document.addEventListener('keydown', e => {
   const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName);
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !typing) { e.preventDefault(); e.shiftKey ? redo() : undo(); }
 });
-boot();
+boot().catch(e => {
+  console.error(e);
+  try { if (!STATE?.blocks) STATE = currentState(); lastSnap = JSON.stringify(STATE); afterLoad(); } catch {}
+  toast('Edytor wystartował bez zapisu w przeglądarce');
+});
 </script>

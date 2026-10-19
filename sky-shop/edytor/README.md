@@ -33,7 +33,9 @@ Projekt → „Prototyp z kaflami” wczytuje wcześniejszy projekt w kierunku l
 
 ## Szablony
 
-Przycisk **Szablony** otwiera wysuwany panel z 24 szablonami w dwóch grupach.
+Przycisk **Szablony** otwiera wysuwany panel z 29 szablonami w trzech grupach.
+
+**Najwyższa półka (5):** Maison, Mocha Mousse, Stone & Pearl, Cashmere, Nude Clay.
 
 **Klasyczne (10):**
 - Oak&Oats — obecny,
